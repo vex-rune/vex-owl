@@ -12,31 +12,74 @@ __pycache__/
 .venv/
 venv/
 env/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+.installed.cfg
+*.egg
 
 # 工作空间用户数据（不提交到 git）
 owl-workspace/users/*
 !owl-workspace/users/.gitkeep
+
+# Nacos 配置缓存
+data/nacos/
+config-data/
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
+.project
+.classpath
+.settings/
+*.iml
+*.ipr
+*.iws
 
 # OS
 .DS_Store
 Thumbs.db
+Desktop.ini
+*.tmp
+*.bak
+*.cache
 
 # 日志
 *.log
 logs/
+*.log.*
+*.gz
 
 # Maven
+target/
+**/target/**
 *.jar
 *.war
 *.ear
+*.class
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
 
 # 构建产物
 *.class
 *.o
 *.pyc
+build/
+dist/
+*.egg-info/
+*.egg

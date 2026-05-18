@@ -3,8 +3,8 @@ version: '3.8'
 services:
   # Nacos 服务配置
   nacos:
-    # Nacos 镜像版本，v2.2.3是经过验证的稳定版本，兼容Spring Cloud 2021+
-    image: nacos/nacos-server:v2.2.3
+    # Nacos 镜像版本，v2.4.3是最新稳定版本，完美适配Spring Cloud 2023+
+    image: nacos/nacos-server:v2.4.3
     # 容器名称，方便管理和识别
     container_name: vex-owl-nacos
     # 环境变量配置

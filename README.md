@@ -80,7 +80,7 @@ docker-compose up -d
 # 步骤
 
 ## 第一步 启动Nacos服务
-使用 `./docker-owl/scripts/start-nacos.sh ` 启动Nacos服务
+使用 `./docker/owl-nacos/scripts/start-nacos.sh ` 启动Nacos服务
 
 ## 第二步 启动其他服务
 使用 `docker-compose up -d` 启动其他服务

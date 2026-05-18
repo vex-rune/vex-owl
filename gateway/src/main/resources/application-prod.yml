@@ -1,0 +1,80 @@
+# ================================================
+# VEX-OWL 网关服务 - 生产环境配置
+# ================================================
+
+# ------------------------------
+# 日志配置 - 生产环境使用INFO级别
+# ------------------------------
+logging:
+  level:
+    root: INFO  # 根日志级别
+    com.vex.owl.gateway.filter: INFO  # 过滤器日志
+    org.springframework.cloud.gateway: WARN  # Gateway警告日志
+    org.springframework: WARN  # Spring框架警告日志
+    org.hibernate: WARN  # Hibernate警告日志
+    reactor.netty: WARN  # Reactor网络警告日志
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"  # 简洁格式
+  file:
+    name: logs/gateway.log  # 日志文件路径
+    max-size: 100MB  # 单个日志文件最大大小
+    max-history: 30  # 保留30天的日志
+    total-size-cap: 10GB  # 总日志大小限制
+
+# ------------------------------
+# 性能优化配置
+# ------------------------------
+spring:
+  # 关闭开发工具
+  devtools:
+    restart:
+      enabled: false  # 关闭热重载
+    livereload:
+      enabled: false  # 关闭LiveReload
+  
+  # Gateway HTTP客户端配置 - 生产环境优化
+  cloud:
+    gateway:
+      httpclient:
+        wiretap: false  # 关闭请求日志，提升性能
+        connect-timeout: 10000  # 连接超时10秒
+        response-timeout: 30s  # 响应超时30秒
+        pool:
+          type: ELASTIC
+          max-connections: 1000  # 最大连接数1000
+          acquire-timeout: 45000  # 连接获取超时45秒
+
+# ------------------------------
+# 监控配置 - 生产环境精简端点
+# ------------------------------
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics  # 只暴露必要的监控端点
+  endpoint:
+    health:
+      show-details: when-authorized  # 只有授权用户才能看到详细信息
+      roles: ADMIN  # 需要ADMIN角色
+    env:
+      show-values: NEVER  # 不显示环境变量值
+    configprops:
+      show-values: NEVER  # 不显示配置属性值
+  health:
+    discovery:
+      enabled: true
+  tracing:
+    enabled: true  # 开启链路追踪
+  metrics:
+    tags:
+      application: ${spring.application.name}  # 指标统一添加服务名标签
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true  # 开启请求耗时直方图统计
+      percentiles:
+        http.server.requests: 0.5, 0.9, 0.95, 0.99  # 统计P50/P90/P95/P99分位耗时
+  
+  # 安全配置
+  security:
+    enabled: true  # 开启监控端点安全认证
+    roles: ADMIN  # 需要ADMIN角色访问
