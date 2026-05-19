@@ -1,0 +1,8 @@
+com\vex\query\criteria\VexPageRequest.class
+com\vex\query\criteria\VexLogic.class
+com\vex\query\criteria\VexExpression.class
+com\vex\query\criteria\VexSortOrder.class
+com\vex\query\criteria\VexOperator.class
+com\vex\query\criteria\VexQueryCriteria.class
+com\vex\query\criteria\VexCriterion.class
+com\vex\query\criteria\VexPredicate.class

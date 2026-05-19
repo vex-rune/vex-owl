@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.vex.query.criteria.VexQueryCriteriaTest
--------------------------------------------------------------------------------
-Tests run: 0, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in com.vex.query.criteria.VexQueryCriteriaTest
