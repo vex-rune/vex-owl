@@ -42,6 +42,8 @@ buildNumber.properties
 .pub-cache/
 .pub/
 /build/
+/logs/
+/log/
 /.flutter-plugins
 /.flutter-plugins-dependencies
 .flutter-plugins

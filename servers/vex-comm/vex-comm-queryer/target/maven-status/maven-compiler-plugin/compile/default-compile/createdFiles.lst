@@ -1,0 +1,9 @@
+com\vex\query\criteria\Operator.class
+com\vex\query\criteria\CriteriaPredicate.class
+com\vex\query\criteria\Logic$LogicEnum.class
+com\vex\query\criteria\PageRequest.class
+com\vex\query\criteria\CriteriaExpression.class
+com\vex\query\criteria\SortOrder.class
+com\vex\query\criteria\Logic.class
+com\vex\query\criteria\Operator$OperatorEnum.class
+com\vex\query\criteria\QueryCriteria.class
