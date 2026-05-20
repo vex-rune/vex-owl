@@ -1,5 +1,5 @@
 # ================================================
-# VEX-OWL 网关服务 - 本地开发环境配置
+# VEX-OWL 认证服务 - 本地开发环境配置
 # ================================================
 
 # ------------------------------
@@ -8,8 +8,8 @@
 logging:
   level:
     root: DEBUG  # 根日志级别
-    com.vex.gateway.filter: DEBUG  # 过滤器详细日志
-    org.springframework.cloud.gateway: DEBUG  # Gateway调试日志
+    com.vex.owl.auth: DEBUG  # 认证服务详细日志
+    org.springframework.security: DEBUG  # 安全框架调试日志
     org.springframework.web: DEBUG  # Web层日志
   pattern:
     console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"  # 彩色控制台输出
@@ -27,13 +27,20 @@ spring:
     livereload:
       enabled: true  # 开启LiveReload
   
-  # Gateway HTTP客户端配置 - 开发环境更宽松
-  cloud:
-    gateway:
-      httpclient:
-        wiretap: true  # 开启请求日志，方便调试
-        connect-timeout: 30000  # 连接超时30秒
-        response-timeout: 60s  # 响应超时60秒
+  # 安全配置 - 开发环境更宽松
+  security:
+    user:
+      name: admin
+      password: admin123
+
+# ------------------------------
+# JWT 配置 - 开发环境使用默认密钥
+# ------------------------------
+jwt:
+  secret: vex-owl-jwt-secret-key-dev-only-not-for-production-2024
+  expiration: 86400000  # 24小时（毫秒）
+  header: Authorization
+  prefix: "Bearer "
 
 # ------------------------------
 # 监控配置 - 开发环境暴露所有端点

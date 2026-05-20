@@ -1,0 +1,58 @@
+# ================================================
+# VEX-OWL 认证服务 - Bootstrap 配置
+# 说明：此文件包含所有环境共用的基础配置
+# 端口：9202
+# 监控地址：http://localhost:9202/actuator/prometheus
+# ================================================
+
+# ------------------------------
+# 服务器基础配置
+# ------------------------------
+server:
+  port: 9202  # 认证服务监听端口
+
+# ------------------------------
+# Spring 基础配置
+# ------------------------------
+spring:
+  application:
+    name: vex-owl-auth-server  # 服务名，用于Nacos注册
+  
+  # 默认激活本地开发环境
+  profiles:
+    active: dev  # 可通过环境变量 SPRING_PROFILES_ACTIVE 覆盖
+  
+  config:
+    import: optional:nacos  # 启用Nacos配置中心（可选）
+
+  # ------------------------------
+  # Nacos 配置中心
+  # ------------------------------
+  cloud:
+    nacos:
+      config:
+        import-check:
+          enabled: false  # 关闭Nacos配置缺失检查（本地开发时Nacos可能未启动）
+        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}  # Nacos服务地址，可通过环境变量覆盖
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD:nacos}
+        file-extension: yml
+        shared-configs:
+          - data-id: common-config.yml  # 公共配置
+            group: COMMON_GROUP
+            refresh: true  # 配置自动刷新
+      
+      # ------------------------------
+      # Nacos 服务发现
+      # ------------------------------
+      discovery:
+        server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD:nacos}
+        namespace: ${NACOS_NAMESPACE:public}  # Nacos命名空间
+
+# ------------------------------
+# Bootstrap Context 配置
+# ------------------------------
+spring.cloud.config:
+  bootstrap: true

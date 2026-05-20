@@ -1,0 +1,72 @@
+# ================================================
+# VEX-OWL 认证服务 - 生产环境配置
+# ================================================
+
+# ------------------------------
+# 日志配置 - 生产环境使用INFO级别
+# ------------------------------
+logging:
+  level:
+    root: INFO  # 根日志级别
+    com.vex.owl.auth: INFO  # 认证服务日志
+    org.springframework.security: INFO  # 安全框架日志
+    org.springframework.web: WARN  # Web层日志
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${PID:- } --- [%15.15t] %-40.40logger{39} : %m%n%wEx"  # 标准输出格式
+  file:
+    enabled: true  # 开启文件日志
+    name: logs/${spring.application.name}.log
+    max-size: 100MB  # 单个日志文件最大100MB
+    max-history: 30  # 保留30天日志
+    total-size-cap: 10GB  # 日志总大小上限10GB
+  logback:
+    rollingpolicy:
+      max-file-size: 100MB
+      file-name-pattern: logs/${spring.application.name}-%d{yyyy-MM-dd}.%i.log
+
+# ------------------------------
+# 生产安全配置
+# ------------------------------
+spring:
+  security:
+    user:
+      name: ${AUTH_ADMIN_USER:admin}
+      password: ${AUTH_ADMIN_PASSWORD}  # 必须通过环境变量设置
+
+# ------------------------------
+# JWT 配置 - 生产环境必须通过环境变量设置
+# ------------------------------
+jwt:
+  secret: ${JWT_SECRET}  # 必须通过环境变量设置，不能使用默认值
+  expiration: ${JWT_EXPIRATION:7200000}  # 2小时（毫秒），可通过环境变量覆盖
+  header: Authorization
+  prefix: "Bearer "
+
+# ------------------------------
+# 监控配置 - 生产环境只暴露必要端点
+# ------------------------------
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus  # 只暴露必要端点
+  endpoint:
+    health:
+      show-details: when-authorized  # 只对授权用户显示详细信息
+    env:
+      enabled: false  # 关闭环境变量端点（安全考虑）
+    configprops:
+      enabled: false  # 关闭配置属性端点（安全考虑）
+  health:
+    discovery:
+      enabled: false
+  tracing:
+    enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5, 0.9, 0.95, 0.99

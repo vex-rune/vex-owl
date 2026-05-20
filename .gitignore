@@ -127,3 +127,4 @@ owl-workspace/users/*
 # Nacos 配置本地缓存
 server/data/nacos/
 server/config-data/
+docker/vex-group/data/**
