@@ -7,14 +7,14 @@ import jakarta.persistence.MappedSuperclass;
 
 /**
  * 可识别实体基类
- * <p>继承自 {@link BasicJpaEntity}，增加主键 ID 字段</p>
+ * <p>继承自 {@link JpaBasicEntity}，增加主键 ID 字段</p>
  * <p>适用于需要唯一标识符的业务实体</p>
  *
  * @author vex
  * @since 2.0.0
  */
 @MappedSuperclass
-public abstract class BasicWithIdJpaEntity extends BasicJpaEntity {
+public abstract class JpaBasicWithIdEntity extends JpaBasicEntity {
 
     /**
      * ID 字段名称常量
@@ -25,7 +25,7 @@ public abstract class BasicWithIdJpaEntity extends BasicJpaEntity {
      * 主键 ID - 自动生成
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     /**

@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * @author vex
  * @since 3.0.0
  */
-public class QueryExecutor<E extends BasicWithIdJpaEntity> {
+public class JpaQueriesExecutor<E extends JpaBasicWithIdEntity> {
 
     private final Class<E> entityClass;
     private final EntityManager entityManager;
@@ -170,7 +170,7 @@ public class QueryExecutor<E extends BasicWithIdJpaEntity> {
      * @param entityClass    实体类类型
      * @param entityManager  JPA EntityManager
      */
-    public QueryExecutor(Class<E> entityClass, EntityManager entityManager) {
+    public JpaQueriesExecutor(Class<E> entityClass, EntityManager entityManager) {
         this.entityClass = entityClass;
         this.entityManager = entityManager;
     }
@@ -183,87 +183,8 @@ public class QueryExecutor<E extends BasicWithIdJpaEntity> {
      * @param <T>            实体类型
      * @return 查询执行器实例
      */
-    public static <T extends BasicWithIdJpaEntity> QueryExecutor<T> of(Class<T> entityClass, EntityManager entityManager) {
-        return new QueryExecutor<>(entityClass, entityManager);
-    }
-
-    /**
-     * 使用分页请求参数执行查询（一站式方法）
-     *
-     * @param pageRequest 分页请求参数（包含 predicate、order、page）
-     * @return 分页结果列表
-     */
-    public List<E> executeQuery(QueriesPageRequest pageRequest) {
-        if (pageRequest != null) {
-            if (pageRequest.getPredicate() != null) {
-                this.predicate = pageRequest.getPredicate();
-            }
-            if (pageRequest.getOrder() != null) {
-                this.orders = Collections.singletonList(pageRequest.getOrder());
-            }
-        }
-        
-        if (pageRequest != null && pageRequest.getPage() != null) {
-            return executePageQuery(pageRequest.getPage());
-        } else {
-            return executeListQuery();
-        }
-    }
-
-    /**
-     * 设置查询条件
-     *
-     * @param predicate 查询条件
-     * @return 当前执行器实例（支持链式调用）
-     */
-    public QueryExecutor<E> withPredicate(QueriesPredicate predicate) {
-        this.predicate = predicate;
-        return this;
-    }
-
-    /**
-     * 设置排序条件
-     *
-     * @param orders 排序条件列表
-     * @return 当前执行器实例（支持链式调用）
-     */
-    public QueryExecutor<E> withOrders(List<QueriesOrder> orders) {
-        this.orders = orders;
-        return this;
-    }
-
-    /**
-     * 设置单个排序条件
-     *
-     * @param order 排序条件
-     * @return 当前执行器实例（支持链式调用）
-     */
-    public QueryExecutor<E> orderBy(QueriesOrder order) {
-        if (this.orders == null) {
-            this.orders = new ArrayList<>();
-        }
-        this.orders.add(order);
-        return this;
-    }
-
-    /**
-     * 按字段升序排序
-     *
-     * @param fieldName 字段名
-     * @return 当前执行器实例（支持链式调用）
-     */
-    public QueryExecutor<E> orderByAsc(String fieldName) {
-        return orderBy(new QueriesOrder(fieldName, QueriesOrder.QueriesOrderEnum.ASC));
-    }
-
-    /**
-     * 按字段降序排序
-     *
-     * @param fieldName 字段名
-     * @return 当前执行器实例（支持链式调用）
-     */
-    public QueryExecutor<E> orderByDesc(String fieldName) {
-        return orderBy(new QueriesOrder(fieldName, QueriesOrder.QueriesOrderEnum.DESC));
+    public static <T extends JpaBasicWithIdEntity> JpaQueriesExecutor<T> of(Class<T> entityClass, EntityManager entityManager) {
+        return new JpaQueriesExecutor<>(entityClass, entityManager);
     }
 
     /**
@@ -272,7 +193,7 @@ public class QueryExecutor<E extends BasicWithIdJpaEntity> {
      * @param pageRequest 分页请求参数（包含 predicate、order、page）
      * @return 分页结果列表
      */
-    public List<E> executePageQuery(QueriesPageRequest pageRequest) {
+    public List<E> page(QueriesPageRequest pageRequest) {
         if (pageRequest != null) {
             if (pageRequest.getPredicate() != null) {
                 this.predicate = pageRequest.getPredicate();
@@ -281,10 +202,10 @@ public class QueryExecutor<E extends BasicWithIdJpaEntity> {
                 this.orders = Collections.singletonList(pageRequest.getOrder());
             }
             if (pageRequest.getPage() != null) {
-                return executePageQuery(pageRequest.getPage());
+                return page(pageRequest.getPage());
             }
         }
-        return executeListQuery();
+        return list();
     }
 
     /**
@@ -294,7 +215,7 @@ public class QueryExecutor<E extends BasicWithIdJpaEntity> {
      * @param page 分页参数
      * @return 分页结果列表
      */
-    public List<E> executePageQuery(QueriesPage page) {
+    public List<E> page(QueriesPage page) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         
         // 构建查询
@@ -312,23 +233,12 @@ public class QueryExecutor<E extends BasicWithIdJpaEntity> {
     }
 
     /**
-     * 分页查询（便捷方法）
-     *
-     * @param pageNum 页码（从0开始）
-     * @param pageSize 每页大小
-     * @return 分页结果列表
-     */
-    public List<E> page(int pageNum, int pageSize) {
-        return executePageQuery(new QueriesPage(pageNum, pageSize));
-    }
-
-    /**
      * 列表查询
      * <p>执行列表查询，默认返回前 10 条记录</p>
      *
      * @return 实体列表
      */
-    public List<E> executeListQuery() {
+    public List<E> list() {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<E> query = buildSelectQuery(builder);
         
@@ -344,97 +254,47 @@ public class QueryExecutor<E extends BasicWithIdJpaEntity> {
     }
 
     /**
-     * 列表查询（自定义限制数量）
-     *
-     * @param limit 最大返回记录数
-     * @return 实体列表
-     */
-    public List<E> list(int limit) {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<E> query = buildSelectQuery(builder);
-        
-        applyOrdering(query, builder);
-        
-        TypedQuery<E> typedQuery = entityManager.createQuery(query);
-        typedQuery.setFirstResult(0);
-        typedQuery.setMaxResults(limit);
-        
-        return typedQuery.getResultList();
-    }
-
-    /**
-     * 查询所有符合条件的记录（无限制）
-     *
-     * @return 实体列表
-     */
-    public List<E> listAll() {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<E> query = buildSelectQuery(builder);
-        
-        applyOrdering(query, builder);
-        
-        return entityManager.createQuery(query).getResultList();
-    }
-
-    /**
      * 计数查询
      * <p>统计符合条件的记录总数</p>
      *
      * @return 记录总数
      */
-    public long executeCountQuery() {
+    public long count() {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        
+
         // 构建计数查询
         CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
         Root<E> root = countQuery.from(entityClass);
-        
+
         // 应用查询条件
         applyWhereClause(countQuery, root, builder);
-        
+
         // 选择计数字段
-        countQuery.select(builder.count(root.get(BasicWithIdJpaEntity.ID_FIELD)));
-        
+        countQuery.select(builder.count(root.get(JpaBasicWithIdEntity.ID_FIELD)));
+
         return entityManager.createQuery(countQuery).getSingleResult();
     }
 
     /**
-     * 检查是否存在符合条件的记录
+     * 带条件的计数查询
+     * <p>根据指定的查询条件统计记录总数</p>
      *
+     * @param predicate 查询条件
+     * @return 记录总数
+     */
+    public long count(QueriesPredicate predicate) {
+        this.predicate = predicate;
+        return count();
+    }
+
+    /**
+     * 检查是否存在符合指定条件的记录
+     *
+     * @param predicate 查询条件
      * @return true 如果存在至少一条记录
      */
-    public boolean exists() {
-        return executeCountQuery() > 0;
-    }
-
-    /**
-     * 查询单条记录（如果存在多条则抛出异常）
-     *
-     * @return 实体对象，如果不存在则返回 null
-     */
-    public E findOne() {
-        List<E> results = list(2);
-        if (results.isEmpty()) {
-            return null;
-        }
-        if (results.size() > 1) {
-            throw new IllegalStateException("期望查询到一条记录，但实际查询到 " + results.size() + " 条");
-        }
-        return results.get(0);
-    }
-
-    /**
-     * 查询单条记录或抛出异常
-     *
-     * @return 实体对象
-     * @throws NoSuchElementException 如果不存在记录
-     */
-    public E getOne() {
-        E result = findOne();
-        if (result == null) {
-            throw new NoSuchElementException("未找到符合条件的记录");
-        }
-        return result;
+    public boolean exists(QueriesPredicate predicate) {
+        return count(predicate) > 0;
     }
 
     /**

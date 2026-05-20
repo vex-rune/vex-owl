@@ -1,6 +1,6 @@
 package com.vex.owl.auth.app;
 
-import com.vex.owl.auth.domain.account.AccountEntity;
+import com.vex.owl.auth.domain.account.AccountBasicWithIdEntity;
 import com.vex.owl.auth.domain.code.CodeManager;
 import com.vex.owl.auth.domain.login_record.LoginRecordManager;
 import com.vex.owl.auth.domain.subject.SubjectManager;
@@ -60,7 +60,7 @@ public class AuthApp {
                 return null;
             }
             
-            AccountEntity account = accountManager.findBySubjectIdAndType(subject.getId(), "PASSWORD");
+            AccountBasicWithIdEntity account = accountManager.findBySubjectIdAndType(subject.getId(), "PASSWORD");
             if (account == null) {
                 record.markFail("未设置密码");
                 loginRecordManager.create(record);
@@ -161,13 +161,13 @@ public class AuthApp {
             subjectManager.create(subject);
             
             if (password != null && !password.isEmpty()) {
-                AccountEntity passwordAccount =
-                    new AccountEntity(subject.getId(), "PASSWORD", password);
+                AccountBasicWithIdEntity passwordAccount =
+                    new AccountBasicWithIdEntity(subject.getId(), "PASSWORD", password);
                 accountManager.create(passwordAccount);
             }
             
-            AccountEntity emailCodeAccount =
-                new AccountEntity(subject.getId(), "EMAIL_CODE", null);
+            AccountBasicWithIdEntity emailCodeAccount =
+                new AccountBasicWithIdEntity(subject.getId(), "EMAIL_CODE", null);
             accountManager.create(emailCodeAccount);
             
             record.markSuccess(subject.getId());
@@ -208,7 +208,7 @@ public class AuthApp {
                 return null;
             }
             
-            AccountEntity account = accountManager.findBySubjectIdAndType(subject.getId(), "PASSWORD");
+            AccountBasicWithIdEntity account = accountManager.findBySubjectIdAndType(subject.getId(), "PASSWORD");
             if (account == null) {
                 record.markFail("未设置密码");
                 loginRecordManager.create(record);

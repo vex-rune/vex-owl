@@ -1,6 +1,6 @@
 package com.vex.owl.auth.domain.account;
 
-import com.vex.query.criteria.jpa.BasicWithIdJpaEntity;
+import com.vex.query.criteria.jpa.JpaBasicWithIdEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @Table(name = "auth_account")
-public class AccountEntity extends BasicWithIdJpaEntity {
+public class AccountBasicWithIdEntity extends JpaBasicWithIdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

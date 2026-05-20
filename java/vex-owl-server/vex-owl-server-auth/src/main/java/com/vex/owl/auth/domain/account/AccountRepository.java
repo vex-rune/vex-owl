@@ -5,13 +5,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 /**
  * 账号仓储接口
  */
-public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
+public interface AccountRepository extends JpaRepository<AccountBasicWithIdEntity, Long> {
 
-    AccountEntity findById(Long id);
+    AccountBasicWithIdEntity findById(Long id);
 
-    AccountEntity findBySubjectIdAndType(Long subjectId, String accountType);
+    AccountBasicWithIdEntity findBySubjectIdAndType(Long subjectId, String accountType);
 
-    void save(AccountEntity account);
+    void save(AccountBasicWithIdEntity account);
 
     boolean existsActiveAccount(Long subjectId, String accountType);
 }

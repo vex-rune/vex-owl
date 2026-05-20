@@ -23,7 +23,7 @@ import java.util.Date;
 @Data
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class BasicJpaEntity implements Serializable {
+public abstract class JpaBasicEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
