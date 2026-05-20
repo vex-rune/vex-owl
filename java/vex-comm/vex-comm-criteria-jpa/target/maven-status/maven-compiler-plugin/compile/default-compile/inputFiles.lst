@@ -1,2 +1,3 @@
-C:\work\vex\vex-owl\servers\vex-comm\vex-comm-criteria-jpa\src\main\java\com\vex\query\criteria\jpa\CriteriaQueryJpaBuilder.java
-C:\work\vex\vex-owl\servers\vex-comm\vex-comm-criteria-jpa\src\main\java\com\vex\query\criteria\jpa\VexExpressionJpaValidator.java
+C:\work\vex\vex-owl\java\vex-comm\vex-comm-criteria-jpa\src\main\java\com\vex\query\criteria\jpa\CriteriaQueryBuilder.java
+C:\work\vex\vex-owl\java\vex-comm\vex-comm-criteria-jpa\src\main\java\com\vex\query\criteria\jpa\QueryStrategy.java
+C:\work\vex\vex-owl\java\vex-comm\vex-comm-criteria-jpa\src\main\java\com\vex\query\criteria\jpa\QueryStrategyFactory.java

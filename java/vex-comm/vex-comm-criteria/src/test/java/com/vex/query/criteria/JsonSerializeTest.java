@@ -43,7 +43,7 @@ class JsonSerializeTest {
     @Test
     @DisplayName("Criteria序列化-简单条件")
     void criteriaSerializeSimple() throws Exception {
-        QueryCriteria criteria = new QueryCriteria();
+        QueriesCriteria criteria = new QueriesCriteria();
         criteria.setCondition(new QueriesCondition());
 
         criteria.getCondition().setField("id");
@@ -58,8 +58,8 @@ class JsonSerializeTest {
     @Test
     @DisplayName("Criteria序列化-子查询")
     void criteriaSerializeSubQuery() throws Exception {
-        QueryCriteria criteria = new QueryCriteria();
-        criteria.setPredicate(new Predicate());
+        QueriesCriteria criteria = new QueriesCriteria();
+        criteria.setPredicate(new QueriesPredicate());
 
         criteria.getPredicate().setAnd(List.of());
 
@@ -71,7 +71,7 @@ class JsonSerializeTest {
     @Test
     @DisplayName("Predicate序列化")
     void predicateSerialize() throws Exception {
-        Predicate predicate = new Predicate();
+        QueriesPredicate predicate = new QueriesPredicate();
 
         QueriesCondition c1 = new QueriesCondition();
         c1.setField("status");
@@ -83,8 +83,8 @@ class JsonSerializeTest {
         c2.setOp(QueriesOperatorEnum.in);
 
         predicate.setAnd(List.of(
-                new QueryCriteria(),
-                new QueryCriteria()
+                new QueriesCriteria(),
+                new QueriesCriteria()
         ));
         predicate.getAnd().get(0).setCondition(c1);
         predicate.getAnd().get(1).setCondition(c2);
@@ -106,7 +106,7 @@ class JsonSerializeTest {
                 }
                 """;
 
-        Predicate predicate = objectMapper.readValue(json, Predicate.class);
+        QueriesPredicate predicate = objectMapper.readValue(json, QueriesPredicate.class);
 
         assertNotNull(predicate.getAnd());
         assertEquals(2, predicate.getAnd().size());
@@ -136,7 +136,7 @@ class JsonSerializeTest {
     @Test
     @DisplayName("完整查询条件序列化")
     void fullQuerySerialize() throws Exception {
-        Predicate predicate = new Predicate();
+        QueriesPredicate predicate = new QueriesPredicate();
 
         QueriesCondition c1 = new QueriesCondition();
         c1.setField("name");
@@ -148,10 +148,10 @@ class JsonSerializeTest {
         c2.setOp(QueriesOperatorEnum.gte);
         c2.setValue(18);
 
-        QueryCriteria criteria1 = new QueryCriteria();
+        QueriesCriteria criteria1 = new QueriesCriteria();
         criteria1.setCondition(c1);
 
-        QueryCriteria criteria2 = new QueryCriteria();
+        QueriesCriteria criteria2 = new QueriesCriteria();
         criteria2.setCondition(c2);
 
         predicate.setAnd(List.of(criteria1, criteria2));
@@ -159,8 +159,7 @@ class JsonSerializeTest {
         String json = objectMapper.writeValueAsString(predicate);
         assertNotNull(json);
 
-        // 反序列化验证
-        Predicate deserialized = objectMapper.readValue(json, Predicate.class);
+        QueriesPredicate deserialized = objectMapper.readValue(json, QueriesPredicate.class);
         assertNotNull(deserialized.getAnd());
         assertEquals(2, deserialized.getAnd().size());
     }

@@ -85,9 +85,11 @@ check_environment() {
     # 检查 Docker Compose
     if command -v docker-compose &> /dev/null; then
         readonly DOCKER_COMPOSE_CMD="docker-compose"
+        readonly COMPOSE_PULL_FLAG="--pull never"
         log_success "Docker Compose CLI 已安装"
     elif docker compose version &> /dev/null; then
         readonly DOCKER_COMPOSE_CMD="docker compose"
+        readonly COMPOSE_PULL_FLAG="--no-pull"
         log_success "Docker Compose Plugin 已安装"
     else
         log_error "Docker Compose 未安装"
@@ -134,11 +136,8 @@ cleanup_environment() {
 deploy_services() {
     log_section "部署 Docker 服务"
 
-    log_info "拉取最新镜像..."
-    ${DOCKER_COMPOSE_CMD} -f "$COMPOSE_FILE" pull
-
-    log_info "启动所有服务..."
-    ${DOCKER_COMPOSE_CMD} -f "$COMPOSE_FILE" up -d
+    log_info "启动所有服务（使用本地镜像）..."
+    ${DOCKER_COMPOSE_CMD} -f "$COMPOSE_FILE" up -d ${COMPOSE_PULL_FLAG}
 
     log_success "服务部署完成"
 }

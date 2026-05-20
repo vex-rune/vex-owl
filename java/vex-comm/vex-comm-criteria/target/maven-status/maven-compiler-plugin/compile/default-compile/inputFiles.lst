@@ -1,8 +1,4 @@
-C:\work\vex\vex-owl\servers\vex-comm\vex-comm-criteria\src\main\java\com\vex\query\criteria\VexCriterion.java
-C:\work\vex\vex-owl\servers\vex-comm\vex-comm-criteria\src\main\java\com\vex\query\criteria\VexExpression.java
-C:\work\vex\vex-owl\servers\vex-comm\vex-comm-criteria\src\main\java\com\vex\query\criteria\VexLogic.java
-C:\work\vex\vex-owl\servers\vex-comm\vex-comm-criteria\src\main\java\com\vex\query\criteria\VexOperator.java
-C:\work\vex\vex-owl\servers\vex-comm\vex-comm-criteria\src\main\java\com\vex\query\criteria\VexPageRequest.java
-C:\work\vex\vex-owl\servers\vex-comm\vex-comm-criteria\src\main\java\com\vex\query\criteria\VexPredicate.java
-C:\work\vex\vex-owl\servers\vex-comm\vex-comm-criteria\src\main\java\com\vex\query\criteria\VexQueryCriteria.java
-C:\work\vex\vex-owl\servers\vex-comm\vex-comm-criteria\src\main\java\com\vex\query\criteria\VexSortOrder.java
+C:\work\vex\vex-owl\java\vex-comm\vex-comm-criteria\src\main\java\com\vex\query\criteria\QueriesCondition.java
+C:\work\vex\vex-owl\java\vex-comm\vex-comm-criteria\src\main\java\com\vex\query\criteria\QueriesCriteria.java
+C:\work\vex\vex-owl\java\vex-comm\vex-comm-criteria\src\main\java\com\vex\query\criteria\QueriesOperatorEnum.java
+C:\work\vex\vex-owl\java\vex-comm\vex-comm-criteria\src\main\java\com\vex\query\criteria\QueriesPredicate.java

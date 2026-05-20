@@ -1,2 +1,4 @@
-com\vex\query\criteria\jpa\CriteriaQueryBuilder$1.class
+com\vex\query\criteria\jpa\QueryStrategy.class
+com\vex\query\criteria\jpa\QueryStrategyFactory$1.class
+com\vex\query\criteria\jpa\QueryStrategyFactory.class
 com\vex\query\criteria\jpa\CriteriaQueryBuilder.class

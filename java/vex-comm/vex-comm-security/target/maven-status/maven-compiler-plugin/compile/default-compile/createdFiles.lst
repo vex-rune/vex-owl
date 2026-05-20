@@ -1,0 +1,3 @@
+com\vex\security\config\JwtProperties.class
+com\vex\security\jwt\JwtTokenProvider.class
+com\vex\security\config\JwtSecurityAutoConfiguration.class
