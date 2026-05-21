@@ -1,16 +1,17 @@
 package com.vex.owl.auth;
 
+import com.vex.owl.notification.api.client.NotificationClient;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
+import com.vex.owl.notification.api.client.NotificationClient;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 
-/**
- * Vex-Owl 认证服务启动类
- */
 @SpringBootApplication
 @EnableDiscoveryClient
+@EnableFeignClients(clients = NotificationClient.class)
 @EnableJpaAuditing
 @EnableRedisRepositories
 public class OwlAuthApplication {

@@ -2,6 +2,7 @@ package com.vex.owl.auth.domain.code.model;
 
 import com.vex.queries.jpa.id.BizSnowId;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
@@ -11,6 +12,7 @@ import org.springframework.data.redis.core.TimeToLive;
 import java.io.Serial;
 import java.io.Serializable;
 
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

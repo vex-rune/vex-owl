@@ -44,6 +44,16 @@
         <!-- Bootstrap Context for Spring Boot 3.x -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
         </dependency>
 
@@ -69,6 +79,11 @@
             <artifactId>redisson-spring-boot-starter</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
         <!-- Spring Data JPA -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -85,6 +100,18 @@
         <dependency>
             <groupId>com.vex</groupId>
             <artifactId>vex-comm-model</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.vex</groupId>
+            <artifactId>vex-comm-jwt</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.vex</groupId>
+            <artifactId>vex-owl-server-notification-api</artifactId>
             <version>1.0.0</version>
         </dependency>
 

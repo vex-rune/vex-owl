@@ -5,6 +5,7 @@ import com.vex.queries.jpa.id.BizSnowId;
 import com.vex.queries.jpa.model.JpaBasicWithIdEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 @BizIdPrefix(value = "SUB")
 @Table(name = "auth_subject")
 public class SubjectEntity extends JpaBasicWithIdEntity {
