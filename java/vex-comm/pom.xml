@@ -21,7 +21,7 @@
         <module>vex-comm-model</module>
         <module>vex-comm-criteria</module>
         <module>vex-comm-criteria-jpa</module>
-        <module>vex-comm-security</module>
+        <module>vex-comm-jwt</module>
     </modules>
 
 
