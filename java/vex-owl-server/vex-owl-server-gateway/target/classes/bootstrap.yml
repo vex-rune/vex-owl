@@ -50,7 +50,7 @@ spring:
         username: ${NACOS_USERNAME:nacos}
         password: ${NACOS_PASSWORD:nacos}
         namespace: ${NACOS_NAMESPACE:public}
-        group: ${NACOS_GROUP:default}
+        group: vex-group
         weight: 100  # 负载均衡权重
         heartbeat-interval-ms: 5000  # 心跳间隔5秒
         heartbeat-timeout-ms: 15000  # 心跳超时15秒

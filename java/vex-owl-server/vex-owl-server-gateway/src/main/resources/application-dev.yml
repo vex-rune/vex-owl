@@ -3,21 +3,7 @@
 # ================================================
 
 # ------------------------------
-# 日志配置 - 本地开发使用DEBUG级别
-# ------------------------------
-logging:
-  level:
-    root: DEBUG  # 根日志级别
-    com.vex.gateway.filter: DEBUG  # 过滤器详细日志
-    org.springframework.cloud.gateway: DEBUG  # Gateway调试日志
-    org.springframework.web: DEBUG  # Web层日志
-  pattern:
-    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"  # 彩色控制台输出
-  file:
-    enabled: false  # 本地开发不写文件日志
-
-# ------------------------------
-# 开发辅助配置
+# Spring 配置
 # ------------------------------
 spring:
   devtools:
@@ -26,7 +12,7 @@ spring:
       additional-paths: src/main/java  # 监控的额外路径
     livereload:
       enabled: true  # 开启LiveReload
-  
+
   # Gateway HTTP客户端配置 - 开发环境更宽松
   cloud:
     gateway:
@@ -35,16 +21,13 @@ spring:
         connect-timeout: 30000  # 连接超时30秒
         response-timeout: 60s  # 响应超时60秒
 
-# ------------------------------
-# Redis 配置 - 开发环境
-# ------------------------------
-spring:
+  # Redis 配置 - 开发环境
   data:
     redis:
-      host: ${REDIS_HOST:localhost}  # Redis主机地址，可通过环境变量覆盖
-      port: ${REDIS_PORT:6379}       # Redis端口，可通过环境变量覆盖
-      password: ${REDIS_PASSWORD:}   # Redis密码，默认为空
-      database: ${REDIS_DATABASE:0}  # Redis数据库索引
+      host: localhost  # Redis主机地址，可通过环境变量覆盖
+      port: 6379      # Redis端口，可通过环境变量覆盖
+      password: VexOwl2026@Redis  # Redis密码
+      database: 0  # Redis数据库索引
       timeout: 5000                  # 连接超时时间（毫秒）
       lettuce:
         pool:

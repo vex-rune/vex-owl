@@ -1,25 +1,4 @@
-# ================================================
-# VEX-OWL 网关服务 - 生产环境配置
-# ================================================
 
-# ------------------------------
-# 日志配置 - 生产环境使用INFO级别
-# ------------------------------
-logging:
-  level:
-    root: INFO  # 根日志级别
-    com.vex.gateway.filter: INFO  # 过滤器日志
-    org.springframework.cloud.gateway: WARN  # Gateway警告日志
-    org.springframework: WARN  # Spring框架警告日志
-    org.hibernate: WARN  # Hibernate警告日志
-    reactor.netty: WARN  # Reactor网络警告日志
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"  # 简洁格式
-  file:
-    name: logs/gateway.log  # 日志文件路径
-    max-size: 100MB  # 单个日志文件最大大小
-    max-history: 30  # 保留30天的日志
-    total-size-cap: 10GB  # 总日志大小限制
 
 # ------------------------------
 # 性能优化配置
