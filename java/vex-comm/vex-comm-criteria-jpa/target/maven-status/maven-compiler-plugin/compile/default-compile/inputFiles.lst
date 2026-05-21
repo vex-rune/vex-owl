@@ -1,3 +1,8 @@
-C:\work\vex\vex-owl\java\vex-comm\vex-comm-criteria-jpa\src\main\java\com\vex\query\criteria\jpa\CriteriaQueryBuilder.java
-C:\work\vex\vex-owl\java\vex-comm\vex-comm-criteria-jpa\src\main\java\com\vex\query\criteria\jpa\QueryStrategy.java
-C:\work\vex\vex-owl\java\vex-comm\vex-comm-criteria-jpa\src\main\java\com\vex\query\criteria\jpa\QueryStrategyFactory.java
+C:\work\vex\vex-owl\java\vex-comm\vex-comm-criteria-jpa\src\main\java\com\vex\queries\jpa\id\BizIdPrefix.java
+C:\work\vex\vex-owl\java\vex-comm\vex-comm-criteria-jpa\src\main\java\com\vex\queries\jpa\id\BizSnowflakeGenerator.java
+C:\work\vex\vex-owl\java\vex-comm\vex-comm-criteria-jpa\src\main\java\com\vex\queries\jpa\id\BizSnowId.java
+C:\work\vex\vex-owl\java\vex-comm\vex-comm-criteria-jpa\src\main\java\com\vex\queries\jpa\id\SnowflakeIdWorker.java
+C:\work\vex\vex-owl\java\vex-comm\vex-comm-criteria-jpa\src\main\java\com\vex\queries\jpa\id\VerifyCode.java
+C:\work\vex\vex-owl\java\vex-comm\vex-comm-criteria-jpa\src\main\java\com\vex\queries\jpa\model\JpaBasicEntity.java
+C:\work\vex\vex-owl\java\vex-comm\vex-comm-criteria-jpa\src\main\java\com\vex\queries\jpa\model\JpaBasicWithIdEntity.java
+C:\work\vex\vex-owl\java\vex-comm\vex-comm-criteria-jpa\src\main\java\com\vex\queries\jpa\queries\JpaQueriesExecutor.java
