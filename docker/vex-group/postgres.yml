@@ -1,0 +1,54 @@
+# ================================================
+# Vex-Owl PostgreSQL 数据库
+# ================================================
+# 启动命令: docker-compose -f postgres.yml up -d
+# 停止命令: docker-compose -f postgres.yml down
+# 端口: 5432
+# ================================================
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: vex-owl-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: vex_owl
+      POSTGRES_USER: vex_user
+      POSTGRES_PASSWORD: vex_password
+      TZ: Asia/Shanghai
+      POSTGRES_INITDB_ARGS: --encoding=UTF-8
+    volumes:
+      - ./data/postgres/data:/var/lib/postgresql/data
+    networks:
+      - vex-owl-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vex_user -d vex_owl"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    command: >
+      postgres
+      -c max_connections=200
+      -c shared_buffers=256MB
+      -c effective_cache_size=768MB
+      -c work_mem=4MB
+      -c maintenance_work_mem=64MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+        reservations:
+          cpus: '1.0'
+          memory: 512M
+
+networks:
+  vex-owl-network:
+    driver: bridge
