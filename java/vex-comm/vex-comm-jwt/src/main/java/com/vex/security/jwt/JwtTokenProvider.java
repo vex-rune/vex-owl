@@ -1,5 +1,6 @@
 package com.vex.security.jwt;
 
+import com.vex.security.LoginUser;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
@@ -38,6 +39,17 @@ public class JwtTokenProvider {
         this.accessTokenValidity = accessTokenValidity;
         this.refreshTokenValidity = refreshTokenValidity;
         this.issuer = issuer;
+    }
+
+    public VexToken generateByUser(LoginUser user) {
+        return new VexToken(
+                generateToken(user.getSubjectId(), user.toMap(), accessTokenValidity, TOKEN_TYPE_ACCESS),
+                generateRefreshToken(user.getSubjectId()),
+                accessTokenValidity,
+                user.getEmail(),
+                user.getNickName(),
+                user.getRole()
+        );
     }
 
     public String generateAccessToken(String subjectId, Map<String, Object> claims) {

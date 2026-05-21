@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.vex.security.jwt.JwtTokenProviderSpringTest
--------------------------------------------------------------------------------
-Tests run: 20, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.626 s -- in com.vex.security.jwt.JwtTokenProviderSpringTest
