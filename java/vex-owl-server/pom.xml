@@ -17,10 +17,12 @@
     <description>Business services parent - Pure module aggregator</description>
 
     <modules>
+        <module>vex-owl-server-notification-api</module>
         <module>vex-owl-server-auth</module>
         <module>vex-owl-server-chat</module>
         <module>vex-owl-server-gateway</module>
         <module>vex-owl-server-memory</module>
         <module>vex-owl-server-user</module>
+        <module>vex-owl-server-notification</module>
     </modules>
 </project>
