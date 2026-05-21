@@ -62,6 +62,7 @@ services:
       - "6379:6379"
     environment:
       TZ: Asia/Shanghai
+      REDIS_PASSWORD: VexOwl2026@Redis
     volumes:
       - ./data/redis/data:/data
     networks:
