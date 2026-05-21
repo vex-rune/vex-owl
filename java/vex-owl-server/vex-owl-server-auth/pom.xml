@@ -82,6 +82,18 @@
             <version>1.0.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.vex</groupId>
+            <artifactId>vex-comm-model</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <!-- Redis -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
         <!-- PostgreSQL Driver -->
         <dependency>
             <groupId>org.postgresql</groupId>

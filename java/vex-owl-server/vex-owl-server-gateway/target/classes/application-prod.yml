@@ -45,6 +45,24 @@ spring:
           acquire-timeout: 45000  # 连接获取超时45秒
 
 # ------------------------------
+# Redis 配置 - 生产环境
+# ------------------------------
+spring:
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}     # Redis主机地址，可通过环境变量覆盖
+      port: ${REDIS_PORT:6379}          # Redis端口，可通过环境变量覆盖
+      password: ${REDIS_PASSWORD:}      # Redis密码，建议通过环境变量设置
+      database: ${REDIS_DATABASE:0}     # Redis数据库索引
+      timeout: 3000                     # 连接超时时间（毫秒）
+      lettuce:
+        pool:
+          max-active: 20                # 连接池最大连接数
+          max-idle: 10                  # 连接池最大空闲连接数
+          min-idle: 5                   # 连接池最小空闲连接数
+          max-wait: 3000                # 连接池最大阻塞等待时间（毫秒）
+
+# ------------------------------
 # 监控配置 - 生产环境精简端点
 # ------------------------------
 management:
