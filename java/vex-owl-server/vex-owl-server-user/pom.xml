@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/xsd/maven-4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- 继承业务服务父Pom -->
+    <!-- 继承业务服务父工程，自动获得 Nacos、Feign、LoadBalancer 等依赖 -->
     <parent>
         <groupId>com.vex</groupId>
         <artifactId>owl-parent</artifactId>
@@ -15,7 +15,221 @@
     <artifactId>owl-user</artifactId>
     <packaging>jar</packaging>
     <name>owl-user</name>
-    <description>用户服务</description>
+    <description>认证服务 - 提供用户认证、令牌管理、JWT处理等功能</description>
 
+    <dependencies>
+        <!--
+            Spring Boot Web：Web MVC 框架
+            功能：提供 REST API 控制器支持，处理 HTTP 请求
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
 
+        <!--
+            Spring Boot Validation：参数校验
+            功能：提供 @Valid、@NotNull 等校验注解支持
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!--
+            JJWT API：JWT 签名和验证接口
+            功能：解析和验证 JWT Token
+        -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+        </dependency>
+        <!--
+            JJWT 实现：JWT 签名和验证的具体实现
+            功能：实现 Token 的签发和验证逻辑
+        -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!--
+            JJWT Jackson：JWT 与 JSON 的转换支持
+            功能：支持 JWT Claims 的 JSON 序列化
+        -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!--
+            Redisson Spring Boot Starter：Redis 客户端
+            功能：提供分布式锁、Token 存储、会话管理
+        -->
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson-spring-boot-starter</artifactId>
+        </dependency>
+
+        <!--
+            Spring Security：安全框架
+            功能：提供身份认证、授权、会话管理等安全功能
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!--
+            Spring Boot Data JPA：JPA 持久化框架
+            功能：提供用户账户、主题等数据的持久化
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!--
+            Vex Criteria JPA：JPA 条件查询工具
+            功能：提供动态查询支持
+        -->
+        <dependency>
+            <groupId>com.vex</groupId>
+            <artifactId>vex-comm-criteria-jpa</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <!--
+            Vex 公共模块：提供通用模型和工具类
+            功能：复用通用 DTO、响应封装等
+        -->
+        <dependency>
+            <groupId>com.vex</groupId>
+            <artifactId>vex-comm-model</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <!--
+            Vex JWT 模块：JWT 相关工具
+            功能：提供 Token 生成和验证的工具类
+        -->
+        <dependency>
+            <groupId>com.vex</groupId>
+            <artifactId>vex-comm-auth</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <!--
+            通知服务 API：Feign 客户端接口
+            功能：调用通知服务发送邮件验证码
+        -->
+        <dependency>
+            <groupId>com.vex</groupId>
+            <artifactId>vex-owl-server-notification-api</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.retry</groupId>
+            <artifactId>spring-retry</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
+        <!--
+            Spring Data Redis：Redis 数据访问
+            功能：提供 Redis Template 操作 Redis 数据
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
+        <!--
+            PostgreSQL 驱动：关系型数据库
+            功能：连接 PostgreSQL 数据库
+        -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!--
+            Spring Boot Test：测试框架
+            功能：提供单元测试、集成测试支持
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!--
+            Embedded Redis：集成测试用的嵌入式 Redis
+            功能：本地测试时启动嵌入式 Redis
+        -->
+        <dependency>
+            <groupId>it.ozimov</groupId>
+            <artifactId>embedded-redis</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!--
+            Lombok：编译时代码生成
+            功能：自动生成 getter/setter/constructor 等方法
+        -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <release>${java.version}</release>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>-XX:+EnableDynamicAgentLoading</argLine>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
