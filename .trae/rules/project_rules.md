@@ -21,7 +21,7 @@
 ### 2. REST API开发 (`rest_api`)
 | 分类 | 规范 | 说明 |
 |-----|------|------|
-| 接口 | [Controller规范](/doc/rules/接口编写规范/01-Controller规范.md) | REST接口编写 |
+| 接口 | [Controller规范](/doc/rules/接口编写规范/01-Controller规范.md) | REST接口编写（包含JavaDoc注释规范、接口命名规范、通用查询规范、日志规范） |
 | 接口 | [通用查询规范](/doc/rules/接口编写规范/02-通用查询规范.md) | 分页查询实现 |
 
 ### 3. 项目架构 (`project_structure`, `ddd_architecture`)

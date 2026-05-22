@@ -3,7 +3,7 @@
 # ================================================
 # 启动命令: docker-compose -f redis.yml up -d
 # 停止命令: docker-compose -f redis.yml down
-# 端口: 6379
+# 访问地址: localhost:6379
 # 密码: VexOwl2026@Redis
 # ================================================
 version: '3.8'
@@ -16,27 +16,35 @@ services:
     ports:
       - "6379:6379"
     environment:
+      # 时区配置
       TZ: Asia/Shanghai
+
+      # Redis 访问密码
       REDIS_PASSWORD: VexOwl2026@Redis
+
     volumes:
       - ./data/redis/data:/data
+
     networks:
       - vex-owl-network
+
+    # Redis 服务器启动命令及参数
     command: >
       redis-server
       --appendonly yes
       --maxmemory 256mb
-      --maxmemory-policy allkeys-lru
       --requirepass VexOwl2026@Redis
       --save 900 1
       --save 300 10
       --save 60 10000
+
     healthcheck:
       test: ["CMD", "redis-cli", "-a", "VexOwl2026@Redis", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 5s
+
     deploy:
       resources:
         limits:
