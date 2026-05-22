@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.5</version>
+        <version>3.5.9</version>
         <relativePath/>
     </parent>
 
@@ -36,19 +36,28 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Jackson JSON处理库：用于对象序列化/反序列化 -->
-        <jackson.version>2.15.3</jackson.version>
+        <jackson.version>2.18.3</jackson.version>
 
         <!-- SLF4J 日志门面：统一日志接口，屏蔽具体日志实现 -->
-        <slf4j.version>2.0.9</slf4j.version>
+        <slf4j.version>2.0.17</slf4j.version>
 
         <!-- Lombok 代码生成：简化 POJO 类（getter/setter/toString等） -->
         <lombok.version>1.18.40</lombok.version>
 
         <!-- Spring Cloud 微服务框架：提供服务发现、配置中心、负载均衡等 -->
-        <spring-cloud.version>2023.0.3</spring-cloud.version>
+        <spring-cloud.version>2025.0.0</spring-cloud.version>
 
         <!-- Spring Cloud Alibaba：集成阿里中间件（Nacos、Sentinel等） -->
-        <spring-cloud-alibaba.version>2023.0.1.0</spring-cloud-alibaba.version>
+        <spring-cloud-alibaba.version>2025.0.0.0</spring-cloud-alibaba.version>
+
+        <!-- Spring AI：AI 应用框架 -->
+        <spring-ai.version>1.1.6</spring-ai.version>
+
+        <!-- Spring AI Alibaba：集成阿里通义千问等模型 -->
+        <spring-ai-alibaba.version>1.1.2.0</spring-ai-alibaba.version>
+
+        <!-- Spring AI Alibaba Extensions：扩展组件 -->
+        <spring-ai-alibaba-extensions.version>1.1.2.1</spring-ai-alibaba-extensions.version>
 
         <!-- JJWT JSON Web Token：实现无状态身份认证和授权 -->
         <jjwt.version>0.12.3</jjwt.version>
