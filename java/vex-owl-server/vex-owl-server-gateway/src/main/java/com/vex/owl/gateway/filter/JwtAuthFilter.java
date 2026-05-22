@@ -1,6 +1,9 @@
- package com.vex.gateway.filter;
+package com.vex.gateway.filter;
 
 import com.vex.gateway.config.JwtConfig;
+import com.vex.security.auth.AuthConstants;
+import com.vex.security.auth.AuthHeaderConstants;
+import com.vex.security.auth.AuthHeaders;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -20,11 +23,8 @@ import reactor.core.publisher.Mono;
 
 import javax.crypto.SecretKey;
 import java.util.List;
+import java.util.Map;
 
-/**
- * JWT认证全局过滤器
- * 对所有请求进行JWT令牌验证，拦截未认证的请求
- */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -33,12 +33,11 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
     private final JwtConfig jwtConfig;
     private final SecretKey secretKey;
 
-    /**
-     * 白名单路径，无需JWT认证
-     */
     private static final List<String> WHITE_LIST = List.of(
-            "/api/user/login",
-            "/api/user/register",
+            "/api/user/auth/login",
+            "/api/user/auth/register",
+            "/api/user/auth/send/register/code",
+            "/api/user/auth/send/login/code",
             "/actuator/health",
             "/actuator/info"
     );
@@ -48,42 +47,44 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         ServerHttpRequest request = exchange.getRequest();
         String path = request.getURI().getPath();
 
-        // 检查是否在白名单中
         if (isWhiteListPath(path)) {
             log.debug("白名单路径，跳过JWT验证: {}", path);
             return chain.filter(exchange);
         }
 
-        // 获取Authorization头
         String authHeader = request.getHeaders().getFirst(jwtConfig.getHeader());
-        
+
         if (authHeader == null || !authHeader.startsWith(jwtConfig.getPrefix())) {
             log.warn("缺少有效的Authorization头: {}", path);
             return onError(exchange, "未授权访问，请先登录", HttpStatus.UNAUTHORIZED);
         }
 
-        // 提取JWT令牌
         String token = authHeader.substring(jwtConfig.getPrefix().length());
 
         try {
-            // 验证并解析JWT
             Claims claims = Jwts.parser()
                     .verifyWith(secretKey)
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
 
-            // 将用户信息添加到请求头中，传递给下游服务
-            String userId = claims.getSubject();
-            ServerHttpRequest modifiedRequest = request.mutate()
-                    .header("X-User-Id", userId)
-                    .header("X-User-Claims", claims.toString())
-                    .header("X-Gateway-Filter", "JwtAuthFilter")
-                    .build();
+            AuthHeaders authHeaders = buildAuthHeaders(claims);
+            Map<String, String> headerMap = authHeaders.toHeaders();
 
-            log.debug("JWT验证成功 | 用户ID: {} | 路径: {}", userId, path);
-            
-            return chain.filter(exchange.mutate().request(modifiedRequest).build());
+            ServerHttpRequest.Builder requestBuilder = request.mutate()
+                    .header(AuthHeaderConstants.HEADER_AUTH_ENABLED, headerMap.get(AuthHeaderConstants.HEADER_AUTH_ENABLED))
+                    .header(AuthHeaderConstants.HEADER_USER_ID, headerMap.get(AuthHeaderConstants.HEADER_USER_ID))
+                    .header(AuthHeaderConstants.HEADER_USER_NAME, headerMap.get(AuthHeaderConstants.HEADER_USER_NAME))
+                    .header(AuthHeaderConstants.HEADER_USER_GROUP, headerMap.get(AuthHeaderConstants.HEADER_USER_GROUP))
+                    .header(AuthHeaderConstants.HEADER_LOGIN_TIME, headerMap.get(AuthHeaderConstants.HEADER_LOGIN_TIME))
+                    .header(AuthHeaderConstants.HEADER_ROLE, headerMap.get(AuthHeaderConstants.HEADER_ROLE))
+                    .header(AuthHeaderConstants.HEADER_EMAIL, headerMap.get(AuthHeaderConstants.HEADER_EMAIL))
+                    .header(AuthHeaderConstants.HEADER_NICKNAME, headerMap.get(AuthHeaderConstants.HEADER_NICKNAME))
+                    .header("X-Gateway-Filter", "JwtAuthFilter");
+
+            log.debug("JWT验证成功 | 用户ID: {} | 路径: {}", authHeaders.getUserId(), path);
+
+            return chain.filter(exchange.mutate().request(requestBuilder.build()).build());
 
         } catch (ExpiredJwtException e) {
             log.warn("JWT令牌已过期 | 路径: {} | 错误: {}", path, e.getMessage());
@@ -97,30 +98,76 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         }
     }
 
-    /**
-     * 检查路径是否在白名单中
-     */
+    private AuthHeaders buildAuthHeaders(Claims claims) {
+        Map<String, Object> claimsMap = claims;
+
+        String userId = "";
+        String userName = "";
+        String userGroup = AuthHeaderConstants.DEFAULT_USER_GROUP;
+        String loginTime = AuthHeaderConstants.DEFAULT_LOGIN_TIME;
+        String role = "";
+        String email = "";
+        String nickname = "";
+
+        if (claimsMap.containsKey(AuthConstants.CLAIM_USER_ID)) {
+            userId = String.valueOf(claimsMap.get(AuthConstants.CLAIM_USER_ID));
+        } else {
+            userId = claims.getSubject();
+        }
+
+        if (claimsMap.containsKey(AuthConstants.CLAIM_USER_NAME)) {
+            userName = String.valueOf(claimsMap.get(AuthConstants.CLAIM_USER_NAME));
+        }
+
+        if (claimsMap.containsKey(AuthConstants.CLAIM_USER_GROUP)) {
+            userGroup = String.valueOf(claimsMap.get(AuthConstants.CLAIM_USER_GROUP));
+        }
+
+        if (claimsMap.containsKey(AuthConstants.CLAIM_LOGIN_TIME)) {
+            loginTime = String.valueOf(claimsMap.get(AuthConstants.CLAIM_LOGIN_TIME));
+        }
+
+        if (claimsMap.containsKey(AuthConstants.CLAIM_ROLE)) {
+            role = String.valueOf(claimsMap.get(AuthConstants.CLAIM_ROLE));
+        }
+
+        if (claimsMap.containsKey(AuthConstants.CLAIM_EMAIL)) {
+            email = String.valueOf(claimsMap.get(AuthConstants.CLAIM_EMAIL));
+        }
+
+        if (claimsMap.containsKey(AuthConstants.CLAIM_NICKNAME)) {
+            nickname = String.valueOf(claimsMap.get(AuthConstants.CLAIM_NICKNAME));
+        }
+
+        return AuthHeaders.builder()
+                .authEnabled(true)
+                .userId(userId)
+                .userName(userName)
+                .userGroup(userGroup)
+                .loginTime(loginTime)
+                .role(role)
+                .email(email)
+                .nickname(nickname)
+                .build();
+    }
+
     private boolean isWhiteListPath(String path) {
         return WHITE_LIST.stream().anyMatch(path::startsWith);
     }
 
-    /**
-     * 错误响应处理
-     */
     private Mono<Void> onError(ServerWebExchange exchange, String message, HttpStatus status) {
         ServerHttpResponse response = exchange.getResponse();
         response.setStatusCode(status);
-        response.getHeaders().add("Content-Type", "application/json;charset=UTF-8");
-        
+        response.getHeaders().add(HttpHeaders.CONTENT_TYPE, "application/json;charset=UTF-8");
+
         String body = String.format("{\"code\":%d,\"message\":\"%s\",\"timestamp\":%d}",
                 status.value(), message, System.currentTimeMillis());
-        
+
         return response.writeWith(Mono.just(response.bufferFactory().wrap(body.getBytes())));
     }
 
     @Override
     public int getOrder() {
-        // 设置过滤器优先级，确保在其他过滤器之前执行
         return -100;
     }
 }

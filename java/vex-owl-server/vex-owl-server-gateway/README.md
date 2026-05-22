@@ -21,7 +21,7 @@
 - Lombok
 
 ## 服务端口
-- 默认启动端口：8080
+- 默认启动端口：9201
 
 ## 项目结构
 ```
@@ -147,25 +147,29 @@ rate-limiter:
 
 ## API 路由规则
 
+路由结构：`/api/{服务}/{模块}/{操作}`
+
 | 路径前缀 | 目标服务 | 说明 |
 |---------|---------|------|
-| /api/user/** | user-service | 用户服务 |
-| /api/chat/** | chat-service | 对话服务 |
-| /api/memory/** | memory-service | 记忆服务 |
+| /api/user/auth/** | vex-owl-auth-server | 用户服务 - 认证模块（登录、注册、验证码） |
+| /api/user/admin/** | vex-owl-auth-server | 用户服务 - 管理模块（账号、用户、日志、主体） |
+| /api/notification/admin/** | vex-owl-notification-server | 通知服务 - 管理模块（邮件、模板） |
 
 ## 白名单路径
 以下路径无需 JWT 认证：
-- `/api/user/login` - 登录接口
-- `/api/user/register` - 注册接口
+- `/api/user/auth/login` - 登录接口
+- `/api/user/auth/register` - 注册接口
+- `/api/user/auth/send/register/code` - 发送注册验证码
+- `/api/user/auth/send/login/code` - 发送登录验证码
 - `/actuator/health` - 健康检查
 - `/actuator/info` - 应用信息
 
 ## 监控和管理
 
 ### Actuator 端点
-- 健康检查: `http://localhost:8080/actuator/health`
-- 应用信息: `http://localhost:8080/actuator/info`
-- 网关路由: `http://localhost:8080/actuator/gateway`
+- 健康检查: `http://localhost:9201/actuator/health`
+- 应用信息: `http://localhost:9201/actuator/info`
+- 网关路由: `http://localhost:9201/actuator/gateway`
 
 ## 开发说明
 

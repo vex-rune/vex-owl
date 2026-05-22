@@ -1,4 +1,4 @@
-package com.vex.gateway;
+package com.vex.owl.gateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

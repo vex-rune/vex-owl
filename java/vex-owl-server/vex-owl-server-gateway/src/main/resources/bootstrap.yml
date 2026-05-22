@@ -124,6 +124,24 @@ spring:
     # Spring Cloud Gateway 配置
     # ----------------------------------------
     gateway:
+      # 显式路由配置（优先级高于服务发现自动路由）
+      routes:
+        # 用户服务（包含 auth + admin 模块）
+        - id: user-server
+          uri: lb://user-server
+          predicates:
+            - Path=/api/user/**
+          filters:
+            - StripPrefix=1
+
+        # 通知服务
+        - id: notification-server
+          uri: lb://notification-server
+          predicates:
+            - Path=/api/notification/**
+          filters:
+            - StripPrefix=1
+
       # 服务发现路由配置
       discovery:
         locator:
@@ -139,10 +157,6 @@ spring:
         - name: RequestSize
           args:
             maxSize: 100MB
-
-        # 路径前缀处理：去掉第一个路径段
-        # 例如：/api/auth/login -> /auth/login
-        - StripPrefix=1
 
       # HTTP 客户端连接池配置
       httpclient:
@@ -172,25 +186,11 @@ spring.cloud.compatibility-verifier.enabled: false
 # 第四部分：日志配置
 # ================================================
 logging:
-  # 日志级别配置
   level:
-    # 根日志级别
     root: INFO
-
-    # 网关服务详细日志
-    com.vex.gateway: DEBUG
-
-    # Spring Cloud Gateway 框架日志
-    org.springframework.cloud.gateway: DEBUG
-
-    # Web 层日志
-    org.springframework.web: DEBUG
-
-  # 控制台日志格式（彩色输出）
+    com.vex.owl.notification: DEBUG
   pattern:
-    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
-
-  # 禁用文件日志（开发环境仅输出到控制台）
+    console: "%d{HH:mm:ss.SSS} %5p %-40.40logger{39} : %m%n"
   file:
     enabled: false
 

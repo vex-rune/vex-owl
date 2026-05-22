@@ -72,6 +72,12 @@
             <artifactId>guava</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.vex</groupId>
+            <artifactId>vex-comm-auth</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
         <!--
             Spring Boot Test：测试框架
             功能：提供单元测试、集成测试支持

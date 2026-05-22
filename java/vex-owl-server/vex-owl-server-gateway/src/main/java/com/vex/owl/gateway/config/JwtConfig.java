@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
  */
 @Data
 @Configuration
-@ConfigurationProperties(prefix = "jwt")
+@ConfigurationProperties(prefix = "vex.jwt")
 public class JwtConfig {
 
     /**
