@@ -1,6 +1,0 @@
-com\vex\security\config\JwtProperties.class
-com\vex\security\jwt\VexToken.class
-com\vex\security\jwt\JwtTokenProvider.class
-com\vex\security\LoginUser.class
-com\vex\security\config\JwtSecurityAutoConfiguration.class
-com\vex\security\LoginUser$LoginUserBuilder.class
