@@ -37,8 +37,6 @@ public class TemplateDataInitializer implements CommandLineRunner {
                 .content(buildRegisterEmailContent())
                 .remark("用户注册时发送的验证码邮件模板")
                 .enabled(true)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
                 .build();
 
         templateManager.create(template);
@@ -57,8 +55,6 @@ public class TemplateDataInitializer implements CommandLineRunner {
                 .content(buildLoginEmailContent())
                 .remark("用户登录时发送的验证码邮件模板")
                 .enabled(true)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
                 .build();
 
         templateManager.create(template);

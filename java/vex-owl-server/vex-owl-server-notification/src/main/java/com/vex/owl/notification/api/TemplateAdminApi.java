@@ -14,13 +14,13 @@ import jakarta.validation.Valid;
 import java.util.List;
 
 /**
- * 通知模版模块
+ * 模版管理
  * <p>模板管理相关业务接口</p>
  */
 @RestController
-@RequestMapping("/api/v1/notification/template")
+@RequestMapping("/api/notification/admin/template")
 @RequiredArgsConstructor
-public class TemplateApi {
+public class TemplateAdminApi {
 
     private final TemplateManager templateManager;
 

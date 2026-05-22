@@ -141,6 +141,11 @@ spring:
         # 格式化 SQL 语句输出
         format_sql: true
 
+        validator:
+          # 关闭 DDL 验证（生产环境建议关闭）
+          # 这可以避免在应用启动时执行 DDL 操作，提高启动速度
+          apply_to_ddl: false
+
   # ----------------------------------------
   # 邮件服务配置（SMTP）
   # ----------------------------------------
@@ -177,19 +182,11 @@ spring:
 # 第四部分：日志配置
 # ================================================
 logging:
-  # 日志级别配置
   level:
-    # 根日志级别
-    root: DEBUG
-
-    # 通知服务详细日志
+    root: INFO
     com.vex.owl.notification: DEBUG
-
-  # 控制台日志格式（彩色输出）
   pattern:
-    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
-
-  # 禁用文件日志（开发环境仅输出到控制台）
+    console: "%d{HH:mm:ss.SSS} %5p %-40.40logger{39} : %m%n"
   file:
     enabled: false
 

@@ -11,18 +11,18 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 /**
- * 通知模块
+ * 邮件
  * <p>邮件发送相关业务接口</p>
  */
 @RestController
-@RequestMapping("/api/v1/notification/email")
+@RequestMapping("/api/notification/admin/email")
 @RequiredArgsConstructor
-public class EmailApi implements NotificationClient {
+public class EmailAdminApi implements NotificationClient {
 
     private final NotificationApp notificationApp;
 
     /**
-     * 通知-邮件发送
+     * 通知-邮件发送(模板发送)
      * <p>使用模板发送邮件</p>
      */
     @PostMapping("/send")
@@ -32,7 +32,7 @@ public class EmailApi implements NotificationClient {
     }
 
     /**
-     * 通知-邮件发送
+     * 通知-邮件发送(直接发送邮件)
      * <p>直接发送邮件</p>
      */
     @PostMapping("/send/direct")

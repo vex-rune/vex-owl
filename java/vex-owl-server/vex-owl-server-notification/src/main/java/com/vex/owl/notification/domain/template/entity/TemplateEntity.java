@@ -46,9 +46,4 @@ public class TemplateEntity extends JpaBasicWithIdEntity {
     @Column(nullable = false)
     private Boolean enabled;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
 }

@@ -35,14 +35,11 @@ public class TemplateManager {
     }
 
     public TemplateEntity create(TemplateEntity entity) {
-        entity.setCreatedAt(LocalDateTime.now());
-        entity.setUpdatedAt(LocalDateTime.now());
         entity.setEnabled(true);
         return templateRepository.save(entity);
     }
 
     public TemplateEntity update(TemplateEntity entity) {
-        entity.setUpdatedAt(LocalDateTime.now());
         return templateRepository.save(entity);
     }
 
