@@ -1,5 +1,6 @@
 package com.vex.queries.jpa.model;
 
+import com.vex.queries.jpa.id.BizSnowId;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
