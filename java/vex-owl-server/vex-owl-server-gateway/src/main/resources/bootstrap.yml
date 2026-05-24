@@ -11,176 +11,94 @@
 # ================================================
 # 第一部分：Vex 项目配置
 # ================================================
-# 项目自定义配置，用于业务功能参数
 vex:
-  # ----------------------------------------
-  # JWT 认证配置
-  # ----------------------------------------
   jwt:
-    # JWT 签名密钥（Base64 编码，生产环境必须更换）
-    # 默认值：dmV4LW93bC1qd3Qtc2VjcmV0LWtleS0yMDI2LTA1LTE4
     secret: ${JWT_SECRET:dmV4LW93bC1qd3Qtc2VjcmV0LWtleS0yMDI2LTA1LTE4}
-
-    # Token 有效期（毫秒），默认 24 小时 = 86400000ms
     expiration: 86400000
-
-    # HTTP Header 名称，用于传递 Token
     header: Authorization
-
-    # Token 前缀，Bearer Token 格式
     prefix: "Bearer "
 
 # ================================================
 # 第二部分：服务器基础配置
 # ================================================
 server:
-  # 服务监听端口
   port: 9201
 
 # ================================================
 # 第三部分：Spring Boot 核心配置
 # ================================================
 spring:
-  # 应用名称（用于 Nacos 注册和服务发现）
   application:
     name: vex-owl-gateway-server
-
-  # 激活的配置文件（dev/test/prod）
   profiles:
     active: dev
-
-  # 配置导入：启用 Nacos 配置中心（optional 表示配置中心不可用时不影响启动）
   config:
     import: optional:nacos
-
-  # ----------------------------------------
-  # Cloud 配置（微服务框架）
-  # ----------------------------------------
   cloud:
-    # Nacos 配置中心
     nacos:
       config:
-        # 关闭配置缺失检查（本地开发时 Nacos 可能未启动）
         import-check:
           enabled: false
-
-        # Nacos 服务器地址，支持环境变量覆盖
         server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
-
-        # Nacos 认证用户名
         username: ${NACOS_USERNAME:nacos}
-
-        # Nacos 认证密码
         password: ${NACOS_PASSWORD:nacos}
-
-        # 配置文件格式
         file-extension: yml
-
-        # 共享配置列表（所有服务共用的配置）
         shared-configs:
           - data-id: common-config.yml
             group: COMMON_GROUP
-            # 启用配置热刷新，无需重启服务
             refresh: true
-
-      # Nacos 服务发现
       discovery:
-        # Nacos 服务器地址
         server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
-
-        # 服务注册认证用户名
         username: ${NACOS_USERNAME:nacos}
-
-        # 服务注册认证密码
         password: ${NACOS_PASSWORD:nacos}
-
-        # Nacos 命名空间（用于环境隔离，如 dev/test/prod）
         namespace: ${NACOS_NAMESPACE:public}
-
-        # 服务所属分组（用于服务分组管理）
         group: vex-group
-
-        # 负载均衡权重（数值越大优先级越高）
         weight: 100
-
-        # 心跳间隔（毫秒），服务向 Nacos 发送心跳的频率
         heartbeat-interval-ms: 5000
-
-        # 心跳超时时间（毫秒），超过此时间未收到心跳则标记为不健康
         heartbeat-timeout-ms: 15000
-
-        # 服务下线超时时间（毫秒），超过此时间自动从注册中心移除
         ip-delete-timeout-ms: 30000
-
-        # 服务元数据（自定义信息服务发现）
         metadata:
-          # 监控端点路径
           management.context-path: /actuator
-
-          # 服务版本号
           version: 1.0.0
-
-    # ----------------------------------------
-    # Spring Cloud Gateway 配置
-    # ----------------------------------------
     gateway:
-      # 显式路由配置（优先级高于服务发现自动路由）
-      routes:
-        # 用户服务（包含 auth + admin 模块）
-        - id: user-server
-          uri: lb://user-server
-          predicates:
-            - Path=/api/user/**
-          filters:
-            - StripPrefix=1
-
-        # 通知服务
-        - id: notification-server
-          uri: lb://notification-server
-          predicates:
-            - Path=/api/notification/**
-          filters:
-            - StripPrefix=1
-
-      # 服务发现路由配置
-      discovery:
-        locator:
-          # 开启自动路由：Nacos 上的服务会自动生成 /服务名/** 路由
-          enabled: true
-
-          # 自动将服务名转小写（避免大小写不一致问题）
-          lower-case-service-id: true
-
-      # 全局过滤器（对所有路由生效）
-      default-filters:
-        # 请求大小限制：防止大文件上传攻击
-        - name: RequestSize
-          args:
-            maxSize: 100MB
-
-      # HTTP 客户端连接池配置
-      httpclient:
-        pool:
-          # 连接池类型：ELASTIC（弹性连接池）
-          type: ELASTIC
-
-          # 最大连接数
-          max-connections: 500
-
-          # 连接获取超时时间（毫秒）
-          acquire-timeout: 30000
-
-# ----------------------------------------
-# 系统级配置
-# ----------------------------------------
-# 启用 Spring Cloud 配置
-spring.cloud.config.enabled: true
-
-# 静态资源路径模式
-spring.webflux.static-path-pattern: /static/**
-
-# 关闭版本兼容性检查（避免因版本不匹配导致启动失败）
-spring.cloud.compatibility-verifier.enabled: false
+      server:
+        webflux:
+          routes:
+            - id: user-server
+              uri: lb://user-server
+              predicates:
+                - Path=/api/user/**
+              filters:
+                - StripPrefix=1
+            - id: notification-server
+              uri: lb://notification-server
+              predicates:
+                - Path=/api/notification/admin/template/**
+            - id: notification-server-v2
+              uri: lb://notification-server
+              predicates:
+                - Path=/api/v2/notification/admin/template/**
+              filters:
+                - StripPrefix=2
+            - id: notification-server-other
+              uri: lb://notification-server
+              predicates:
+                - Path=/api/notification/**
+              filters:
+                - StripPrefix=1
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+          httpclient:
+            pool:
+              type: ELASTIC
+              max-connections: 500
+              acquire-timeout: 30000
+    compatibility-verifier:
+      enabled: false
+  webflux:
+    static-path-pattern: /static/**
 
 # ================================================
 # 第四部分：日志配置
@@ -198,27 +116,16 @@ logging:
 # 第五部分：监控配置（Actuator）
 # ================================================
 management:
-  # 暴露的监控端点（* 表示全部）
   endpoints:
     web:
       exposure:
         include: '*'
-
-  # 端点详细配置
   endpoint:
-    # 健康检查端点配置
     health:
-      # 显示详细信息（包含各组件状态）
       show-details: always
-
-  # 健康检查配置
   health:
-    # 启用服务发现（显示注册的服务信息）
     discovery:
       enabled: true
-
-  # 指标配置
   metrics:
-    # 指标添加服务名标签
     tags:
       application: ${spring.application.name}
