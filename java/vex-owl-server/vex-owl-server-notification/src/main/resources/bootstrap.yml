@@ -1,186 +1,72 @@
 # ================================================
 # VEX-OWL 通知服务 - Bootstrap 配置文件
 # ================================================
-# 说明：
-#   - 本文件为通知服务唯一配置文件，整合了所有环境配置
-#   - 配置项按优先级和功能分组，vex 项目专用配置置于最前
-#   - 通过 ${VAR:default} 语法支持环境变量覆盖
-#   - 服务端口：9206
-# ================================================
-
-# ================================================
-# 第一部分：Vex 项目配置
-# ================================================
-# 项目自定义配置，用于业务功能参数
 vex:
-  # ----------------------------------------
-  # 邮件服务配置
-  # ----------------------------------------
   mail:
-    # 发件人邮箱地址
     from: ${MAIL_FROM:noreply@example.com}
 
-# ================================================
-# 第二部分：服务器基础配置
-# ================================================
 server:
-  # 服务监听端口
   port: 9206
 
-# ================================================
-# 第三部分：Spring Boot 核心配置
-# ================================================
 spring:
-  # 应用名称（用于 Nacos 注册和服务发现）
   application:
     name: vex-owl-notification-server
-
-  # 激活的配置文件（dev/test/prod）
   profiles:
     active: dev
-
-  # 配置导入：启用 Nacos 配置中心（optional 表示配置中心不可用时不影响启动）
   config:
     import: optional:nacos
-
-  # ----------------------------------------
-  # Cloud 配置（微服务框架）
-  # ----------------------------------------
   cloud:
-    # Nacos 配置中心
     nacos:
       config:
-        # 关闭配置缺失检查（本地开发时 Nacos 可能未启动）
         import-check:
           enabled: false
-
-        # Nacos 服务器地址，支持环境变量覆盖
-        # 开发环境默认 localhost:8848
         server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
-
-        # Nacos 认证用户名
         username: ${NACOS_USERNAME:nacos}
-
-        # Nacos 认证密码
         password: ${NACOS_PASSWORD:nacos}
-
-        # 配置文件格式
         file-extension: yml
-
-        # 共享配置列表（所有服务共用的配置）
         shared-configs:
           - data-id: common-config.yml
             group: COMMON_GROUP
-            # 启用配置热刷新，无需重启服务
             refresh: true
-
-      # Nacos 服务发现
       discovery:
-        # Nacos 服务器地址
         server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
-
-        # 服务注册认证用户名
         username: ${NACOS_USERNAME:nacos}
-
-        # 服务注册认证密码
         password: ${NACOS_PASSWORD:nacos}
-
-        # 服务所属分组（用于服务分组管理）
         group: vex-group
-
-  # ----------------------------------------
-  # 数据源配置（PostgreSQL 数据库）
-  # ----------------------------------------
   datasource:
-    # JDBC 连接 URL
     url: jdbc:postgresql://localhost:5432/vex_owl
-
-    # 数据库用户名
     username: vex_user
-
-    # 数据库密码
     password: vex_password
-
-    # 数据库驱动类
     driver-class-name: org.postgresql.Driver
-
-    # Hikari 连接池配置
     hikari:
-      # 最大连接数
       maximum-pool-size: 10
-
-      # 最小空闲连接数
       minimum-idle: 5
-
-      # 连接超时时间（毫秒）
       connection-timeout: 30000
-
-      # 空闲连接超时时间（毫秒）
       idle-timeout: 600000
-
-      # 连接最大生命周期（毫秒）
       max-lifetime: 1800000
-
-  # ----------------------------------------
-  # JPA 配置（Java 持久化 API）
-  # ----------------------------------------
   jpa:
-    # Hibernate DDL 策略：update（自动更新表结构，生产环境建议用 validate）
     hibernate:
       ddl-auto: update
-
-    # 显示 SQL 语句（开发环境开启，便于调试）
     show-sql: true
-
-    # Hibernate 专属配置
     properties:
       hibernate:
-        # PostgreSQL 数据库方言
         dialect: org.hibernate.dialect.PostgreSQLDialect
-
-        # 格式化 SQL 语句输出
         format_sql: true
-
         validator:
-          # 关闭 DDL 验证（生产环境建议关闭）
-          # 这可以避免在应用启动时执行 DDL 操作，提高启动速度
           apply_to_ddl: false
-
-  # ----------------------------------------
-  # 邮件服务配置（SMTP）
-  # ----------------------------------------
   mail:
-    # SMTP 服务器地址
     host: ${MAIL_HOST:smtpdm.aliyun.com}
-
-    # SMTP 端口
     port: ${MAIL_PORT:465}
-
-    # SMTP 用户名（发件邮箱）
     username: ${MAIL_USERNAME:noreply@example.com}
-
-    # SMTP 密码/授权码
     password: ${MAIL_PASSWORD:SALaisIJFkl34dj}
-
-    # JavaMail 属性配置
     properties:
       mail:
         smtp:
-          # 启用认证
           auth: true
-
-          # 连接超时时间（毫秒）
           connectiontimeout: 5000
-
-          # 超时时间（毫秒）
           timeout: 5000
-
-          # 写入超时时间（毫秒）
           writetimeout: 5000
 
-# ================================================
-# 第四部分：日志配置
-# ================================================
 logging:
   level:
     root: INFO
@@ -190,25 +76,14 @@ logging:
   file:
     enabled: false
 
-# ================================================
-# 第五部分：监控配置（Actuator）
-# ================================================
 management:
-  # 暴露的监控端点（* 表示全部）
   endpoints:
     web:
       exposure:
         include: '*'
-
-  # 端点详细配置
   endpoint:
-    # 健康检查端点配置
     health:
-      # 显示详细信息（包含各组件状态）
       show-details: always
-
-  # 指标配置
   metrics:
-    # 指标添加服务名标签
     tags:
       application: ${spring.application.name}
