@@ -184,7 +184,7 @@ public class JpaQueriesExecutor<E> {
      * @param <T>           实体类型
      * @return 查询执行器实例
      */
-    public static <T extends JpaBasicWithIdEntity> JpaQueriesExecutor<T> of(Class<T> entityClass, EntityManager entityManager) {
+    public static <T> JpaQueriesExecutor<T> of(Class<T> entityClass, EntityManager entityManager) {
         return new JpaQueriesExecutor<>(entityClass, entityManager);
     }
 
