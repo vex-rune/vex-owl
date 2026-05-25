@@ -69,7 +69,7 @@ com.vex.owl.{模块名}
 |------|------|------|
 | **api** | HTTP接入、参数校验、响应封装 | 依赖 app 层 |
 | **app** | 业务流程编排、事务控制、跨领域协作 | 依赖 domain 层 |
-| **domain** | 核心业务逻辑、领域模型 | **纯Java，禁止依赖框架** |
+| **domain** | 核心业务逻辑、领域模型、数据管理 | 可使用Spring基础能力（JPA、事务等），构建Manager管理类 |
 
 ### 3.3 领域分包
 
@@ -91,7 +91,7 @@ domain/
 
 ## 4. 核心原则
 
-1. **domain是核心**：纯Java实体和接口，不依赖Spring、JPA等框架
+1. **domain是核心**：承载领域模型和核心业务逻辑，可使用Spring基础能力（JPA Repository、@Service、事务等）
 2. **领域隔离**：各领域之间无交叉依赖，通过app层协调
 3. **依赖单向**：api → app → domain，禁止反向依赖
 4. **版本统一**：所有版本在根pom.xml的properties中定义

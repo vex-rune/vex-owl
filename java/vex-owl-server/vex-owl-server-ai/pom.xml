@@ -52,10 +52,29 @@
     <!-- 依赖列表 -->
     <dependencies>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+
+        <!-- Vex Common Model -->
+        <dependency>
+            <groupId>com.vex</groupId>
+            <artifactId>vex-comm-model</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
         <!-- Spring Boot WebFlux（支持流式输出） -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+
+        <!-- Spring Boot Validation -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
         <!-- Spring Boot JPA -->
@@ -132,6 +151,12 @@
         <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-starter-mcp-client</artifactId>
+        </dependency>
+
+        <!-- MCP 服务端支持（WebFlux，提供 @McpTool 等注解） -->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-mcp-server-webflux</artifactId>
         </dependency>
 
         <!-- PostgreSQL 向量存储 (pgvector) -->

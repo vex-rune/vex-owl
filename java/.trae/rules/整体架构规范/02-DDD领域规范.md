@@ -7,10 +7,10 @@ Vex-Owl项目DDD架构实现
 
 ## 1. 领域层核心原则
 
-### 1.1 纯净性要求
-- **纯Java实现**：领域层仅使用Java标准库，不依赖Spring、JPA等框架
-- **无外部依赖**：领域实体和服务不能有@Service、@Repository等注解
-- **独立测试**：领域层代码应能独立于框架进行单元测试
+### 1.1 领域层能力
+- **可使用Spring基础能力**：领域层可使用Spring注入（@Service、@Component）、JPA Repository、事务（@Transactional）等基础能力
+- **构建Manager管理类**：领域层可构建Manager类，封装该领域的数据库查询和基础管理逻辑
+- **独立测试**：领域层Manager应能通过集成测试验证
 
 ### 1.2 领域隔离
 - 各领域之间**无交叉依赖**
