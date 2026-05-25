@@ -1,6 +1,6 @@
 package com.vex.owl.ai.domain.llm.factory;
 
-import com.vex.owl.ai.domain.llm.entity.AiModelEntity;
+import com.vex.owl.ai.domain.llm.entity.ModelEntity;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -42,14 +42,14 @@ class ChatModelIntegrationTest {
         assumeTrue(envSet("DASHSCOPE_API_KEY"), "DASHSCOPE_API_KEY 未设置，跳过");
 
         log.info("--- DashScope 问答测试开始 ---");
-        AiModelEntity model = model("dashscope")
+        ModelEntity model = model("dashscope")
                 .modelName("qwen-plus")
                 .apiKey(env("DASHSCOPE_API_KEY"))
                 .baseUrl("https://dashscope.aliyuncs.com/api/v1")
                 .build();
         log.info("构建模型配置: modelName={}, baseUrl={}", model.getModelName(), model.getBaseUrl());
 
-        DashScopeChatModelProviderFactory factory = new DashScopeChatModelProviderFactory();
+        DashScopeModelProviderFactory factory = new DashScopeModelProviderFactory();
         factory.restClientBuilder = RestClient.builder();
         ChatClient client = factory.createClient(model);
         log.info("ChatClient 创建成功，发送测试 prompt...");
@@ -72,14 +72,14 @@ class ChatModelIntegrationTest {
         assumeTrue(envSet("DEEPSEEK_API_KEY"), "DEEPSEEK_API_KEY 未设置，跳过");
 
         log.info("--- DeepSeek 问答测试开始 ---");
-        AiModelEntity model = model("deepseek")
+        ModelEntity model = model("deepseek")
                 .modelName("deepseek-chat")
                 .apiKey(env("DEEPSEEK_API_KEY"))
                 .baseUrl("https://api.deepseek.com")
                 .build();
         log.info("构建模型配置: modelName={}, baseUrl={}", model.getModelName(), model.getBaseUrl());
 
-        DeepSeekChatModelProviderFactory factory = new DeepSeekChatModelProviderFactory();
+        DeepSeekModelProviderFactory factory = new DeepSeekModelProviderFactory();
         factory.restClientBuilder = RestClient.builder();
         ChatClient client = factory.createClient(model);
         log.info("ChatClient 创建成功，发送测试 prompt...");
@@ -98,14 +98,14 @@ class ChatModelIntegrationTest {
         assumeTrue(envSet("DEEPSEEK_API_KEY"), "DEEPSEEK_API_KEY 未设置，跳过");
 
         log.info("--- DeepSeek 代码生成测试开始 ---");
-        AiModelEntity model = model("deepseek")
+        ModelEntity model = model("deepseek")
                 .modelName("deepseek-chat")
                 .apiKey(env("DEEPSEEK_API_KEY"))
                 .baseUrl("https://api.deepseek.com")
                 .build();
         log.info("构建模型配置: modelName={}, baseUrl={}", model.getModelName(), model.getBaseUrl());
 
-        DeepSeekChatModelProviderFactory factory = new DeepSeekChatModelProviderFactory();
+        DeepSeekModelProviderFactory factory = new DeepSeekModelProviderFactory();
         factory.restClientBuilder = RestClient.builder();
         ChatClient client = factory.createClient(model);
         log.info("ChatClient 创建成功，发送代码生成 prompt...");
@@ -129,14 +129,14 @@ class ChatModelIntegrationTest {
         assumeTrue(envSet("MINIMAX_API_KEY"), "MINIMAX_API_KEY 未设置，跳过");
 
         log.info("--- MiniMax 问答测试开始 ---");
-        AiModelEntity model = model("minimax")
+        ModelEntity model = model("minimax")
                 .modelName("MiniMax-M2.7")
                 .apiKey(env("MINIMAX_API_KEY"))
                 .baseUrl("https://api.minimax.chat")
                 .build();
         log.info("构建模型配置: modelName={}, baseUrl={}", model.getModelName(), model.getBaseUrl());
 
-        MiniMaxChatModelProviderFactory factory = new MiniMaxChatModelProviderFactory();
+        MiniMaxModelProviderFactory factory = new MiniMaxModelProviderFactory();
         ChatClient client = factory.createClient(model);
         log.info("ChatClient 创建成功，发送测试 prompt...");
 
@@ -158,23 +158,23 @@ class ChatModelIntegrationTest {
         assumeTrue(envSet("DEEPSEEK_API_KEY"), "DEEPSEEK_API_KEY 未设置，跳过");
 
         log.info("--- 全链路测试开始 ---");
-        AiChatModelProductFactory productFactory = new AiChatModelProductFactory();
+        ModelProductFactory productFactory = new ModelProductFactory();
         log.info("AiChatModelProductFactory 创建成功");
 
-        AiModelEntity model = model("deepseek")
+        ModelEntity model = model("deepseek")
                 .modelName("deepseek-chat")
                 .apiKey(env("DEEPSEEK_API_KEY"))
                 .baseUrl("https://api.deepseek.com")
                 .build();
         log.info("构建模型配置: providerCode={}, modelName={}", model.getProviderCode(), model.getModelName());
 
-        AbstractAiChatModelFactory factory = productFactory.get(model.getProviderCode());
+        AbstractAiModelFactory factory = productFactory.get(model.getProviderCode());
         log.info("工厂路由结果: {}", factory.getClass().getSimpleName());
 
         assertNotNull(factory);
-        assertInstanceOf(DeepSeekChatModelProviderFactory.class, factory);
+        assertInstanceOf(DeepSeekModelProviderFactory.class, factory);
 
-        ((DeepSeekChatModelProviderFactory) factory).restClientBuilder = RestClient.builder();
+        ((DeepSeekModelProviderFactory) factory).restClientBuilder = RestClient.builder();
         ChatClient client = factory.createClient(model);
         log.info("ChatClient 创建成功，发送 prompt...");
 
@@ -199,7 +199,7 @@ class ChatModelIntegrationTest {
         return System.getenv(name);
     }
 
-    private static AiModelEntity.AiModelEntityBuilder model(String providerCode) {
-        return AiModelEntity.builder().providerCode(providerCode);
+    private static ModelEntity.ModelEntityBuilder model(String providerCode) {
+        return ModelEntity.builder().providerCode(providerCode);
     }
 }

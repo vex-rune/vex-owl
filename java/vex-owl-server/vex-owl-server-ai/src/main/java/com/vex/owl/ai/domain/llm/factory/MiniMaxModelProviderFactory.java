@@ -11,14 +11,19 @@ import org.springframework.ai.model.tool.DefaultToolExecutionEligibilityPredicat
 import org.springframework.ai.retry.RetryUtils;
 import org.springframework.web.client.RestClient;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * MiniMax Provider 工厂
  * <p>基于 Spring AI MiniMax SDK，将 {@link ModelProperties} 中的连接参数
  * 组装为可调用的 {@link ChatClient}。</p>
  */
-public class MiniMaxChatModelProviderFactory implements AbstractAiChatModelFactory {
+public class MiniMaxModelProviderFactory implements AbstractAiModelFactory {
 
-    /** HTTP 客户端构建器，默认使用 RestClient.builder() */
+    /**
+     * HTTP 客户端构建器，默认使用 RestClient.builder()
+     */
     RestClient.Builder restClientBuilder = RestClient.builder();
 
     /**
@@ -46,7 +51,14 @@ public class MiniMaxChatModelProviderFactory implements AbstractAiChatModelFacto
                 RetryUtils.DEFAULT_RETRY_TEMPLATE,
                 ObservationRegistry.create(),
                 new DefaultToolExecutionEligibilityPredicate()
-                );
-        return ChatClient.builder(chatModel).build();
+        );
+        return ChatClient.builder(chatModel).defaultToolContext(
+                Map.of(
+                        // 平台
+                        "platform", "MiniMax",
+                        // 模型
+                        "model", modelProperties.getModelName()
+                )
+        ).build();
     }
 }

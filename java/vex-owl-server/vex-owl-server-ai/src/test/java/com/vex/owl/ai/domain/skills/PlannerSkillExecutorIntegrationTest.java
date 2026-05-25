@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.vex.owl.ai.app.tools.ThinkRecordLogTools;
-import com.vex.owl.ai.domain.llm.entity.AiModelEntity;
-import com.vex.owl.ai.domain.llm.factory.AiChatModelProductFactory;
-import com.vex.owl.ai.domain.llm.factory.DeepSeekChatModelProviderFactory;
+import com.vex.owl.ai.domain.llm.entity.ModelEntity;
+import com.vex.owl.ai.domain.llm.factory.ModelProductFactory;
+import com.vex.owl.ai.domain.llm.factory.DeepSeekModelProviderFactory;
 import com.vex.owl.ai.domain.skills.PlannerSkillExecutor.Plan;
 import com.vex.owl.ai.domain.skills.SkillResult.Metadata;
 import com.vex.owl.ai.domain.skills.SkillResult.ResultType;
@@ -48,14 +48,14 @@ class PlannerSkillExecutorIntegrationTest {
 
         log.info("--- PlannerSkillExecutor 全链路集成测试开始 ---");
 
-        AiModelEntity model = modelBuilder()
+        ModelEntity model = modelBuilder()
                 .modelName("deepseek-chat")
                 .apiKey(env("DEEPSEEK_API_KEY"))
                 .baseUrl("https://api.deepseek.com")
                 .build();
         log.info("构建模型: modelName={}", model.getModelName());
 
-        DeepSeekChatModelProviderFactory factory = new DeepSeekChatModelProviderFactory();
+        DeepSeekModelProviderFactory factory = new DeepSeekModelProviderFactory();
         ChatClient chatClient = factory.createClient(model);
 
         Map<String, Object> toolContext = Map.of(
@@ -105,16 +105,16 @@ class PlannerSkillExecutorIntegrationTest {
 
         log.info("--- PlannerSkillExecutor 全量工厂全链路测试开始 ---");
 
-        AiChatModelProductFactory productFactory = new AiChatModelProductFactory();
+        ModelProductFactory productFactory = new ModelProductFactory();
 
-        AiModelEntity model = modelBuilder()
+        ModelEntity model = modelBuilder()
                 .modelName("deepseek-chat")
                 .apiKey(env("DEEPSEEK_API_KEY"))
                 .baseUrl("https://api.deepseek.com")
                 .build();
 
-        DeepSeekChatModelProviderFactory factory =
-                (DeepSeekChatModelProviderFactory) productFactory.get(model.getProviderCode());
+        DeepSeekModelProviderFactory factory =
+                (DeepSeekModelProviderFactory) productFactory.get(model.getProviderCode());
         assertNotNull(factory);
 
         ChatClient chatClient = factory.createClient(model);
@@ -157,13 +157,13 @@ class PlannerSkillExecutorIntegrationTest {
 
         log.info("--- PlannerSkillExecutor 简单任务测试开始 ---");
 
-        AiModelEntity model = modelBuilder()
+        ModelEntity model = modelBuilder()
                 .modelName("deepseek-chat")
                 .apiKey(env("DEEPSEEK_API_KEY"))
                 .baseUrl("https://api.deepseek.com")
                 .build();
 
-        DeepSeekChatModelProviderFactory factory = new DeepSeekChatModelProviderFactory();
+        DeepSeekModelProviderFactory factory = new DeepSeekModelProviderFactory();
         ChatClient chatClient = factory.createClient(model);
 
         Map<String, Object> toolContext = Map.of(
@@ -204,7 +204,7 @@ class PlannerSkillExecutorIntegrationTest {
         return System.getenv(name);
     }
 
-    private static AiModelEntity.AiModelEntityBuilder modelBuilder() {
-        return AiModelEntity.builder().providerCode("deepseek");
+    private static ModelEntity.ModelEntityBuilder modelBuilder() {
+        return ModelEntity.builder().providerCode("deepseek");
     }
 }

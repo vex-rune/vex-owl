@@ -10,14 +10,18 @@ import org.springframework.ai.model.tool.DefaultToolCallingManager;
 import org.springframework.ai.retry.RetryUtils;
 import org.springframework.web.client.RestClient;
 
+import java.util.Map;
+
 /**
  * DeepSeek Provider 工厂
  * <p>基于 Spring AI DeepSeek SDK，将 {@link ModelProperties} 中的连接参数
  * 组装为可调用的 {@link ChatClient}。</p>
  */
-public class DeepSeekChatModelProviderFactory implements AbstractAiChatModelFactory {
+public class DeepSeekModelProviderFactory implements AbstractAiModelFactory {
 
-    /** HTTP 客户端构建器，由外部注入以实现连接池复用 */
+    /**
+     * HTTP 客户端构建器，由外部注入以实现连接池复用
+     */
     RestClient.Builder restClientBuilder = RestClient.builder();
 
     /**
@@ -47,6 +51,15 @@ public class DeepSeekChatModelProviderFactory implements AbstractAiChatModelFact
                 ObservationRegistry.create()
         );
 
-        return ChatClient.builder(chatModel).build();
+        return ChatClient.builder(chatModel)
+                .defaultToolContext(
+                        Map.of(
+                                // 平台
+                                "platform",  "DeepSeek",
+                                // 模型
+                                "model", modelProperties.getModelName()
+                        )
+                )
+                .build();
     }
 }

@@ -93,6 +93,12 @@
             <version>1.0.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>io.hypersistence</groupId>
+            <artifactId>hypersistence-utils-hibernate-60</artifactId>
+            <version>3.9.0</version>
+        </dependency>
+
         <!-- Spring Boot Thymeleaf -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -133,12 +139,6 @@
         <dependency>
             <groupId>com.alibaba.cloud.ai</groupId>
             <artifactId>spring-ai-alibaba-starter-dashscope</artifactId>
-        </dependency>
-
-        <!-- 聊天记忆支持（PostgreSQL） -->
-        <dependency>
-            <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-starter-model-chat-memory-repository-jdbc</artifactId>
         </dependency>
 
         <!-- PostgreSQL 连接 -->

@@ -10,14 +10,18 @@ import org.springframework.ai.model.tool.DefaultToolCallingManager;
 import org.springframework.ai.retry.RetryUtils;
 import org.springframework.web.client.RestClient;
 
+import java.util.Map;
+
 /**
  * 通义千问 Provider 工厂
  * <p>基于 Spring AI Alibaba DashScope SDK，将 {@link ModelProperties} 中的连接参数
  * 组装为可调用的 {@link ChatClient}。</p>
  */
-public class DashScopeChatModelProviderFactory implements AbstractAiChatModelFactory {
+public class DashScopeModelProviderFactory implements AbstractAiModelFactory {
 
-    /** HTTP 客户端构建器，由外部注入以实现连接池复用 */
+    /**
+     * HTTP 客户端构建器，由外部注入以实现连接池复用
+     */
     RestClient.Builder restClientBuilder = RestClient.builder();
 
     /**
@@ -46,6 +50,14 @@ public class DashScopeChatModelProviderFactory implements AbstractAiChatModelFac
                 ObservationRegistry.create()
         );
 
-        return ChatClient.builder(chatModel).build();
+        return ChatClient.builder(chatModel)
+                .defaultToolContext(
+                        Map.of(
+                                // 平台
+                                "platform", "DashScope",
+                                // 模型
+                                "model", modelProperties.getModelName()
+                        )
+                ).build();
     }
 }

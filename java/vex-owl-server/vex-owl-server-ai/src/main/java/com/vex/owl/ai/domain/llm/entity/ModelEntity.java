@@ -3,6 +3,7 @@ package com.vex.owl.ai.domain.llm.entity;
 import com.vex.owl.ai.domain.llm.repo.ModelProperties;
 import com.vex.queries.jpa.id.BizIdPrefix;
 import com.vex.queries.jpa.id.BizSnowId;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -12,6 +13,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Map;
+
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * AI模型实体
@@ -26,7 +30,7 @@ import java.util.Map;
 @Entity
 @BizIdPrefix(value = "model")
 @Table(name = "ai_model")
-public class AiModelEntity implements ModelProperties {
+public class ModelEntity implements ModelProperties {
 
     /** 主键，带业务前缀的雪花ID */
     @Id
@@ -64,5 +68,7 @@ public class AiModelEntity implements ModelProperties {
     private double costScore;
 
     /** 扩展参数，承载模型特有的额外配置项 */
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
     private Map<String, String> options;
 }
