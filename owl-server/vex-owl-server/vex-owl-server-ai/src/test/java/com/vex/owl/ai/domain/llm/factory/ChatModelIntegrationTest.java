@@ -168,7 +168,7 @@ class ChatModelIntegrationTest {
                 .build();
         log.info("构建模型配置: providerCode={}, modelName={}", model.getProviderCode(), model.getModelName());
 
-        AbstractAiModelFactory factory = productFactory.get(model.getProviderCode());
+        AbstractAiModelFactory factory = productFactory.getFactory(model.getProviderCode());
         log.info("工厂路由结果: {}", factory.getClass().getSimpleName());
 
         assertNotNull(factory);

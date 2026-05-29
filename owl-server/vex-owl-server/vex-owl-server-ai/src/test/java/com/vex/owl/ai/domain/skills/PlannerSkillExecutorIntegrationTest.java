@@ -114,7 +114,7 @@ class PlannerSkillExecutorIntegrationTest {
                 .build();
 
         DeepSeekModelProviderFactory factory =
-                (DeepSeekModelProviderFactory) productFactory.get(model.getProviderCode());
+                (DeepSeekModelProviderFactory) productFactory.getFactory(model.getProviderCode());
         assertNotNull(factory);
 
         ChatClient chatClient = factory.createClient(model);

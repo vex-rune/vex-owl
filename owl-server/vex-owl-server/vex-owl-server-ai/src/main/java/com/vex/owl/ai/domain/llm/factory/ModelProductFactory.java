@@ -1,5 +1,13 @@
 package com.vex.owl.ai.domain.llm.factory;
 
+import com.vex.owl.ai.domain.llm.event.TokenUsageAdvisor;
+import com.vex.owl.ai.domain.llm.repo.ModelProperties;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
+
 /**
  * AI聊天模型工厂门面
  * <p>根据 providerCode 分派到对应的具体工厂实现。
@@ -13,7 +21,12 @@ package com.vex.owl.ai.domain.llm.factory;
  *   <li>{@code minimax} — MiniMax（MiniMaxChatModelProviderFactory）</li>
  * </ul></p>
  */
+@Component
+@NoArgsConstructor
+@AllArgsConstructor
 public class ModelProductFactory {
+
+    private TokenUsageAdvisor tokenUsageAdvisor;
 
     /**
      * 根据 Provider 代码获取对应的模型工厂实例
@@ -21,15 +34,18 @@ public class ModelProductFactory {
      * @param providerCode Provider 标识码，如 "dashscope"、"deepseek"、"minimax"
      * @return 匹配的工厂实例；code 为空或未匹配时返回 null
      */
-    public AbstractAiModelFactory get(String providerCode) {
+    public AbstractAiModelFactory getFactory(String providerCode) {
         if (providerCode == null) {
             return null;
         }
-        return switch (providerCode) {
+        AbstractAiModelFactory factory = switch (providerCode) {
             case "dashscope" -> new DashScopeModelProviderFactory();
             case "deepseek" -> new DeepSeekModelProviderFactory();
             case "minimax" -> new MiniMaxModelProviderFactory();
-            default -> null;
+            default -> throw new IllegalArgumentException("providerCode=" + providerCode + ", 没有对应的工厂");
         };
+
+        return new TokenUsageAdvisorProviderFactoryWapper(factory, tokenUsageAdvisor);
     }
+
 }

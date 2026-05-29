@@ -1,7 +1,10 @@
 package com.vex.owl.ai.domain.llm.factory;
 
+import com.vex.owl.ai.domain.llm.event.TokenUsageAdvisor;
 import com.vex.owl.ai.domain.llm.repo.ModelProperties;
 import io.micrometer.observation.ObservationRegistry;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.deepseek.DeepSeekChatModel;
 import org.springframework.ai.deepseek.DeepSeekChatOptions;
@@ -55,7 +58,7 @@ public class DeepSeekModelProviderFactory implements AbstractAiModelFactory {
                 .defaultToolContext(
                         Map.of(
                                 // 平台
-                                "platform",  "DeepSeek",
+                                "platform", "DeepSeek",
                                 // 模型
                                 "model", modelProperties.getModelName()
                         )

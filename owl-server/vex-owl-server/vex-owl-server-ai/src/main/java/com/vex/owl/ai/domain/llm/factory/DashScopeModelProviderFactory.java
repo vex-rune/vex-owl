@@ -3,11 +3,16 @@ package com.vex.owl.ai.domain.llm.factory;
 import com.alibaba.cloud.ai.dashscope.api.DashScopeApi;
 import com.alibaba.cloud.ai.dashscope.chat.DashScopeChatModel;
 import com.alibaba.cloud.ai.dashscope.chat.DashScopeChatOptions;
+import com.vex.owl.ai.domain.llm.event.TokenUsageAdvisor;
 import com.vex.owl.ai.domain.llm.repo.ModelProperties;
 import io.micrometer.observation.ObservationRegistry;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.model.tool.DefaultToolCallingManager;
 import org.springframework.ai.retry.RetryUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestClient;
 
 import java.util.Map;
