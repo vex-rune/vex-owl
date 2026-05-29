@@ -3,7 +3,7 @@
 # ================================================
 # 启动命令: docker-compose -f postgres.yml up -d
 # 停止命令: docker-compose -f postgres.yml down
-# 访问地址: localhost:5432
+# 访问地址: localhost:10864
 # 数据库: vex_owl
 # 用户名: vex_user
 # 密码: vex_password
@@ -16,7 +16,7 @@ services:
     container_name: vex-owl-postgres
     restart: unless-stopped
     ports:
-      - "5432:5432"
+      - "10864:5432"
     environment:
       # 数据库名称
       POSTGRES_DB: vex_owl
@@ -34,7 +34,7 @@ services:
       POSTGRES_INITDB_ARGS: --encoding=UTF-8
 
     volumes:
-      - ./data/postgres/data:/var/lib/postgresql/data
+      - ../../data/postgres/data:/var/lib/postgresql/data
 
     networks:
       - vex-owl-network

@@ -1,0 +1,131 @@
+# ================================================
+# VEX-OWL 网关服务 - Bootstrap 配置文件
+# ================================================
+# 说明：
+#   - 本文件为网关服务唯一配置文件，整合了所有环境配置
+#   - 配置项按优先级和功能分组，vex 项目专用配置置于最前
+#   - 通过 ${VAR:default} 语法支持环境变量覆盖
+#   - 服务端口：9201
+# ================================================
+
+# ================================================
+# 第一部分：Vex 项目配置
+# ================================================
+vex:
+  jwt:
+    secret: ${JWT_SECRET:dmV4LW93bC1qd3Qtc2VjcmV0LWtleS0yMDI2LTA1LTE4}
+    expiration: 86400000
+    header: Authorization
+    prefix: "Bearer "
+
+# ================================================
+# 第二部分：服务器基础配置
+# ================================================
+server:
+  port: 9201
+
+# ================================================
+# 第三部分：Spring Boot 核心配置
+# ================================================
+spring:
+  application:
+    name: vex-owl-gateway-server
+  profiles:
+    active: dev
+  config:
+    import: optional:nacos
+  cloud:
+    nacos:
+      config:
+        import-check:
+          enabled: false
+        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD:nacos}
+        file-extension: yml
+        shared-configs:
+          - data-id: common-config.yml
+            group: COMMON_GROUP
+            refresh: true
+      discovery:
+        server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD:nacos}
+        namespace: ${NACOS_NAMESPACE:public}
+        group: vex-group
+        weight: 100
+        heartbeat-interval-ms: 5000
+        heartbeat-timeout-ms: 15000
+        ip-delete-timeout-ms: 30000
+        metadata:
+          management.context-path: /actuator
+          version: 1.0.0
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: user-server
+              uri: lb://user-server
+              predicates:
+                - Path=/api/user/**
+              filters:
+                - StripPrefix=1
+            - id: notification-server
+              uri: lb://notification-server
+              predicates:
+                - Path=/api/notification/admin/template/**
+            - id: notification-server-v2
+              uri: lb://notification-server
+              predicates:
+                - Path=/api/v2/notification/admin/template/**
+              filters:
+                - StripPrefix=2
+            - id: notification-server-other
+              uri: lb://notification-server
+              predicates:
+                - Path=/api/notification/**
+              filters:
+                - StripPrefix=1
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+          httpclient:
+            pool:
+              type: ELASTIC
+              max-connections: 500
+              acquire-timeout: 30000
+    compatibility-verifier:
+      enabled: false
+  webflux:
+    static-path-pattern: /static/**
+
+# ================================================
+# 第四部分：日志配置
+# ================================================
+logging:
+  level:
+    root: INFO
+    com.vex.owl.notification: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} %5p %-40.40logger{39} : %m%n"
+  file:
+    enabled: false
+
+# ================================================
+# 第五部分：监控配置（Actuator）
+# ================================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+  health:
+    discovery:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}

@@ -3,7 +3,7 @@
 # ================================================
 # 启动命令: docker-compose -f redis.yml up -d
 # 停止命令: docker-compose -f redis.yml down
-# 访问地址: localhost:6379
+# 访问地址: localhost:12758
 # 密码: VexOwl2026@Redis
 # ================================================
 version: '3.8'
@@ -14,7 +14,7 @@ services:
     container_name: vex-owl-redis
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "12758:6379"
     environment:
       # 时区配置
       TZ: Asia/Shanghai
@@ -23,7 +23,7 @@ services:
       REDIS_PASSWORD: VexOwl2026@Redis
 
     volumes:
-      - ./data/redis/data:/data
+      - ../../data/redis/data:/data
 
     networks:
       - vex-owl-network

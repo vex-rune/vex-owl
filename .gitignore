@@ -24,30 +24,28 @@ buildNumber.properties
 # ================================================
 # Flutter / Dart 前端构建产物
 # ================================================
-/app/vex_owl_*/build/
-/app/vex_owl_*/.dart_tool/
-/app/vex_owl_*/.flutter-plugins
-/app/vex_owl_*/.flutter-plugins-dependencies
-/app/vex_owl_*/.packages
-/app/vex_owl_*/pubspec.lock
-/app/*/.packages
-/app/*/.dart_tool/
-/app/*/build/
-/app/*/.flutter-plugins
-/app/*/.flutter-plugins-dependencies
-
-# Flutter specific
-*.lock
-.packages
+**/owl-client/**/GeneratedPluginRegistrant.*
+**/owl-client/**/Generated*.xcconfig
+**/owl-client/.dart_tool/
+**/owl-client/.packages
+**/owl-client/.flutter-plugins
+**/owl-client/.flutter-plugins-dependencies
+**/owl-client/.fvm/
+**/owl-client/build/
+**/owl-client/pubspec.lock
+**/owl-client/*.lock
 .pub-cache/
 .pub/
-/build/
-/logs/
-/log/
-/.flutter-plugins
-/.flutter-plugins-dependencies
-.flutter-plugins
-.flutter-plugins-dependencies
+
+# ================================================
+# Vite / React 前端构建产物
+# ================================================
+**/owl-admin/node_modules/
+**/owl-admin/dist/
+**/owl-admin/.vite/
+**/owl-admin/coverage/
+**/owl-admin/.eslintcache
+**/owl-admin/*.local
 
 # Dart code generation
 *.g.dart
@@ -127,4 +125,6 @@ owl-workspace/users/*
 # Nacos 配置本地缓存
 server/data/nacos/
 server/config-data/
-**/vex-group/data/**
+docker/vex-group/data/**
+owl-docker-container/data/**
+

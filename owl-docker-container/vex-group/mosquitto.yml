@@ -1,0 +1,45 @@
+# ================================================
+# Vex-Owl Mosquitto MQTT 消息代理
+# ================================================
+# 启动命令: docker-compose -f mosquitto.yml up -d
+# 停止命令: docker-compose -f mosquitto.yml down
+# 访问地址: localhost:3766 (MQTT) / localhost:18002 (WebSocket)
+# 配置文件: ../config/mosquitto.conf
+# 数据目录: ../data/mosquitto
+# ================================================
+version: '3.8'
+
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2.4.0
+    container_name: vex-owl-mosquitto
+    restart: unless-stopped
+    ports:
+      - "3766:1883"    # MQTT 客户端端口
+      - "18002:9001"   # WebSocket 端口 (可选)
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - ../../config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - ../../data/mosquitto:/mosquitto/data
+      - ../../data/mosquitto/log:/mosquitto/log
+    networks:
+      - vex-owl-network
+    healthcheck:
+      test: ["CMD", "mosquitto_sub", "-t", "$$SYS/#", "-C", "1", "-i", "healthcheck", "-W", "3"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+
+networks:
+  vex-owl-network:
+    driver: bridge

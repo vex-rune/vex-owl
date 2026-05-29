@@ -3,7 +3,7 @@
 # ================================================
 # 启动命令: docker-compose -f nacos.yml up -d
 # 停止命令: docker-compose -f nacos.yml down
-# 访问地址: http://localhost:8848/
+# 访问地址: http://localhost:17696/
 # 默认账号: nacos / nacos
 # ================================================
 services:
@@ -12,10 +12,10 @@ services:
     container_name: vex-owl-nacos
     restart: unless-stopped
     ports:
-      - "8848:8080"   # 主机8848 -> 容器8080 (Nacos 控制台)
-      - "9848:9848"   # gRPC 客户端端口
-      - "9849:9849"   # gRPC 服务端端口
-      - "7848:7848"   # Raft 端口
+      - "17696:8080"  # 主机17696 -> 容器8080 (Nacos 控制台)
+      - "19696:9848"  # gRPC 客户端端口
+      - "19698:9849"  # gRPC 服务端端口
+      - "15696:7848"  # Raft 端口
     environment:
       - MODE=standalone
       - NACOS_AUTH_ENABLE=false
@@ -26,8 +26,8 @@ services:
       - JVM_XMX=512m
       - JVM_XMN=256m
     volumes:
-      - ./data/nacos/data:/home/nacos/data
-      - ./data/nacos/logs:/home/nacos/logs
+      - ../../data/nacos/data:/home/nacos/data
+      - ../../data/nacos/logs:/home/nacos/logs
     networks:
       - vex-owl-network
     healthcheck:

@@ -17,28 +17,34 @@ start_all() {
     echo "========================================"
     echo ""
 
-    echo "[1/3] Starting Nacos..."
+    echo "[1/4] Starting Nacos..."
     docker-compose -f "$SCRIPT_DIR/vex-group/nacos.yml" up -d
-    echo "  OK Nacos started (http://localhost:8848/nacos)"
+    echo "  OK Nacos started (http://localhost:17696/nacos)"
 
     echo ""
-    echo "[2/3] Starting Redis..."
+    echo "[2/4] Starting Redis..."
     docker-compose -f "$SCRIPT_DIR/vex-group/redis.yml" up -d
-    echo "  OK Redis started (localhost:6379, password: VexOwl2026@Redis)"
+    echo "  OK Redis started (localhost:12758, password: VexOwl2026@Redis)"
 
     echo ""
-    echo "[3/3] Starting PostgreSQL..."
+    echo "[3/4] Starting PostgreSQL..."
     docker-compose -f "$SCRIPT_DIR/vex-group/postgres.yml" up -d
-    echo "  OK PostgreSQL started (localhost:5432)"
+    echo "  OK PostgreSQL started (localhost:10864)"
+
+    echo ""
+    echo "[4/4] Starting Mosquitto..."
+    docker-compose -f "$SCRIPT_DIR/vex-group/mosquitto.yml" up -d
+    echo "  OK Mosquitto started (localhost:3766 MQTT, localhost:18002 WebSocket)"
 
     echo ""
     echo "========================================"
     echo "  Deployment Complete!"
     echo "========================================"
     echo "服务地址："
-    echo "  - Nacos:    http://localhost:8848/nacos (nacos/nacos)"
-    echo "  - Redis:    localhost:6379 (password: VexOwl2026@Redis)"
-    echo "  - Postgres: localhost:5432 (vex_owl/vex_user/vex_password)"
+    echo "  - Nacos:     http://localhost:17696/nacos (nacos/nacos)"
+    echo "  - Redis:     localhost:12758 (password: VexOwl2026@Redis)"
+    echo "  - Postgres:  localhost:10864 (vex_owl/vex_user/vex_password)"
+    echo "  - Mosquitto: localhost:3766 (MQTT) / localhost:18002 (WebSocket)"
     echo ""
 }
 
@@ -58,6 +64,9 @@ stop_all() {
     echo "Stopping PostgreSQL..."
     docker-compose -f "$SCRIPT_DIR/vex-group/postgres.yml" down 2>/dev/null || true
 
+    echo "Stopping Mosquitto..."
+    docker-compose -f "$SCRIPT_DIR/vex-group/mosquitto.yml" down 2>/dev/null || true
+
     echo ""
     echo "OK All services stopped"
     echo ""
@@ -70,7 +79,7 @@ show_status() {
     echo "========================================"
     echo ""
 
-    for container in vex-owl-nacos vex-owl-redis vex-owl-postgres; do
+    for container in vex-owl-nacos vex-owl-redis vex-owl-postgres vex-owl-mosquitto; do
         if docker ps --filter "name=$container" --format "{{.Status}}" | grep -q "Up"; then
             echo "[$container] RUNNING"
         else
