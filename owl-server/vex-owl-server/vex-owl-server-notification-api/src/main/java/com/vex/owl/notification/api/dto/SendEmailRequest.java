@@ -9,6 +9,12 @@ import lombok.NoArgsConstructor;
 
 import java.util.Map;
 
+/**
+ * 发送邮件请求
+ * @author Vex
+ * @version 1.0.0
+ * @since 2023-12-15
+ */
 public record SendEmailRequest(
         @NotBlank(message = "收件人邮箱不能为空")
         @Size(max = 255)

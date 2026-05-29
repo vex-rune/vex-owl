@@ -36,7 +36,6 @@ public class ModelProductFactory {
             return null;
         }
         AbstractAiModelFactory factory = switch (providerCode) {
-            case "dashscope" -> new DashScopeModelProviderFactory();
             case "deepseek" -> new DeepSeekModelProviderFactory();
             case "minimax" -> new MiniMaxModelProviderFactory();
             default -> throw new IllegalArgumentException("providerCode=" + providerCode + ", 没有对应的工厂");

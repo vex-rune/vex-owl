@@ -1,13 +1,6 @@
 # ================================================
 # VEX-OWL AI 服务 - Bootstrap 配置文件
 # ================================================
-vex:
-  ai:
-    chat:
-      model: qwen-plus
-      temperature: 0.7
-      max-tokens: 4096
-
 server:
   port: 9205
 
@@ -16,14 +9,28 @@ spring:
     name: vex-owl-ai-server
   profiles:
     active: dev
-  config:
-    import: optional:nacos
+#  ai:
+#    model:
+#      chat: none
+#      embedding: none
+#      video: none
+#      moderation: none
+#      audio:
+#        speech: none    # 随便写一个不是 dashscope 的值就行
+#        transcription: none
+#      image: none
+#      rerank: none
+#    dashscope:
+#      agent:
+#        enabled: false
   cloud:
+    bootstrap:
+      enabled: true
     nacos:
       config:
         import-check:
           enabled: false
-        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:8848}
+        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:17696}
         username: ${NACOS_USERNAME:nacos}
         password: ${NACOS_PASSWORD:nacos}
         file-extension: yml
@@ -32,7 +39,7 @@ spring:
             group: COMMON_GROUP
             refresh: true
       discovery:
-        server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
+        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:17696}
         username: ${NACOS_USERNAME:nacos}
         password: ${NACOS_PASSWORD:nacos}
         namespace: ${NACOS_NAMESPACE:public}
@@ -51,7 +58,7 @@ spring:
           min-idle: 0
           max-wait: -1
   datasource:
-    url: jdbc:postgresql://localhost:5432/vex_owl
+    url: jdbc:postgresql://localhost:10864/vex_owl
     username: vex_user
     password: vex_password
     driver-class-name: org.postgresql.Driver
@@ -69,13 +76,6 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-  ai:
-    dashscope:
-      api-key: ${DASHSCOPE_API_KEY:your-api-key-here}
-      base-url: https://dashscope.aliyuncs.com/api/v1
-    embedding:
-      options:
-        model: text-embedding-v3
 
 logging:
   level:
@@ -97,5 +97,3 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
-
-spring.cloud.config.bootstrap: true

@@ -11,7 +11,7 @@ version: '3.8'
 
 services:
   mosquitto:
-    image: eclipse-mosquitto:2.4.0
+    image: eclipse-mosquitto:2.0
     container_name: vex-owl-mosquitto
     restart: unless-stopped
     ports:
@@ -20,7 +20,6 @@ services:
     environment:
       - TZ=Asia/Shanghai
     volumes:
-      - ../../config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
       - ../../data/mosquitto:/mosquitto/data
       - ../../data/mosquitto/log:/mosquitto/log
     networks:
