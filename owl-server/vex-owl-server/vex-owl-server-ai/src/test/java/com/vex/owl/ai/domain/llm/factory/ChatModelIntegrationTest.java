@@ -1,6 +1,7 @@
 package com.vex.owl.ai.domain.llm.factory;
 
 import com.vex.owl.ai.domain.llm.entity.ModelEntity;
+import com.vex.owl.ai.domain.llm.event.TokenUsageAdvisor;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -8,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.web.client.RestClient;
+import org.springframework.context.ApplicationEventPublisher;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
@@ -18,6 +19,18 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 class ChatModelIntegrationTest {
 
     private static final Logger log = LoggerFactory.getLogger(ChatModelIntegrationTest.class);
+
+    static ModelProductFactory factory;
+
+    static {
+
+        factory = new ModelProductFactory(new TokenUsageAdvisor(new ApplicationEventPublisher() {
+            @Override
+            public void publishEvent(Object event) {
+                log.info("发布事件: {}", event);
+            }
+        }));
+    }
 
     @BeforeAll
     static void checkAnyKeyAvailable() {
@@ -30,6 +43,7 @@ class ChatModelIntegrationTest {
         log.info("MINIMAX_API_KEY   : {}", hasMiniMax ? "已设置" : "未设置");
         assumeTrue(hasDashScope || hasDeepSeek || hasMiniMax,
                 "至少设置一个 API Key 环境变量才能运行集成测试");
+
     }
 
     // ═══════════════════════════════════════════
@@ -49,9 +63,7 @@ class ChatModelIntegrationTest {
                 .build();
         log.info("构建模型配置: modelName={}, baseUrl={}", model.getModelName(), model.getBaseUrl());
 
-        DashScopeModelProviderFactory factory = new DashScopeModelProviderFactory();
-        factory.restClientBuilder = RestClient.builder();
-        ChatClient client = factory.createClient(model);
+        ChatClient client = factory.getFactory("dashscope").createClient(model);
         log.info("ChatClient 创建成功，发送测试 prompt...");
 
         String reply = client.prompt("请回复一句话：'测试成功'。不要加其他内容。").call().content();
@@ -79,9 +91,7 @@ class ChatModelIntegrationTest {
                 .build();
         log.info("构建模型配置: modelName={}, baseUrl={}", model.getModelName(), model.getBaseUrl());
 
-        DeepSeekModelProviderFactory factory = new DeepSeekModelProviderFactory();
-        factory.restClientBuilder = RestClient.builder();
-        ChatClient client = factory.createClient(model);
+        ChatClient client = factory.getFactory("deepseek").createClient(model);
         log.info("ChatClient 创建成功，发送测试 prompt...");
 
         String reply = client.prompt("请回复一句话：'测试成功'。不要加其他内容。").call().content();
@@ -105,9 +115,7 @@ class ChatModelIntegrationTest {
                 .build();
         log.info("构建模型配置: modelName={}, baseUrl={}", model.getModelName(), model.getBaseUrl());
 
-        DeepSeekModelProviderFactory factory = new DeepSeekModelProviderFactory();
-        factory.restClientBuilder = RestClient.builder();
-        ChatClient client = factory.createClient(model);
+        ChatClient client = factory.getFactory("deepseek").createClient(model);
         log.info("ChatClient 创建成功，发送代码生成 prompt...");
 
         String reply = client.prompt("写一个 Java hello world，只输出代码不要解释。").call().content();
@@ -136,8 +144,7 @@ class ChatModelIntegrationTest {
                 .build();
         log.info("构建模型配置: modelName={}, baseUrl={}", model.getModelName(), model.getBaseUrl());
 
-        MiniMaxModelProviderFactory factory = new MiniMaxModelProviderFactory();
-        ChatClient client = factory.createClient(model);
+        ChatClient client = factory.getFactory("minimax").createClient(model);
         log.info("ChatClient 创建成功，发送测试 prompt...");
 
         String reply = client.prompt("请回复一句话：'测试成功'。不要加其他内容。").call().content();
@@ -168,14 +175,11 @@ class ChatModelIntegrationTest {
                 .build();
         log.info("构建模型配置: providerCode={}, modelName={}", model.getProviderCode(), model.getModelName());
 
-        AbstractAiModelFactory factory = productFactory.getFactory(model.getProviderCode());
         log.info("工厂路由结果: {}", factory.getClass().getSimpleName());
 
         assertNotNull(factory);
-        assertInstanceOf(DeepSeekModelProviderFactory.class, factory);
 
-        ((DeepSeekModelProviderFactory) factory).restClientBuilder = RestClient.builder();
-        ChatClient client = factory.createClient(model);
+        ChatClient client = factory.getFactory("deepseek").createClient(model);
         log.info("ChatClient 创建成功，发送 prompt...");
 
         String reply = client.prompt("1+1等于几？只回答数字。").call().content();

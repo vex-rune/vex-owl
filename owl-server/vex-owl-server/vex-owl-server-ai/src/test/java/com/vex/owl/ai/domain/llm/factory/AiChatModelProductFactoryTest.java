@@ -1,11 +1,15 @@
 package com.vex.owl.ai.domain.llm.factory;
 
+import com.vex.owl.ai.domain.llm.event.TokenUsageAdvisor;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationEventPublisher;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Slf4j
 @DisplayName("AiChatModelProductFactory单元测试")
 class AiChatModelProductFactoryTest {
 
@@ -13,7 +17,12 @@ class AiChatModelProductFactoryTest {
 
     @BeforeEach
     void setUp() {
-        factory = new ModelProductFactory();
+        factory = new ModelProductFactory(new TokenUsageAdvisor(new ApplicationEventPublisher() {
+            @Override
+            public void publishEvent(Object event) {
+                log.info("发布事件: {}", event);
+            }
+        }));
     }
 
     @Test

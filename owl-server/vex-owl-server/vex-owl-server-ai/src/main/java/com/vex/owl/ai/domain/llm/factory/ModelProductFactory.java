@@ -1,12 +1,9 @@
 package com.vex.owl.ai.domain.llm.factory;
 
 import com.vex.owl.ai.domain.llm.event.TokenUsageAdvisor;
-import com.vex.owl.ai.domain.llm.repo.ModelProperties;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClient;
 
 /**
  * AI聊天模型工厂门面
