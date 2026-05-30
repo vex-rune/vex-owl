@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 @Slf4j
@@ -38,15 +40,21 @@ public class TokenUsageAdvisor implements CallAdvisor, StreamAdvisor {
 
         Usage usage = metadata.getUsage();
 
-        TokenUsageEvent event = new TokenUsageEvent(
-                context,
-                usage.getPromptTokens(),
-                usage.getCompletionTokens(),
-                usage.getTotalTokens(),
-                metadata.getModel()
-        );
-        log.info("发送事件 TokenUsageEvent:{}", event);
-        publisher.publishEvent(event);
+        log.info("finishReason:{}", chatResponse.getResult().getMetadata().getFinishReason().toString());
+
+        if ("STOP".equals(chatResponse.getResult().getMetadata().getFinishReason().toString())) {
+
+
+            TokenUsageEvent event = new TokenUsageEvent(
+                    context,
+                    usage.getPromptTokens(),
+                    usage.getCompletionTokens(),
+                    usage.getTotalTokens(),
+                    metadata.getModel()
+            );
+            log.info("发送事件 TokenUsageEvent:{}", event);
+            publisher.publishEvent(event);
+        }
 
         return response;
     }
@@ -65,39 +73,46 @@ public class TokenUsageAdvisor implements CallAdvisor, StreamAdvisor {
             ChatClientRequest chatClientRequest,
             StreamAdvisorChain streamAdvisorChain
     ) {
+        Map<String, Object> context = chatClientRequest.context();
 
-        return streamAdvisorChain.nextStream(chatClientRequest)
-                .doOnComplete(() -> {
-                    // 流完成后，你能拿到最终的 token 消耗
-                    // 注意：这里拿不到，必须 collect 之后
-                })
-                // 正确做法：把流收集起来，从最后一个元素取 usage
-                .collectList()
-                .map(responses -> {
-                    if (responses.isEmpty()) return null;
+        AtomicInteger promptTokens = new AtomicInteger(0);
+        AtomicInteger completionTokens = new AtomicInteger(0);
+        AtomicInteger totalTokens = new AtomicInteger(0);
+        AtomicReference<String> modelName = new AtomicReference<>();
 
-                    // 取最后一个响应
-                    ChatClientResponse last = responses.get(responses.size() - 1);
+        Flux<ChatClientResponse> responseFlux = streamAdvisorChain.nextStream(chatClientRequest);
 
-                    // 取 token 消耗（Spring AI 标准）
-                    ChatResponseMetadata metadata = last.chatResponse().getMetadata();
-                    Usage usage = metadata.getUsage();
+        return responseFlux.doOnNext(response -> {
+            ChatResponse chatResponse = response.chatResponse();
+            if (chatResponse != null && chatResponse.getMetadata() != null) {
+                Usage usage = chatResponse.getMetadata().getUsage();
+                if (usage != null) {
+                    promptTokens.addAndGet(usage.getPromptTokens());
+                    completionTokens.addAndGet(usage.getCompletionTokens());
+                    totalTokens.addAndGet(usage.getTotalTokens());
 
-                    if (usage != null) {
-                        Map<String, Object> context = last.context();
-
-                        TokenUsageEvent event = new TokenUsageEvent(
-                                context,
-                                usage.getPromptTokens(),
-                                usage.getCompletionTokens(),
-                                usage.getTotalTokens(),
-                                metadata.getModel()
-                        );
-                        log.info("发送事件 TokenUsageEvent:{}", event);
-                        publisher.publishEvent(event);
+                    if (modelName.get() == null) {
+                        String model = chatResponse.getMetadata().getModel();
+                        if (model != null) {
+                            modelName.set(model);
+                        }
                     }
-                    return responses;
-                })
-                .flatMapMany(Flux::fromIterable); // 转回 Flux 不影响返回值
+                }
+            }
+        }).doOnComplete(() -> {
+            String finishInfo = "stream completed";
+            log.info("finishReason:{}", finishInfo);
+
+            TokenUsageEvent event = new TokenUsageEvent(
+                    context,
+                    promptTokens.get(),
+                    completionTokens.get(),
+                    totalTokens.get(),
+                    modelName.get()
+            );
+            log.info("发送事件 TokenUsageEvent:{}", event);
+            publisher.publishEvent(event);
+        });
     }
+
 }

@@ -24,7 +24,8 @@ public class TokenUsageAdvisorProviderFactoryWapper implements AbstractAiModelFa
 
         // 用法：mutate() = 复制 + 改配置 + 构建新客户端
         return client.mutate()
-                .defaultAdvisors(toolCallAdvisor, tokenUsageAdvisor)
+                .defaultAdvisors(tokenUsageAdvisor)
+                // .defaultAdvisors(toolCallAdvisor)
                 .build();
     }
 }
