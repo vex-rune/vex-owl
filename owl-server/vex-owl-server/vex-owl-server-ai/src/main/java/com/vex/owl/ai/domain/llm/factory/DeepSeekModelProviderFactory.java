@@ -35,11 +35,17 @@ public class DeepSeekModelProviderFactory implements AbstractAiModelFactory {
      */
     @Override
     public ChatClient createClient(ModelProperties modelProperties) {
-        DeepSeekApi deepSeekApi = DeepSeekApi
-                .builder()
-                .baseUrl(modelProperties.getBaseUrl())
+        DeepSeekApi.Builder builder = DeepSeekApi
+                .builder();
+        String baseUrl = modelProperties.getBaseUrl();
+        if (baseUrl != null) {
+            builder.baseUrl(baseUrl);
+        }
+        if (restClientBuilder != null) {
+            builder.restClientBuilder(restClientBuilder);
+        }
+        DeepSeekApi deepSeekApi = builder
                 .apiKey(modelProperties.getApiKey())
-                .restClientBuilder(restClientBuilder)
                 .build();
 
         DeepSeekChatOptions chatOptions = DeepSeekChatOptions.builder()

@@ -7,11 +7,13 @@ import java.util.Map;
 
 import com.vex.owl.ai.app.tools.ThinkRecordLogTools;
 import com.vex.owl.ai.domain.llm.entity.ModelEntity;
+import com.vex.owl.ai.domain.llm.event.TokenUsageAdvisor;
 import com.vex.owl.ai.domain.llm.factory.ModelProductFactory;
 import com.vex.owl.ai.domain.llm.factory.DeepSeekModelProviderFactory;
-import com.vex.owl.ai.domain.skills.PlannerSkillExecutor.Plan;
 import com.vex.owl.ai.domain.skills.SkillResult.Metadata;
 import com.vex.owl.ai.domain.skills.SkillResult.ResultType;
+import com.vex.owl.ai.domain.skills.plan.Plan;
+import com.vex.owl.ai.domain.skills.plan.PlannerSkillExecutor;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -21,6 +23,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.support.ToolCallbacks;
 import org.springframework.ai.tool.ToolCallback;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -29,7 +33,11 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 @Tag("integration")
 @DisplayName("PlannerSkillExecutor 集成测试 — 调用大模型验证计划生成")
+@SpringBootTest
 class PlannerSkillExecutorIntegrationTest {
+
+    @Autowired
+    ModelProductFactory productFactory;
 
     private static final Logger log = LoggerFactory.getLogger(PlannerSkillExecutorIntegrationTest.class);
 
@@ -104,8 +112,6 @@ class PlannerSkillExecutorIntegrationTest {
         assumeTrue(envSet("DEEPSEEK_API_KEY"), "DEEPSEEK_API_KEY 未设置，跳过");
 
         log.info("--- PlannerSkillExecutor 全量工厂全链路测试开始 ---");
-
-        ModelProductFactory productFactory = new ModelProductFactory();
 
         ModelEntity model = modelBuilder()
                 .modelName("deepseek-chat")

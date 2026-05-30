@@ -1,10 +1,12 @@
 package com.vex.owl.ai.app.tools;
 
 import com.vex.owl.ai.domain.tools.ToolContextExtractor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.model.ToolContext;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
+import org.springframework.stereotype.Component;
 
 /**
  * 思考过程记录工具
@@ -12,10 +14,13 @@ import org.springframework.ai.tool.annotation.ToolParam;
  * 大模型在需要记录推理过程时调用此工具，思考内容由模型自行生成。
  * 租户ID由应用层通过 toolContext 注入，不由大模型提供。</p>
  */
+@Component
 @Slf4j
-public class ThinkRecordLogTools {
+public class ThinkRecordLogTools implements PublicTools {
 
     private final ToolContextExtractor toolContextExtractor = ToolContextExtractor.getInstance();
+    @Getter
+    public   final String name = "thinkRecordLog";
 
     /**
      * 记录思考过程
@@ -36,4 +41,5 @@ public class ThinkRecordLogTools {
 
         return "思考过程已记录";
     }
+
 }

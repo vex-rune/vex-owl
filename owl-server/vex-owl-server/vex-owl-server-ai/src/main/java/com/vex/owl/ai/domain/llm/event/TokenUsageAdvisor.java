@@ -1,6 +1,7 @@
 package com.vex.owl.ai.domain.llm.event;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClientRequest;
 import org.springframework.ai.chat.client.ChatClientResponse;
 import org.springframework.ai.chat.client.advisor.api.CallAdvisor;
@@ -17,6 +18,7 @@ import reactor.core.publisher.Flux;
 import java.util.Map;
 
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class TokenUsageAdvisor implements CallAdvisor, StreamAdvisor {
@@ -36,13 +38,15 @@ public class TokenUsageAdvisor implements CallAdvisor, StreamAdvisor {
 
         Usage usage = metadata.getUsage();
 
-        publisher.publishEvent(new TokenUsageEvent(
+        TokenUsageEvent event = new TokenUsageEvent(
                 context,
                 usage.getPromptTokens(),
                 usage.getCompletionTokens(),
                 usage.getTotalTokens(),
                 metadata.getModel()
-        ));
+        );
+        log.info("发送事件 TokenUsageEvent:{}", event);
+        publisher.publishEvent(event);
 
         return response;
     }
@@ -54,7 +58,7 @@ public class TokenUsageAdvisor implements CallAdvisor, StreamAdvisor {
 
     @Override
     public int getOrder() {
-        return 0;
+        return 2;
     }
 
     public Flux<ChatClientResponse> adviseStream(
@@ -82,13 +86,15 @@ public class TokenUsageAdvisor implements CallAdvisor, StreamAdvisor {
                     if (usage != null) {
                         Map<String, Object> context = last.context();
 
-                        publisher.publishEvent(new TokenUsageEvent(
+                        TokenUsageEvent event = new TokenUsageEvent(
                                 context,
                                 usage.getPromptTokens(),
                                 usage.getCompletionTokens(),
                                 usage.getTotalTokens(),
                                 metadata.getModel()
-                        ));
+                        );
+                        log.info("发送事件 TokenUsageEvent:{}", event);
+                        publisher.publishEvent(event);
                     }
                     return responses;
                 })
