@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class TokenUsageAdvisor implements CallAdvisor, StreamAdvisor {
+public class TokenUsageListenerAdvisor implements CallAdvisor, StreamAdvisor {
 
     private final ApplicationEventPublisher publisher;
 
@@ -61,7 +61,7 @@ public class TokenUsageAdvisor implements CallAdvisor, StreamAdvisor {
 
     @Override
     public String getName() {
-        return TokenUsageAdvisor.class.getName();
+        return TokenUsageListenerAdvisor.class.getName();
     }
 
     @Override

@@ -47,10 +47,5 @@ public class AiChatMessageEntity extends JpaBasicWithIdEntity {
 
     /// 消息文本内容
     private String textContent;
-//
-//    /// 元数据（JSON 格式）
-//    @Column(columnDefinition = "jsonb")
-//    @Type(JsonBinaryType.class)  // 注意：是 org.hibernate.annotations.Type
-//    private Map<String, Object> metadata;
 
 }
