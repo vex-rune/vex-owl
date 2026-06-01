@@ -3,7 +3,7 @@ package com.vex.owl.ai.domain.llm;
 import com.vex.owl.ai.app.tools.DateTimeTools;
 import com.vex.owl.ai.app.tools.ThinkRecordLogTools;
 import com.vex.owl.ai.domain.llm.entity.ModelEntity;
-import com.vex.owl.ai.domain.llm.event.TokenUsageEvent;
+import com.vex.owl.ai.domain.event.TokenUsageEvent;
 import com.vex.owl.ai.domain.llm.factory.AbstractAiModelFactory;
 import com.vex.owl.ai.domain.llm.factory.ModelProductFactory;
 import org.junit.jupiter.api.BeforeAll;
@@ -20,17 +20,14 @@ import org.springframework.ai.tool.ToolCallback;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import reactor.core.publisher.Flux;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 @Tag("integration")
@@ -73,11 +70,10 @@ class LmmTest {
 
         ToolCallback[] callbacks = ToolCallbacks.from(new ThinkRecordLogTools(), new DateTimeTools());
 
-        ChatClientResponse response = client.prompt("用一句话介绍唐朝")
+        ChatClientResponse response = client.prompt("用一句话介绍唐朝, 并且说出距离今天多少秒! 并且输出思考过程")
                 .toolCallbacks(callbacks)
                 .toolContext(Map.of("A", 1))
                 .system("你是一个历史知识问答助手，请简洁回答。")
-                .advisors(toolCallAdvisor)
                 .call()
                 .chatClientResponse();
 

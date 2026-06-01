@@ -1,4 +1,4 @@
-package com.vex.owl.ai.domain.llm.event;
+package com.vex.owl.ai.domain.event;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

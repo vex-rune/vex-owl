@@ -10,7 +10,7 @@ server:
 
 spring:
   application:
-    name: vex-owl-notification-server
+    name: notification-server
   profiles:
     active: dev
   config:
@@ -18,11 +18,14 @@ spring:
   cloud:
     nacos:
       config:
+        enabled: true
         import-check:
           enabled: false
+        namespace: ${NACOS_NAMESPACE:public}
         server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:17696}
-        username: ${NACOS_USERNAME:nacos}
-        password: ${NACOS_PASSWORD:nacos}
+        username: ''
+        password: ''
+        group: DEFAULT_GROUP
         file-extension: yml
         shared-configs:
           - data-id: common-config.yml
@@ -30,11 +33,12 @@ spring:
             refresh: true
       discovery:
         server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:17696}
-        username: ${NACOS_USERNAME:nacos}
-        password: ${NACOS_PASSWORD:nacos}
+        username: ''
+        password: ''
+        namespace: ${NACOS_NAMESPACE:public}
         group: vex-group
   datasource:
-    url: jdbc:postgresql://localhost:5432/vex_owl
+    url: jdbc:postgresql://localhost:10864/vex_owl
     username: vex_user
     password: vex_password
     driver-class-name: org.postgresql.Driver

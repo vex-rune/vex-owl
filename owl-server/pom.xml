@@ -71,8 +71,7 @@
         <!-- Embedded Redis：集成测试用的嵌入式Redis服务器 -->
         <embedded-redis.version>0.7.3</embedded-redis.version>
 
-        <!-- Nacos 客户端：服务发现和配置管理客户端库 -->
-        <nacos-client.version>2.4.3</nacos-client.version>
+        <!-- Nacos 客户端版本由 spring-cloud-alibaba-dependencies BOM 统一管理 -->
 
         <!-- JaCoCo 代码覆盖率：生成测试覆盖率报告 -->
         <jacoco.version>0.8.11</jacoco.version>
@@ -192,13 +191,6 @@
                 <groupId>it.ozimov</groupId>
                 <artifactId>embedded-redis</artifactId>
                 <version>${embedded-redis.version}</version>
-            </dependency>
-
-            <!-- Nacos Client：服务发现和配置管理客户端 -->
-            <dependency>
-                <groupId>com.alibaba.nacos</groupId>
-                <artifactId>nacos-client</artifactId>
-                <version>${nacos-client.version}</version>
             </dependency>
 
             <!-- JUnit Jupiter：单元测试框架（JUnit 5） -->

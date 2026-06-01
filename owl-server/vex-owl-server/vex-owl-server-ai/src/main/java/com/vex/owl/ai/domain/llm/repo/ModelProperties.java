@@ -1,5 +1,7 @@
 package com.vex.owl.ai.domain.llm.repo;
 
+import lombok.Data;
+
 /**
  * 模型连接属性接口
  * <p>定义 Provider Factory 创建 ChatClient 所需的最小参数集合。
@@ -27,4 +29,11 @@ public interface ModelProperties {
      * @return 模型提供商的 API Base URL
      */
     String getBaseUrl();
+
+    /**
+     * 获取 Provider 码
+     */
+    String getProviderCode();
+
+
 }

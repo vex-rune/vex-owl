@@ -6,33 +6,29 @@ server:
 
 spring:
   application:
-    name: vex-owl-ai-server
+    name: ai-server
   profiles:
     active: dev
-#  ai:
-#    model:
-#      chat: none
-#      embedding: none
-#      video: none
-#      moderation: none
-#      audio:
-#        speech: none    # 随便写一个不是 dashscope 的值就行
-#        transcription: none
-#      image: none
-#      rerank: none
-#    dashscope:
-#      agent:
-#        enabled: false
+  config:
+    import: optional:nacos
   cloud:
-    bootstrap:
-      enabled: true
+    openfeign:
+      client:
+        config:
+          default:
+            connectTimeout: 10000
+            readTimeout: 30000
+    # Nacos 配置
     nacos:
       config:
+        enabled: true
         import-check:
           enabled: false
+        namespace: ${NACOS_NAMESPACE:public}
         server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:17696}
-        username: ${NACOS_USERNAME:nacos}
-        password: ${NACOS_PASSWORD:nacos}
+        username: ''
+        password: ''
+        group: DEFAULT_GROUP
         file-extension: yml
         shared-configs:
           - data-id: common-config.yml
@@ -40,8 +36,8 @@ spring:
             refresh: true
       discovery:
         server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:17696}
-        username: ${NACOS_USERNAME:nacos}
-        password: ${NACOS_PASSWORD:nacos}
+        username: ''
+        password: ''
         namespace: ${NACOS_NAMESPACE:public}
         group: vex-group
   data:
@@ -97,3 +93,18 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+
+# ================================================
+# MiniMax API 配置
+# ================================================
+# TTS 文档：https://platform.minimaxi.com/docs/api-reference/speech-t2a-http
+# 图像生成文档：https://platform.minimaxi.com/docs/api-reference/image-generation-t2i
+# 音乐生成文档：https://platform.minimaxi.com/docs/api-reference/music-generation
+minimax:
+  api:
+    # MiniMax API 地址（默认：api.minimaxi.com，备用：api-bj.minimaxi.com）
+    url: ${MINIMAX_API_URL:https://api.minimaxi.com}
+    # API Key（必填），在 MiniMax 平台【账户管理 > 接口密钥】中获取
+    key: ${MINIMAX_API_KEY:}
+    # Group ID（可选），MiniMax 需要的分组标识
+    group-id: ${MINIMAX_GROUP_ID:}

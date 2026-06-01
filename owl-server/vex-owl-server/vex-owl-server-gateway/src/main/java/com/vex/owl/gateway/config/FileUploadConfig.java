@@ -1,4 +1,4 @@
-package com.vex.gateway.config;
+package com.vex.owl.gateway.config;
 
 import org.springframework.context.annotation.Configuration;
 

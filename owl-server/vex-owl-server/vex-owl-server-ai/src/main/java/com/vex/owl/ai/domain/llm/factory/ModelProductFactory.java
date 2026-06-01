@@ -1,8 +1,7 @@
 package com.vex.owl.ai.domain.llm.factory;
 
-import com.vex.owl.ai.domain.llm.event.TokenUsageAdvisor;
+import com.vex.owl.ai.domain.event.TokenUsageListenerAdvisor;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.springframework.ai.chat.client.advisor.ToolCallAdvisor;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +22,7 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class ModelProductFactory {
 
-    private final TokenUsageAdvisor tokenUsageAdvisor;
+    private final TokenUsageListenerAdvisor tokenUsageAdvisor;
     private final ToolCallAdvisor toolCallAdvisor;
 
     /**
@@ -42,7 +41,7 @@ public class ModelProductFactory {
             default -> throw new IllegalArgumentException("providerCode=" + providerCode + ", 没有对应的工厂");
         };
 
-        return new TokenUsageAdvisorProviderFactoryWapper(factory, tokenUsageAdvisor,toolCallAdvisor);
+        return new TokenUsageAdvisorProviderFactoryWapper(factory, tokenUsageAdvisor, toolCallAdvisor);
     }
 
 }

@@ -24,8 +24,9 @@ public class SecurityConfig {
                 // 微服务无状态，禁用session
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // 放行登录注册
-                        .requestMatchers("/auth/login","/auth/register").permitAll()
+                        // 放行登录注册及验证码接口
+                        .requestMatchers("/auth/login","/auth/register",
+                                "/auth/send/register/code","/auth/send/login/code").permitAll()
                         // 认证服务内部其他接口也要鉴权
                         .anyRequest().authenticated()
                 )

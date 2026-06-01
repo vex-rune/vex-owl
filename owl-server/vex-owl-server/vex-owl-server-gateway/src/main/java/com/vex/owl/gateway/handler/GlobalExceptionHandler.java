@@ -1,4 +1,4 @@
-package com.vex.gateway.handler;
+package com.vex.owl.gateway.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;

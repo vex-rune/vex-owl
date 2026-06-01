@@ -1,27 +1,20 @@
-# ================================================
-# Vex-Owl Nacos 配置中心
-# ================================================
-# 启动命令: docker-compose -f nacos.yml up -d
-# 停止命令: docker-compose -f nacos.yml down
-# 访问地址: http://localhost:17696/
-# 默认账号: nacos / nacos
-# ================================================
 services:
   nacos:
     image: nacos/nacos-server:v3.0.3
     container_name: vex-owl-nacos
     restart: unless-stopped
     ports:
-      - "17696:8080"  # 主机17696 -> 容器8080 (Nacos 控制台)
-      - "19696:9848"  # gRPC 客户端端口
-      - "19698:9849"  # gRPC 服务端端口
-      - "15696:7848"  # Raft 端口
+      - "17696:8080"
+      - "18696:9848"
+      - "18698:9849"
+      - "15696:7848"
     environment:
+      # 核心：完全关闭鉴权 + 补全所有强制必填的环境变量
       - MODE=standalone
       - NACOS_AUTH_ENABLE=false
-      - NACOS_AUTH_IDENTITY_KEY=vex-owl
-      - NACOS_AUTH_IDENTITY_VALUE=vex-owl@2026
-      - NACOS_AUTH_TOKEN=SecretKey012345678901234567890123456789012345678901234567890123456789
+      - NACOS_AUTH_TOKEN=TmFjb3NTZWNyZXRLZXkxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ=
+      - NACOS_AUTH_IDENTITY_KEY=identity-key
+      - NACOS_AUTH_IDENTITY_VALUE=identity-value
       - JVM_XMS=512m
       - JVM_XMX=512m
       - JVM_XMN=256m
@@ -30,20 +23,6 @@ services:
       - ../../data/nacos/logs:/home/nacos/logs
     networks:
       - vex-owl-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
-      interval: 15s
-      timeout: 10s
-      retries: 10
-      start_period: 90s
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 768M
-        reservations:
-          cpus: '0.5'
-          memory: 512M
 
 networks:
   vex-owl-network:

@@ -1,4 +1,4 @@
-package com.vex.gateway.config;
+package com.vex.owl.gateway.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

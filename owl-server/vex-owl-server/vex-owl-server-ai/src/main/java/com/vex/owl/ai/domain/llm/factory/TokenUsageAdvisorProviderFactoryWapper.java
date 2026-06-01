@@ -1,18 +1,16 @@
 package com.vex.owl.ai.domain.llm.factory;
 
-import com.vex.owl.ai.domain.llm.event.TokenUsageAdvisor;
+import com.vex.owl.ai.domain.event.TokenUsageListenerAdvisor;
 import com.vex.owl.ai.domain.llm.repo.ModelProperties;
 import lombok.AllArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.ToolCallAdvisor;
 
-import java.util.List;
-
 @AllArgsConstructor
 public class TokenUsageAdvisorProviderFactoryWapper implements AbstractAiModelFactory {
 
     private final AbstractAiModelFactory factory;
-    private final TokenUsageAdvisor tokenUsageAdvisor;
+    private final TokenUsageListenerAdvisor tokenUsageAdvisor;
     private final ToolCallAdvisor toolCallAdvisor;
 
     /**
@@ -25,7 +23,7 @@ public class TokenUsageAdvisorProviderFactoryWapper implements AbstractAiModelFa
         // 用法：mutate() = 复制 + 改配置 + 构建新客户端
         return client.mutate()
                 .defaultAdvisors(tokenUsageAdvisor)
-                // .defaultAdvisors(toolCallAdvisor)
+                 .defaultAdvisors(toolCallAdvisor)
                 .build();
     }
 }

@@ -1,4 +1,4 @@
-package com.vex.owl.ai.app.tools.config;
+package com.vex.owl.ai.domain.tools.config;
 
 import com.vex.owl.ai.domain.event.ToolCallingListener;
 import io.micrometer.observation.ObservationRegistry;

@@ -1,4 +1,4 @@
-package com.vex.owl.ai.app.tools;
+package com.vex.owl.ai.domain.event;
 
 public record ToolCallEvent(
     // 工具

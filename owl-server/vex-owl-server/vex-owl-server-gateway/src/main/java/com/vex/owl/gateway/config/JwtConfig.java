@@ -1,4 +1,4 @@
-package com.vex.gateway.config;
+package com.vex.owl.gateway.config;
 
 import io.jsonwebtoken.security.Keys;
 import lombok.Data;
@@ -36,12 +36,4 @@ public class JwtConfig {
      * Token前缀
      */
     private String prefix;
-
-    /**
-     * 创建签名密钥
-     */
-    @Bean
-    public SecretKey secretKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-    }
 }

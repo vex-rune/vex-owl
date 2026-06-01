@@ -1,6 +1,6 @@
-package com.vex.gateway.filter;
+package com.vex.owl.gateway.filter;
 
-import com.vex.gateway.config.JwtConfig;
+import com.vex.owl.gateway.config.JwtConfig;
 import com.vex.security.auth.AuthConstants;
 import com.vex.security.auth.AuthHeaderConstants;
 import com.vex.security.auth.AuthHeaders;
@@ -8,12 +8,14 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -22,6 +24,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +34,6 @@ import java.util.Map;
 public class JwtAuthFilter implements GlobalFilter, Ordered {
 
     private final JwtConfig jwtConfig;
-    private final SecretKey secretKey;
 
     private static final List<String> WHITE_LIST = List.of(
             "/api/user/auth/login",
@@ -47,6 +49,10 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         ServerHttpRequest request = exchange.getRequest();
         String path = request.getURI().getPath();
 
+        if (HttpMethod.OPTIONS.equals( request.getMethod())) {
+            return chain.filter(exchange);
+        }
+
         if (isWhiteListPath(path)) {
             log.debug("白名单路径，跳过JWT验证: {}", path);
             return chain.filter(exchange);
@@ -60,6 +66,8 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         }
 
         String token = authHeader.substring(jwtConfig.getPrefix().length());
+
+        SecretKey secretKey = Keys.hmacShaKeyFor(jwtConfig.getSecret().getBytes(StandardCharsets.UTF_8));
 
         try {
             Claims claims = Jwts.parser()

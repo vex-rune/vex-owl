@@ -1,13 +1,11 @@
-package com.vex.owl.ai.app.tools;
+package com.vex.owl.ai.domain.tools;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.support.ToolCallbacks;
 import org.springframework.ai.tool.ToolCallback;
-import org.springframework.ai.tool.definition.ToolDefinition;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,7 +14,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-public class ToolCallbacksServer {
+public class ToolServer {
 
     private final List<Tools> tools;
 

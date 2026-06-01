@@ -1,4 +1,4 @@
-package com.vex.owl.ai.app.tools;
+package com.vex.owl.ai.domain.tools;
 
-public interface PublicTools extends Tools{
+public interface PublicTools extends Tools {
 }

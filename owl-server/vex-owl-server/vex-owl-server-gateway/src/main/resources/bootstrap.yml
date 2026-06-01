@@ -11,12 +11,15 @@
 # ================================================
 # 第一部分：Vex 项目配置
 # ================================================
+
 vex:
   jwt:
     secret: ${JWT_SECRET:dmV4LW93bC1qd3Qtc2VjcmV0LWtleS0yMDI2LTA1LTE4}
     expiration: 86400000
     header: Authorization
     prefix: "Bearer "
+
+# 🔥 修复3：删除错误的 gRPC 偏移量配置，使用默认值 1000
 
 # ================================================
 # 第二部分：服务器基础配置
@@ -29,31 +32,44 @@ server:
 # ================================================
 spring:
   application:
-    name: vex-owl-gateway-server
+    name: gateway-server
   profiles:
     active: dev
   config:
     import: optional:nacos
   cloud:
+    # 强制修复主机名 + 网卡问题
+    inetutils:
+      preferred-networks: 127.0.0.1
+      ignored-interfaces: ["vboxnet*, docker*, vmnet*, eth0*, lo*"]
     nacos:
       config:
+        enabled: true
         import-check:
           enabled: false
+        namespace: ${NACOS_NAMESPACE:public}
+        # 🔥 修复1：使用正确的 HTTP 主端口 17696
         server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:17696}
-        username: ${NACOS_USERNAME:nacos}
-        password: ${NACOS_PASSWORD:nacos}
+        # 🔥 修复2：鉴权已关闭，清空账号密码
+        username: ''
+        password: ''
+        group: DEFAULT_GROUP
         file-extension: yml
         shared-configs:
           - data-id: common-config.yml
             group: COMMON_GROUP
             refresh: true
       discovery:
+        # 🔥 修复1：使用正确的 HTTP 主端口 17696
         server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:17696}
-        username: ${NACOS_USERNAME:nacos}
-        password: ${NACOS_PASSWORD:nacos}
+        # 🔥 修复2：鉴权已关闭，清空账号密码
+        username: ''
+        password: ''
         namespace: ${NACOS_NAMESPACE:public}
         group: vex-group
         weight: 100
+        ip: 127.0.0.1
+        port: 9201
         heartbeat-interval-ms: 5000
         heartbeat-timeout-ms: 15000
         ip-delete-timeout-ms: 30000
@@ -86,6 +102,10 @@ spring:
                 - Path=/api/notification/**
               filters:
                 - StripPrefix=1
+            - id: ai-server
+              uri: lb://ai-server
+              predicates:
+                - Path=/api/ai/**
           discovery:
             locator:
               enabled: true
