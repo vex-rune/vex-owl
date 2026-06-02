@@ -11,6 +11,7 @@ import com.vex.security.auth.AuthHeaderConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
@@ -22,10 +23,12 @@ public class ChatApi {
     private final ChatApp chatApp;
     private final ChatManager chatManager;
 
-    @PostMapping("free")
+    /// sse
+    @PostMapping(value = "/free", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> chat(@RequestHeader(AuthHeaderConstants.HEADER_USER_ID) String userId,
                              @RequestBody FreeChatMessageRequest request) {
-        return chatApp.chat(userId, request.getPrompt());
+        return chatApp.chat(userId, request.getPrompt())
+                .onErrorResume(e -> Flux.just("系统错误：" + e.getMessage()));
     }
 
     @GetMapping("session/list")

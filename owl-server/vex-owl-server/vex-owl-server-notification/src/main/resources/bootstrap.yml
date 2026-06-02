@@ -61,12 +61,17 @@ spring:
   mail:
     host: ${MAIL_HOST:smtpdm.aliyun.com}
     port: ${MAIL_PORT:465}
-    username: ${MAIL_USERNAME:noreply@example.com}
-    password: ${MAIL_PASSWORD:SALaisIJFkl34dj}
+    username: ${SMTP_USER}
+    password: ${SMTP_PASSWORD}
     properties:
       mail:
         smtp:
           auth: true
+          ssl:
+            enable: true
+          socketFactory:
+            class: javax.net.ssl.SSLSocketFactory
+            port: 465
           connectiontimeout: 5000
           timeout: 5000
           writetimeout: 5000

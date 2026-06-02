@@ -1,6 +1,5 @@
 package com.vex.queries.jpa.queries;
 
-import com.vex.queries.jpa.model.JpaBasicWithIdEntity;
 import com.vex.queries.model.queries.model.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -271,7 +270,7 @@ public class JpaQueriesExecutor<E> {
         applyWhereClause(countQuery, root, builder);
 
         // 选择计数字段
-        countQuery.select(builder.count(root.get(JpaBasicWithIdEntity.ID_FIELD)));
+        countQuery.select(builder.count(root.get("id")));
 
         return entityManager.createQuery(countQuery).getSingleResult();
     }

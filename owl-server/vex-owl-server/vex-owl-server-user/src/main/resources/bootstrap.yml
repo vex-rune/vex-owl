@@ -77,7 +77,7 @@ spring:
 
 logging:
   level:
-    root: INFO
+    root: info
     com.vex.owl.notification: DEBUG
   pattern:
     console: "%d{HH:mm:ss.SSS} %5p %-40.40logger{39} : %m%n"

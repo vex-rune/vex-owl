@@ -67,16 +67,16 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
+        format_sql: false
 
 logging:
   level:
     root: INFO
-    com.vex.owl.ai: DEBUG
+    org.springframework.ai.chat.client: DEBUG
   pattern:
     console: "%d{HH:mm:ss.SSS} %5p %-40.40logger{39} : %m%n"
   file:
@@ -108,3 +108,10 @@ minimax:
     key: ${MINIMAX_API_KEY:}
     # Group ID（可选），MiniMax 需要的分组标识
     group-id: ${MINIMAX_GROUP_ID:}
+
+vex:
+  free-model-properties:
+    providerCode: minimax
+    apiKey: ${MINIMAX_API_KEY:}
+    modelName: MiniMax-M2.7
+    baseUrl:

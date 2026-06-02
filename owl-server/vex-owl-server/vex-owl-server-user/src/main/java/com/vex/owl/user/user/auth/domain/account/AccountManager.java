@@ -93,6 +93,6 @@ public class AccountManager {
     }
 
     public Optional<AccountEntity> validByAccount(AccountType type, String account) {
-        return accountRepository.findByAccountLowerAndAccountType(account.toLowerCase(), type.name());
+        return accountRepository.findByAccountLowerAndAccountType(account.toLowerCase(), type).stream().findFirst();
     }
 }

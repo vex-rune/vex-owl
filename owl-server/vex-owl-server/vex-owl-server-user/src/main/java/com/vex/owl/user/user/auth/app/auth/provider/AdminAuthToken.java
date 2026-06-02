@@ -27,7 +27,7 @@ public class AdminAuthToken implements Authentication {
     private String name;
     private boolean isAuthenticated;
 
-    public AdminAuthToken(String email, Supplier<String> password) {
+    public AdminAuthToken(String email, String password) {
         this.name = email;
         this.principal = email;
         this.credentials = password;

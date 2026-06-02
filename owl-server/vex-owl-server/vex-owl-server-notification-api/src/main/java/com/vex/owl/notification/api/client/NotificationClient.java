@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import jakarta.validation.Valid;
 
-@FeignClient(name = "vex-owl-notification-server", path = "/api/v1/notification")
+@FeignClient(name = "notification-server", path = "/api/notification/admin/email")
 public interface NotificationClient {
 
-    @PostMapping("/email/send")
+    @PostMapping("/send")
     ApiResponse<Void> sendEmail(@Valid @RequestBody SendEmailRequest request);
 
-    @PostMapping("/email/send/direct")
+    @PostMapping("/send/direct")
     ApiResponse<Void> sendEmailDirect(@Valid @RequestBody SendEmailDirectRequest request);
 }

@@ -14,10 +14,11 @@
 
 vex:
   jwt:
-    secret: ${JWT_SECRET:dmV4LW93bC1qd3Qtc2VjcmV0LWtleS0yMDI2LTA1LTE4}
+    secret: ${JWT_SECRET:vex-owl-jwt-secret-key-dev-only-not-for-production-2024}
     expiration: 86400000
     header: Authorization
     prefix: "Bearer "
+
 
 # 🔥 修复3：删除错误的 gRPC 偏移量配置，使用默认值 1000
 
@@ -84,8 +85,6 @@ spring:
               uri: lb://user-server
               predicates:
                 - Path=/api/user/**
-              filters:
-                - StripPrefix=1
             - id: notification-server
               uri: lb://notification-server
               predicates:

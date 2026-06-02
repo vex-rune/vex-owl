@@ -9,12 +9,15 @@ import com.vex.owl.ai.domain.tools.ToolServer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +33,7 @@ public class ChatApp {
     /// 免费的对话
     public Flux<String> chat(String tenantId, String prompt) {
         // 0. 得到会话
-        ChatSessionEntity session = chatManager.getSession("free-" + tenantId, tenantId);
+        ChatSessionEntity session = chatManager.getSession("free_" + tenantId, tenantId);
 
         // 1. 得到 ModelProperties
         ChatClient client = modelProductFactory.getFactory(modelProperties.getProviderCode()).createClient(modelProperties);
@@ -49,10 +52,20 @@ public class ChatApp {
         List<ToolCallback> publicTools = toolServer.getPublicTools();
 
         // 3. 请求AI
+        MessageChatMemoryAdvisor memoryAdvisor = MessageChatMemoryAdvisor.builder(chatMessageMemory).build();
+
+
+        Map<String, Object> toolContext = metadata.toMap();
+
+        Consumer<ChatClient.AdvisorSpec> advisorSpecConsumer =
+                spe -> spe.advisors(memoryAdvisor)
+                        .params(toolContext);
+
         return client.prompt(prompt)
-                .toolContext(metadata.toMap())
+                .toolContext(toolContext)
                 .toolCallbacks(publicTools)
-                .advisors(MessageChatMemoryAdvisor.builder(chatMessageMemory).build())
+                .advisors(memoryAdvisor)
+                .advisors(advisorSpecConsumer)
                 .system("""
                         你叫"奥沃"，一个由 VEX 技术团队打造的 AI 助手。
                         

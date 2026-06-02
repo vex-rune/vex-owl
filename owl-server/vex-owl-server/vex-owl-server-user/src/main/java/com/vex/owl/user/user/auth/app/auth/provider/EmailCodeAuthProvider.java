@@ -1,10 +1,11 @@
 package com.vex.owl.user.user.auth.app.auth.provider;
 
+import com.vex.owl.user.user.auth.app.auth.AuthApp;
 import com.vex.owl.user.user.auth.domain.account.AccountManager;
 import com.vex.owl.user.user.auth.domain.account.model.AccountEntity;
 import com.vex.owl.user.user.auth.domain.account.model.AccountType;
+import com.vex.owl.user.user.auth.domain.code.CodeManager;
 import com.vex.owl.user.user.auth.domain.code.model.CodeEntity;
-import com.vex.owl.user.user.auth.domain.code.model.CodeId;
 import com.vex.owl.user.user.auth.domain.code.repo.CodeRedisRepository;
 import com.vex.owl.user.user.auth.domain.subject.SubjectManager;
 import com.vex.owl.user.user.auth.domain.subject.entity.SubjectEntity;
@@ -32,20 +33,20 @@ public class EmailCodeAuthProvider implements AuthenticationProvider {
 
     private final AccountManager accountManager;
     private final SubjectManager subjectManager;
-    private final CodeRedisRepository codeRepository;
+    private final CodeManager codeManager;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String email = authentication.getName();
         String code = authentication.getCredentials().toString();
 
-        CodeEntity codeEntity = codeRepository.findByIdAndCode(new CodeId(email, "email_login"), code)
-                .orElseThrow(() -> new BadCredentialsException("验证码错误或已过期"));
+        boolean b = codeManager.validateCode(email, AuthApp.CODE_TYPE_LOGIN, code);
+        if (!b) throw new BadCredentialsException("验证码错误或已过期");
 
         Optional<AccountEntity> optAccount = accountManager.validByAccount(AccountType.email, email);
         AccountEntity account = optAccount.orElseThrow(() -> new AccountExpiredException("账号不存在"));
 
-        codeRepository.delete(codeEntity);
+        codeManager.deleteCode(email, AuthApp.CODE_TYPE_LOGIN);
 
         List<SimpleGrantedAuthority> auths = Collections.singletonList(USER_GRANTED_AUTHORITY);
 
@@ -53,12 +54,12 @@ public class EmailCodeAuthProvider implements AuthenticationProvider {
         SubjectEntity subject = optSub.orElseThrow(() -> new AccountExpiredException("主体不存在"));
 
         return new UsernamePasswordAuthenticationToken(LoginUser.builder()
-                        .subjectId(subject.getId())
-                        .nickName(subject.getNickname())
-                        .phone(null)
-                        .email(account.getCredential())
-                        .authorities(Collections.singletonList(subject.getRole()))
-                        .build(),
+                .subjectId(subject.getId())
+                .nickName(subject.getNickname())
+                .phone(null)
+                .email(account.getCredential())
+                .authorities(Collections.singletonList(subject.getRole()))
+                .build(),
                 null,
                 auths
         );

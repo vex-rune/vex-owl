@@ -2,7 +2,7 @@ package com.vex.owl.notification.domain.template.entity;
 
 import com.vex.queries.jpa.id.BizIdPrefix;
 import com.vex.queries.jpa.id.BizSnowId;
-import com.vex.queries.jpa.model.JpaBasicWithIdEntity;
+import com.vex.queries.jpa.model.JpaBasicEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -11,8 +11,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,7 +18,7 @@ import java.time.LocalDateTime;
 @Entity
 @BizIdPrefix(value = "template")
 @Table(name = "notification_template")
-public class TemplateEntity extends JpaBasicWithIdEntity {
+public class TemplateEntity extends JpaBasicEntity {
 
     @Id
     @BizSnowId

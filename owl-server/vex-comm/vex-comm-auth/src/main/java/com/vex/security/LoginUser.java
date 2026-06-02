@@ -6,6 +6,7 @@ import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -50,12 +51,12 @@ public class LoginUser implements Serializable {
 
 
     public Map<String, Object> toMap() {
-        return Map.of(
-                "subjectId", subjectId,
-                "nickName", nickName,
-                "phone", phone,
-                "email", email,
-                "authorities", authorities
-        );
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("subjectId", subjectId);
+        map.put("nickName", nickName);
+        map.put("phone", phone);
+        map.put("email", email);
+        map.put("authorities", authorities);
+        return map;
     }
 }

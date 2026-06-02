@@ -2,7 +2,7 @@ package com.vex.owl.ai.domain.chat;
 
 import com.vex.queries.jpa.id.BizIdPrefix;
 import com.vex.queries.jpa.id.BizSnowId;
-import com.vex.queries.jpa.model.JpaBasicWithIdEntity;
+import com.vex.queries.jpa.model.JpaBasicEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -21,8 +21,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @BizIdPrefix(value = "cm")
-@Table(name = "chat_message")
-public class ChatMessageEntity extends JpaBasicWithIdEntity {
+@Table(name = "ai_chat_message")
+public class ChatMessageEntity extends JpaBasicEntity {
 
     /**
      * 主键
@@ -30,6 +30,9 @@ public class ChatMessageEntity extends JpaBasicWithIdEntity {
     @Id
     @BizSnowId
     private String id;
+
+    /// 租户ID（多租户隔离）
+    private String messageId;
 
     /// 租户ID（多租户隔离）
     private String tenantId;

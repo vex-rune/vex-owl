@@ -2,6 +2,8 @@
 # Vex-Owl 项目通用 .gitignore
 # ================================================
 
+/data
+
 # ================================================
 # Java / Maven 后端构建产物
 # ================================================
@@ -24,18 +26,218 @@ buildNumber.properties
 # ================================================
 # Flutter / Dart 前端构建产物
 # ================================================
-**/owl-client/**/GeneratedPluginRegistrant.*
-**/owl-client/**/Generated*.xcconfig
-**/owl-client/.dart_tool/
-**/owl-client/.packages
-**/owl-client/.flutter-plugins
-**/owl-client/.flutter-plugins-dependencies
-**/owl-client/.fvm/
-**/owl-client/build/
-**/owl-client/pubspec.lock
-**/owl-client/*.lock
+# ==============================================
+# 1. 通用杂项文件
+# ==============================================
+*.class
+*.log
+*.pyc
+*.swp
+*.lock
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
+*.tmp
+*.bak
+
+# ==============================================
+# 2. Dart & Flutter 核心文件
+# ==============================================
+# Dart工具目录（自动生成）
+.dart_tool/
+# 包引用文件（自动生成）
+.packages
+# 插件注册表（自动生成）
+.flutter-plugins
+.flutter-plugins-dependencies
+# 构建输出目录（所有平台的编译产物）
+/build/
+# 文档生成目录
+**/doc/api/
+# 生成的插件注册文件
+**/generated_plugin_registrant.dart
+# Flutter编译临时文件
+flutter_*.png
+linked_*.ds
+unlinked.ds
+unlinked_spec.ds
+# Pub缓存（本地依赖缓存）
 .pub-cache/
 .pub/
+
+# ==============================================
+# 3. Android 平台
+# ==============================================
+**/android/**/gradle-wrapper.jar
+**/android/.gradle/
+**/android/captures/
+**/android/gradlew
+**/android/gradlew.bat
+**/android/local.properties  # 本地SDK路径配置
+**/android/**/GeneratedPluginRegistrant.java
+**/android/key.properties    # 签名密钥配置（敏感！绝对不能提交）
+*.jks                         # 签名密钥文件（敏感！绝对不能提交）
+*.keystore
+
+# Flutter作为Module集成时的.android目录
+**/.android/**/gradle-wrapper.jar
+**/.android/.gradle/
+**/.android/captures/
+**/.android/gradlew
+**/.android/gradlew.bat
+**/.android/local.properties
+**/.android/**/GeneratedPluginRegistrant.java
+**/.android/key.properties
+
+# ==============================================
+# 4. iOS & macOS 平台
+# ==============================================
+**/ios/**/*.mode1v3
+**/ios/**/*.mode2v3
+**/ios/**/*.moved-aside
+**/ios/**/*.pbxuser
+**/ios/**/*.perspectivev3
+**/ios/**/*sync/
+**/ios/**/.sconsign.dblite
+**/ios/**/.tags*
+**/ios/**/.vagrant/
+**/ios/**/DerivedData/
+**/ios/**/Icon?
+**/ios/**/Pods/                # CocoaPods依赖
+**/ios/**/.symlinks/
+**/ios/**/profile
+**/ios/**/xcuserdata/          # Xcode用户配置
+**/ios/.generated/
+**/ios/Flutter/.last_build_id
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/ServiceDefinitions.json
+**/ios/Runner/GeneratedPluginRegistrant.*
+
+# macOS平台
+**/macos/Flutter/GeneratedPluginRegistrant.swift
+**/macos/Flutter/ephemeral/
+**/macos/Pods/
+**/macos/xcuserdata/
+
+# Flutter作为Module集成时的.ios目录
+**/.ios/**/*.mode1v3
+**/.ios/**/*.mode2v3
+**/.ios/**/*.moved-aside
+**/.ios/**/*.pbxuser
+**/.ios/**/*.perspectivev3
+**/.ios/**/*sync/
+**/.ios/**/.sconsign.dblite
+**/.ios/**/.tags*
+**/.ios/**/.vagrant/
+**/.ios/**/DerivedData/
+**/.ios/**/Icon?
+**/.ios/**/Pods/
+**/.ios/**/.symlinks/
+**/.ios/**/profile
+**/.ios/**/xcuserdata/
+**/.ios/.generated/
+**/.ios/Flutter/.last_build_id
+**/.ios/Flutter/App.framework
+**/.ios/Flutter/Flutter.framework
+**/.ios/Flutter/Flutter.podspec
+**/.ios/Flutter/Generated.xcconfig
+**/.ios/Flutter/flutter_export_environment.sh
+
+# ==============================================
+# 5. Windows 平台
+# ==============================================
+**/windows/flutter/generated_plugin_registrant.cc
+**/windows/flutter/generated_plugin_registrant.h
+**/windows/flutter/generated_plugins.cmake
+**/windows/CMakeLists.txt.user
+**/windows/build/
+
+# ==============================================
+# 6. Linux 平台
+# ==============================================
+**/linux/flutter/generated_plugin_registrant.cc
+**/linux/flutter/generated_plugin_registrant.h
+**/linux/flutter/generated_plugins.cmake
+**/linux/CMakeLists.txt.user
+**/linux/build/
+
+# ==============================================
+# 7. Web 平台
+# ==============================================
+**/web/keys.json
+**/web/.dart_tool/
+**/web/build/
+**/web/flutter_service_worker.js
+
+# ==============================================
+# 8. IDE 配置文件
+# ==============================================
+# IntelliJ / Android Studio
+*.iml
+*.ipr
+*.iws
+.idea/
+*.iws
+.idea_modules/
+out/
+
+# VS Code
+# .vscode/  # 建议取消注释，提交团队共享的launch.json和tasks.json
+.vscode/.history/
+.vscode/settings.json
+.vscode/extensions.json
+
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
+
+# ==============================================
+# 9. 测试与覆盖率
+# ==============================================
+coverage/
+test/.test_coverage.dart
+*.lcov
+
+# ==============================================
+# 10. 敏感配置文件（绝对不能提交！）
+# ==============================================
+# Firebase配置
+**/ios/GoogleService-Info.plist
+**/macos/GoogleService-Info.plist
+**/android/app/google-services.json
+**/windows/google-services.json
+/lib/firebase_options.dart
+
+# 环境变量与密钥
+.env
+.env.local
+.env.development
+.env.production
+config.yaml
+secrets.json
+credentials.json
+gdcredentials.json
+
+# ==============================================
+# 11. 其他
+# ==============================================
+# 符号文件
+app.*.symbols
+app.*.map
+# 崩溃日志
+crashlytics-build.properties
+# 备份文件
+*.backup
+*.bak
 
 # ================================================
 # Vite / React 前端构建产物
@@ -94,37 +296,7 @@ logs/
 # Python（如果有Python脚本）
 # ================================================
 __pycache__/
-*.py[cod]
+*.pyc
 *.pyo
-*.pyd
-.Python
-*.so
-.venv/
 venv/
-env/
-pip-log.txt
-pip-delete-this-directory.txt
-.tox/
-.coverage
-htmlcov/
-.pytest_cache/
-.mypy_cache/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# ================================================
-# 本地数据和工作空间（不提交到 git）
-# ================================================
-/data/**
-/server/data/**
-/server/config-data/**
-owl-workspace/users/*
-!owl-workspace/users/.gitkeep
-
-# Nacos 配置本地缓存
-server/data/nacos/
-server/config-data/
-docker/vex-group/data/**
-owl-docker-container/data/**
-
+.venv/

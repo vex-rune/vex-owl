@@ -22,7 +22,11 @@ public class CodeEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    private CodeId id;
+    private String id;
+
+    private String targetId;
+
+    private String type;
 
     private String code;
 
@@ -31,9 +35,4 @@ public class CodeEntity implements Serializable {
     @TimeToLive
     private Long ttl = 300L;
 
-    public CodeEntity(CodeId id, String code) {
-        this.id = id;
-        this.code = code;
-        this.ttl = 300L;
-    }
 }

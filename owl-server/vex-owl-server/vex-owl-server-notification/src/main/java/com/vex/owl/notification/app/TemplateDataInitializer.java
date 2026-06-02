@@ -101,7 +101,7 @@ public class TemplateDataInitializer implements CommandLineRunner {
                             
                             <div class="code-box">
                                 <p class="code-label">您的验证码</p>
-                                <p class="code">{code}</p>
+                                <p class="code">${code}</p>
                             </div>
                             
                             <div class="warning">
@@ -164,7 +164,7 @@ public class TemplateDataInitializer implements CommandLineRunner {
                             
                             <div class="code-box">
                                 <p class="code-label">您的验证码</p>
-                                <p class="code">{code}</p>
+                                <p class="code">${code}</p>
                             </div>
                             
                             <div class="warning">

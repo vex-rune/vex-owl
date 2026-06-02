@@ -21,7 +21,7 @@ public class EmailCodeAuthToken implements Authentication {
     private String name;
     private boolean isAuthenticated;
 
-    public EmailCodeAuthToken(String email, Supplier<String> code) {
+    public EmailCodeAuthToken(String email, String code) {
         this.name = email;
         this.principal = email;
         this.credentials = code;

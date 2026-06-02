@@ -1,10 +1,12 @@
 package com.vex.owl.user.user.auth.domain.code;
 
 import com.vex.owl.user.user.auth.domain.code.model.CodeEntity;
-import com.vex.owl.user.user.auth.domain.code.model.CodeId;
 import com.vex.owl.user.user.auth.domain.code.repo.CodeRedisRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * 验证码管理
@@ -31,9 +33,13 @@ public class CodeManager {
         }
         // 保存验证码
         codeRedisRepository.save(
-                new CodeEntity(new CodeId(email, type), code.toString())
+                new CodeEntity(getId(email, type), email, type, code.toString(), 300L)
         );
         return code.toString();
+    }
+
+    private static String getId(String email, String type) {
+        return type + ":" + email;
     }
 
     /**
@@ -45,17 +51,18 @@ public class CodeManager {
      * @return 是否有效
      */
     public boolean validateCode(String email, String type, String code) {
-        return codeRedisRepository.findByIdAndCode(
-                new CodeId(email, type),
-                code
-        ).isPresent();
+        String id = getId(email, type);
+        Optional<CodeEntity> byId = codeRedisRepository.findById(id);
+        return byId
+                .filter( c-> Objects.equals(code, c.getCode()))
+                .isPresent();
     }
 
     /**
      * 删除验证码
      */
     public void deleteCode(String email, String type) {
-        codeRedisRepository.deleteById(new CodeId(email, type));
+        codeRedisRepository.deleteById(getId(email, type));
     }
 
 }

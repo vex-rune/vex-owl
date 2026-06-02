@@ -26,7 +26,7 @@ public class EmailPasswordAuthToken implements Authentication {
     private String name;
     private boolean isAuthenticated;
 
-    public EmailPasswordAuthToken(String email, Supplier<String> password) {
+    public EmailPasswordAuthToken(String email, String password) {
         this.name = email;
         this.principal = email;
         this.credentials = password;

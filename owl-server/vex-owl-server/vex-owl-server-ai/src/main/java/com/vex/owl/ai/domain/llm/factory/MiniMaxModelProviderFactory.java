@@ -36,11 +36,7 @@ public class MiniMaxModelProviderFactory implements AbstractAiModelFactory {
      */
     @Override
     public ChatClient createClient(ModelProperties modelProperties) {
-        MiniMaxApi miniMaxApi = new MiniMaxApi(
-                modelProperties.getBaseUrl(),
-                modelProperties.getApiKey(),
-                restClientBuilder
-        );
+        MiniMaxApi miniMaxApi = new MiniMaxApi(modelProperties.getApiKey());
         MiniMaxChatOptions chatOptions = MiniMaxChatOptions
                 .builder()
                 .model(modelProperties.getModelName())

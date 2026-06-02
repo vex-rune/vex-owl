@@ -2,7 +2,7 @@ package com.vex.owl.user.user.auth.domain.login_record.entity;
 
 import com.vex.queries.jpa.id.BizIdPrefix;
 import com.vex.queries.jpa.id.BizSnowId;
-import com.vex.queries.jpa.model.JpaBasicWithIdEntity;
+import com.vex.queries.jpa.model.JpaBasicEntity;
 import jakarta.persistence.*;
 
 /**
@@ -10,9 +10,9 @@ import jakarta.persistence.*;
  * 记录用户登录行为
  */
 @Entity
-@Table(name = "auth_login_record")
+@Table(name = "user_auth_login_record")
 @BizIdPrefix(value = "LOG")
-public class LoginRecordEntity extends JpaBasicWithIdEntity {
+public class LoginRecordEntity extends JpaBasicEntity {
 
     @Id
     @BizSnowId
