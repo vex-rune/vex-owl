@@ -105,7 +105,7 @@ minimax:
     # MiniMax API 地址（默认：api.minimaxi.com，备用：api-bj.minimaxi.com）
     url: ${MINIMAX_API_URL:https://api.minimaxi.com}
     # API Key（必填），在 MiniMax 平台【账户管理 > 接口密钥】中获取
-    key: ${MINIMAX_API_KEY:}
+    key: ${MINIMAX_API_KEY2:}
     # Group ID（可选），MiniMax 需要的分组标识
     group-id: ${MINIMAX_GROUP_ID:}
 

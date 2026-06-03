@@ -2,8 +2,10 @@ package com.vex.owl.ai.infra.minimax.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.ToString;
 
 @Data
+@ToString
 public class MiniMaxTtsResponse {
 
     /**
@@ -32,6 +34,7 @@ public class MiniMaxTtsResponse {
      * 合成数据对象
      */
     @Data
+    @ToString
     public static class TtsData {
         /**
          * 音频数据，根据 output_format 参数返回：
@@ -53,6 +56,7 @@ public class MiniMaxTtsResponse {
      * 音频附加信息
      */
     @Data
+    @ToString
     public static class ExtraInfo {
         /**
          * 音频时长（毫秒）
@@ -119,6 +123,7 @@ public class MiniMaxTtsResponse {
      * 基础响应状态
      */
     @Data
+    @ToString
     public static class BaseResp {
         /**
          * 状态码
