@@ -1,0 +1,117 @@
+# ================================================
+# VEX-OWL AI 服务 - Bootstrap 配置文件
+# ================================================
+server:
+  port: 9205
+
+spring:
+  application:
+    name: ai-server
+  profiles:
+    active: dev
+  config:
+    import: optional:nacos
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connectTimeout: 10000
+            readTimeout: 30000
+    # Nacos 配置
+    nacos:
+      config:
+        enabled: true
+        import-check:
+          enabled: false
+        namespace: ${NACOS_NAMESPACE:public}
+        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:17696}
+        username: ''
+        password: ''
+        group: DEFAULT_GROUP
+        file-extension: yml
+        shared-configs:
+          - data-id: common-config.yml
+            group: COMMON_GROUP
+            refresh: true
+      discovery:
+        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:17696}
+        username: ''
+        password: ''
+        namespace: ${NACOS_NAMESPACE:public}
+        group: vex-group
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:VexOwl2026@Redis}
+      database: ${REDIS_DATABASE:0}
+      timeout: 5000
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: -1
+  datasource:
+    url: jdbc:postgresql://localhost:10864/vex_owl
+    username: vex_user
+    password: vex_password
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: false
+
+logging:
+  level:
+    root: INFO
+    org.springframework.ai.chat.client: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} %5p %-40.40logger{39} : %m%n"
+  file:
+    enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+# ================================================
+# MiniMax API 配置
+# ================================================
+# TTS 文档：https://platform.minimaxi.com/docs/api-reference/speech-t2a-http
+# 图像生成文档：https://platform.minimaxi.com/docs/api-reference/image-generation-t2i
+# 音乐生成文档：https://platform.minimaxi.com/docs/api-reference/music-generation
+minimax:
+  api:
+    # MiniMax API 地址（默认：api.minimaxi.com，备用：api-bj.minimaxi.com）
+    url: ${MINIMAX_API_URL:https://api.minimaxi.com}
+    # API Key（必填），在 MiniMax 平台【账户管理 > 接口密钥】中获取
+    key: ${MINIMAX_API_KEY2:}
+    # Group ID（可选），MiniMax 需要的分组标识
+    group-id: ${MINIMAX_GROUP_ID:}
+
+vex:
+  free-model-properties:
+    providerCode: minimax
+    apiKey: ${MINIMAX_API_KEY:}
+    modelName: MiniMax-M2.7
+    baseUrl:

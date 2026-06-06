@@ -1,0 +1,29 @@
+services:
+  nacos:
+    image: nacos/nacos-server:v3.0.3
+    container_name: vex-owl-nacos
+    restart: unless-stopped
+    ports:
+      - "17696:8080"
+      - "18696:9848"
+      - "18698:9849"
+      - "15696:7848"
+    environment:
+      # 核心：完全关闭鉴权 + 补全所有强制必填的环境变量
+      - MODE=standalone
+      - NACOS_AUTH_ENABLE=false
+      - NACOS_AUTH_TOKEN=TmFjb3NTZWNyZXRLZXkxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ=
+      - NACOS_AUTH_IDENTITY_KEY=identity-key
+      - NACOS_AUTH_IDENTITY_VALUE=identity-value
+      - JVM_XMS=512m
+      - JVM_XMX=512m
+      - JVM_XMN=256m
+    volumes:
+      - ../../data/nacos/data:/home/nacos/data
+      - ../../data/nacos/logs:/home/nacos/logs
+    networks:
+      - vex-owl-network
+
+networks:
+  vex-owl-network:
+    driver: bridge

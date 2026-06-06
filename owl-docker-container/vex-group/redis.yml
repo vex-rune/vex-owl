@@ -1,0 +1,59 @@
+# ================================================
+# Vex-Owl Redis 缓存服务
+# ================================================
+# 启动命令: docker-compose -f redis.yml up -d
+# 停止命令: docker-compose -f redis.yml down
+# 访问地址: localhost:12758
+# 密码: VexOwl2026@Redis
+# ================================================
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7.2.4
+    container_name: vex-owl-redis
+    restart: unless-stopped
+    ports:
+      - "12758:6379"
+    environment:
+      # 时区配置
+      TZ: Asia/Shanghai
+
+      # Redis 访问密码
+      REDIS_PASSWORD: VexOwl2026@Redis
+
+    volumes:
+      - ../../data/redis/data:/data
+
+    networks:
+      - vex-owl-network
+
+    # Redis 服务器启动命令及参数
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 256mb
+      --requirepass VexOwl2026@Redis
+      --save 900 1
+      --save 300 10
+      --save 60 10000
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "VexOwl2026@Redis", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+networks:
+  vex-owl-network:
+    driver: bridge

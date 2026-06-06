@@ -1,0 +1,113 @@
+# ================================================
+# VEX-OWL 认证服务 - Bootstrap 配置文件
+# ================================================
+vex:
+  jwt:
+    secret: ${JWT_SECRET:vex-owl-jwt-secret-key-dev-only-not-for-production-2024}
+    expiration: 86400000
+    header: Authorization
+    prefix: "Bearer "
+
+server:
+  port: 9202
+
+spring:
+  application:
+    name: user-server
+  profiles:
+    active: dev
+  config:
+    import: optional:nacos
+  cloud:
+    nacos:
+      config:
+        enabled: true
+        import-check:
+          enabled: false
+        namespace: ${NACOS_NAMESPACE:public}
+        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:17696}
+        username: ''
+        password: ''
+        group: DEFAULT_GROUP
+        file-extension: yml
+        shared-configs:
+          - data-id: common-config.yml
+            group: COMMON_GROUP
+            refresh: true
+      discovery:
+        server-addr: ${NACOS_SERVER_ADDR:127.0.0.1:17696}
+        username: ''
+        password: ''
+        namespace: ${NACOS_NAMESPACE:public}
+        group: vex-group
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:12758}
+      password: ${REDIS_PASSWORD:VexOwl2026@Redis}
+      database: ${REDIS_DATABASE:0}
+      timeout: 5000
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: -1
+  datasource:
+    url: jdbc:postgresql://localhost:10864/vex_owl
+    username: vex_user
+    password: vex_password
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        validator:
+          apply_to_ddl: false
+
+logging:
+  level:
+    root: info
+    com.vex.owl.notification: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} %5p %-40.40logger{39} : %m%n"
+  file:
+    enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+    env:
+      show-values: ALWAYS
+    configprops:
+      show-values: ALWAYS
+  health:
+    discovery:
+      enabled: true
+  tracing:
+    enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5, 0.9, 0.95, 0.99
+
+spring.cloud.config.bootstrap: true
