@@ -221,4 +221,24 @@ class MiniMaxServiceTest {
         // 如果有失败，测试不算完全通过
         assertEquals(0, failCount, "部分语音文件生成失败");
     }
+
+    @Test
+    void textToSpeechUrl() {
+        if (apiKey == null || apiKey.isBlank()) {
+            System.out.println("警告: 未设置 MINIMAX_API_KEY 环境变量，跳过测试");
+            return;
+        }
+
+        String url = miniMaxService.textToSpeechUrl(
+                "你好，这是一个返回URL的语音合成测试。",
+                "female-shaonv",
+                "mp3",
+                apiKey,
+                Map.of("tenantId", "test-tenant", "sessionId", "test-url")
+        );
+
+        System.out.println("语音文件 URL: " + url);
+        assertNotNull(url, "URL 不应为空");
+        assertTrue(url.startsWith("http"), "URL 应以 http 开头");
+    }
 }

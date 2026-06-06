@@ -1,6 +1,5 @@
 package com.vex.owl.ai.infra.minimax.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vex.owl.ai.domain.event.AiContextMetadata;
 import com.vex.owl.ai.domain.event.ImageUsageEvent;
 import com.vex.owl.ai.domain.event.MusicUsageEvent;
@@ -204,6 +203,51 @@ public class MiniMaxService {
             publishTtsUsageEvent(request, response, context);
         }
         return HexFormat.of().parseHex(audioHex);
+    }
+
+    /**
+     * 将文本转换为语音（返回 URL）
+     *
+     * <p>使用默认配置将文本转换为语音，返回音频文件的下载地址（有效期 24 小时）</p>
+     *
+     * @param text    要转换的文本内容
+     * @param voiceId 音色ID
+     * @param format  音频格式（mp3/wav/flac）
+     * @param apiKey  apiKey
+     * @param context 上下文信息（可选）
+     * @return 音频文件的 URL
+     */
+    public String textToSpeechUrl(String text, String voiceId, String format,
+                                  String apiKey, Map<String, Object> context) {
+        String audioFormat = (format == null || format.isBlank()) ? "mp3" : format;
+        String voice = (voiceId == null || voiceId.isBlank()) ? "female-shaonv" : voiceId;
+        String speechText = (text == null || text.isBlank()) ? "语音合成" : text;
+
+        MiniMaxTtsRequest request = MiniMaxTtsRequest.builder()
+                .model("speech-2.8-hd")
+                .text(speechText)
+                .stream(false)
+                .outputFormat("url")
+                .voiceSetting(MiniMaxTtsRequest.VoiceSetting.builder()
+                        .voiceId(voice).speed(1).vol(1).pitch(0).emotion("happy").build())
+                .audioSetting(MiniMaxTtsRequest.AudioSetting.builder()
+                        .sampleRate(32000).bitrate(128000).format(audioFormat).channel(1).build())
+                .subtitleEnable(false)
+                .build();
+
+        String authorization = "Bearer " + apiKey;
+        validateTtsRequest(request);
+
+        MiniMaxTtsResponse response = minimaxClient.textToSpeech(authorization, request);
+        if (!response.isSuccess()) {
+            throw new MiniMaxException("TTS 失败: " + response);
+        }
+
+        String audioUrl = response.getData().getAudio();
+        if (context != null) {
+            publishTtsUsageEvent(request, response, context);
+        }
+        return audioUrl;
     }
 
     // ==================== 文生图 ====================
