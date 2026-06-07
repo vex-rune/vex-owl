@@ -1,6 +1,6 @@
 package com.vex.owl.ai.domain.llm.factory;
 
-import com.vex.owl.ai.domain.event.TokenUsageListenerAdvisor;
+import com.vex.owl.ai.app.TokenUsageListenerAdvisor;
 import com.vex.owl.ai.domain.llm.repo.ModelProperties;
 import lombok.AllArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;

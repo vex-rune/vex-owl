@@ -1,6 +1,6 @@
 package com.vex.owl.ai.domain.tools.config;
 
-import com.vex.owl.ai.domain.event.ToolCallingListener;
+import com.vex.owl.ai.app.ToolCallingListener;
 import io.micrometer.observation.ObservationRegistry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.advisor.ToolCallAdvisor;

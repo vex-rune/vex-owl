@@ -1,7 +1,7 @@
-package com.vex.owl.ai.domain.event;
+package com.vex.owl.ai.app;
 
-import com.vex.owl.ai.domain.context.DefaultRunContext;
 import com.vex.owl.ai.domain.context.RunContext;
+import com.vex.owl.ai.domain.event.TokenUsageEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClientRequest;
@@ -21,10 +21,25 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * Token 使用量监听器
+ *
+ * <p>监听 AI 调用的 Token 使用量，发送 TokenUsageEvent</p>
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class TokenUsageListenerAdvisor implements CallAdvisor, StreamAdvisor {
+
+    /** Advisor 名称 */
+    public static final String NAME = "TokenUsageListenerAdvisor";
+    
+    /** Advisor 顺序 */
+    public static final int ORDER = 2;
+    
+    /** 魔法值 */
+    private static final String FINISH_REASON_STOP = "STOP";
+    private static final String FINISH_INFO_STREAM_COMPLETED = "stream completed";
 
     private final ApplicationEventPublisher publisher;
 
@@ -38,11 +53,9 @@ public class TokenUsageListenerAdvisor implements CallAdvisor, StreamAdvisor {
         ChatResponseMetadata metadata = chatResponse.getMetadata();
         Usage usage = metadata.getUsage();
 
-        log.info("finishReason:{}", chatResponse.getResult().getMetadata().getFinishReason().toString());
+        RunContext runContext = RunContext.fromMap(context);
 
-        RunContext runContext = DefaultRunContext.fromMap(context);
-
-        if ("STOP".equals(chatResponse.getResult().getMetadata().getFinishReason().toString())) {
+        if (FINISH_REASON_STOP.equals(chatResponse.getResult().getMetadata().getFinishReason())) {
             TokenUsageEvent event = TokenUsageEvent.builder()
                     .tenantId(runContext.getTenantId())
                     .sessionId(runContext.getSessionId())
@@ -61,19 +74,18 @@ public class TokenUsageListenerAdvisor implements CallAdvisor, StreamAdvisor {
 
     @Override
     public String getName() {
-        return TokenUsageListenerAdvisor.class.getName();
+        return NAME;
     }
 
     @Override
     public int getOrder() {
-        return 2;
+        return ORDER;
     }
 
     public Flux<ChatClientResponse> adviseStream(
             ChatClientRequest chatClientRequest,
             StreamAdvisorChain streamAdvisorChain
     ) {
-        Map<String, Object> context = chatClientRequest.context();
 
         AtomicInteger promptTokens = new AtomicInteger(0);
         AtomicInteger completionTokens = new AtomicInteger(0);
@@ -100,13 +112,16 @@ public class TokenUsageListenerAdvisor implements CallAdvisor, StreamAdvisor {
                 }
             }
         }).doOnComplete(() -> {
-            String finishInfo = "stream completed";
-            log.info("finishReason:{}", finishInfo);
+            log.info("finishReason:{}", FINISH_INFO_STREAM_COMPLETED);
+
+
+            Map<String, Object> context = chatClientRequest.context();
+            RunContext runContext = RunContext.fromMap(context);
 
             TokenUsageEvent event = TokenUsageEvent.builder()
-                    .tenantId(getString(context, "tenantId"))
-                    .sessionId(getString(context, "sessionId"))
-                    .provider(getString(context, "provider"))
+                    .tenantId(runContext.getTenantId())
+                    .sessionId(runContext.getSessionId())
+                    .provider(runContext.getProvider())
                     .modelName(modelName.get())
                     .promptTokens(promptTokens.get())
                     .completionTokens(completionTokens.get())

@@ -1,9 +1,14 @@
 package com.vex.owl.ai.app.chat;
 
+import com.vex.owl.ai.domain.agent.*;
 import com.vex.owl.ai.domain.chat.ChatManager;
 import com.vex.owl.ai.domain.chat.ChatMessageMemory;
 import com.vex.owl.ai.domain.chat.ChatSessionEntity;
+import com.vex.owl.ai.domain.context.ContextAdvisor;
+import com.vex.owl.ai.domain.context.DefaultRunContext;
+import com.vex.owl.ai.domain.context.RunContext;
 import com.vex.owl.ai.domain.llm.factory.ModelProductFactory;
+import com.vex.owl.ai.domain.pipeline.SequentialPipeline;
 import com.vex.owl.ai.domain.tools.ToolServer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
@@ -26,6 +31,7 @@ public class ChatApp {
     private final ToolServer toolServer;
     private final ChatMessageMemory chatMessageMemory;
     private final ChatManager chatManager;
+    private final ContextAdvisor contextAdvisor;
 
     /**
      * 免费对话
@@ -86,5 +92,30 @@ public class ChatApp {
                         """)
                 .stream()
                 .content();
+    }
+
+    /**
+     * 顺序管道编排 (SSE 流式输出)
+     *
+     * <p>LLM 动态规划执行顺序，然后按顺序执行每个 Agent，逐步输出结果</p>
+     */
+    public Flux<String> pipeline(String tenantId, String prompt) {
+        ChatClient client = modelProductFactory.getFactory(modelProperties.getProviderCode())
+                .createClient(modelProperties);
+
+        Agent orchestratorAgent = SimplAgent.builder()
+                .client(client)
+                .advisorSpecConsumer(spec -> spec.advisors(contextAdvisor))
+                .build();
+
+        AgentManager agentManager = new DefaultAgentManager(List.of(orchestratorAgent));
+
+        SequentialPipeline pipeline = SequentialPipeline.builder()
+                .client(client)
+                .agentManager(agentManager)
+                .build();
+
+        RunContext context = DefaultRunContext.of("pipeline", tenantId);
+        return pipeline.stream(prompt, context);
     }
 }

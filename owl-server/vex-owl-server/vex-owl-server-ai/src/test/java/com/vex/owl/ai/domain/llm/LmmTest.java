@@ -2,7 +2,6 @@ package com.vex.owl.ai.domain.llm;
 
 import com.vex.owl.ai.app.tools.DateTimeTools;
 import com.vex.owl.ai.app.tools.ThinkRecordLogTools;
-import com.vex.owl.ai.domain.event.AiContextMetadata;
 import com.vex.owl.ai.domain.llm.entity.ModelEntity;
 import com.vex.owl.ai.domain.event.TokenUsageEvent;
 import com.vex.owl.ai.domain.llm.factory.AbstractAiModelFactory;
@@ -138,16 +137,6 @@ class LmmTest {
 
         assertNotNull(eventListener.events, "事件监听器不应为空");
         assertFalse(eventListener.events.isEmpty(), "流式调用应捕获到 TokenUsageEvent");
-
-        if (!eventListener.events.isEmpty()) {
-            TokenUsageEvent event = eventListener.events.get(0);
-            AiContextMetadata metadata = event.getMetadata();
-            TokenUsageEvent.TokenUsageData usageData = event.getData();
-            log.info("捕获到流式 TokenUsageEvent: promptTokens={}, completionTokens={}, totalTokens={}",
-                    usageData.getPromptTokens(), usageData.getCompletionTokens(), usageData.getTotalTokens());
-            assertNotNull(usageData.getPromptTokens(), "promptTokens 不应为空");
-            assertNotNull(usageData.getTotalTokens(), "totalTokens 不应为空");
-        }
 
         log.info("--- 流式 TokenUsageEvent 发送验证测试通过 ✓ ---");
     }

@@ -1,11 +1,12 @@
-package com.vex.owl.ai.domain.event;
+package com.vex.owl.ai.app;
 
 import com.vex.owl.ai.domain.context.DefaultRunContext;
 import com.vex.owl.ai.domain.context.RunContext;
+import com.vex.owl.ai.domain.event.ToolCallRequestEvent;
+import com.vex.owl.ai.domain.event.ToolCallResultEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.messages.AssistantMessage;
-import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.MessageType;
 import org.springframework.ai.chat.messages.ToolResponseMessage;
 import org.springframework.ai.chat.model.ChatResponse;
@@ -77,9 +78,7 @@ public class ToolCallingListener implements ToolCallingManager {
                 .findFirst();
 
         if (optional.isPresent()) {
-
-            RunContext runContext = DefaultRunContext.fromMap(context);
-
+            RunContext runContext = RunContext.fromMap(context);
             ToolCallResultEvent event = new ToolCallResultEvent(
                     runContext.getTenantId(),
                     runContext.getSessionId(),

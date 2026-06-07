@@ -1,5 +1,6 @@
 package com.vex.owl.ai.domain.context;
 
+import lombok.Builder;
 import lombok.Getter;
 
 import java.util.HashMap;
@@ -9,136 +10,124 @@ import java.util.UUID;
 /**
  * 默认 AI 上下文实现
  *
- * <p>不可变对象，使用 withXxx 方法返回新实例</p>
+ * <p>可变对象，使用 withXxx 方法在原实例上修改并返回 this（链式调用）</p>
  */
 @Getter
-public class DefaultAIContext implements AIContext {
+public class DefaultRunContext implements RunContext {
 
     // === 基础 ===
     private final String id;
-    private final String method;
-    private final String path;
 
     // === 头部/参数 ===
-    private final Map<String, String> headers;
-    private final Map<String, String> params;
+    private Map<String, String> headers;
+    private Map<String, String> params;
 
     // === 目标 ===
-    private final String tenantId;
-    private final String sessionId;
+    private String method;
+    private String tenantId;
+    private String sessionId;
 
     // === 模型配置 ===
-    private final String provider;
-    private final String modelName;
+    private String provider;
+    private String modelName;
 
     // === 执行状态 ===
-    private final int step;
+    private int step;
     private final long startTime;
-    private final String previousResult;
+    private String previousResult;
 
-    /**
-     * 私有构造函数
-     */
-    private DefaultAIContext(String id, String method, String path,
-                            Map<String, String> headers, Map<String, String> params,
-                            String tenantId, String sessionId,
-                            String provider, String modelName,
-                            int step, long startTime, String previousResult) {
-        this.id = id;
+    // === 元素 ===
+    private final Map<String, Object> attributes = new HashMap<>();
+
+    @Builder
+    private DefaultRunContext(String id, String method,
+                             Map<String, String> headers, Map<String, String> params,
+                             String tenantId, String sessionId,
+                             String provider, String modelName,
+                             int step, long startTime, String previousResult) {
+        this.id = id != null ? id : UUID.randomUUID().toString();
         this.method = method;
-        this.path = path;
-        this.headers = headers;
-        this.params = params;
+        this.headers = headers != null ? new HashMap<>(headers) : new HashMap<>();
+        this.params = params != null ? new HashMap<>(params) : new HashMap<>();
         this.tenantId = tenantId;
         this.sessionId = sessionId;
         this.provider = provider;
         this.modelName = modelName;
-        this.step = step;
-        this.startTime = startTime;
+        this.step = step > 0 ? step : 1;
+        this.startTime = startTime > 0 ? startTime : System.currentTimeMillis();
         this.previousResult = previousResult;
     }
 
     /**
      * 创建默认上下文
      */
-    public static DefaultAIContext of(String method, String path, String tenantId) {
-        return new DefaultAIContext(
-            UUID.randomUUID().toString(),
-            method, path,
-            Map.of(), Map.of(),
-            tenantId, null,
-            null, null,
-            1, System.currentTimeMillis(), null
+    public static DefaultRunContext of(String method, String tenantId) {
+        return new DefaultRunContext(
+                UUID.randomUUID().toString(),
+                method,
+                Map.of(), Map.of(),
+                tenantId, null,
+                null, null,
+                1, System.currentTimeMillis(), null
         );
     }
 
     /**
      * 创建默认上下文 (带模型)
      */
-    public static DefaultAIContext of(String method, String path, String tenantId,
-                                     String provider, String modelName) {
-        return new DefaultAIContext(
-            UUID.randomUUID().toString(),
-            method, path,
-            Map.of(), Map.of(),
-            tenantId, null,
-            provider, modelName,
-            1, System.currentTimeMillis(), null
+    public static DefaultRunContext of(String method, String tenantId,
+                                       String provider, String modelName) {
+        return new DefaultRunContext(
+                UUID.randomUUID().toString(),
+                method,
+                Map.of(), Map.of(),
+                tenantId, null,
+                provider, modelName,
+                1, System.currentTimeMillis(), null
         );
     }
 
-    // === 变更方法 ===
+    // === 变更方法（原地修改，返回 this） ===
 
     @Override
-    public AIContext withStep(int step) {
-        return new DefaultAIContext(id, method, path, headers, params,
-            tenantId, sessionId, provider, modelName,
-            step, startTime, previousResult);
+    public DefaultRunContext withStep(int step) {
+        this.step = step;
+        return this;
     }
 
     @Override
-    public AIContext withResult(String result) {
-        return new DefaultAIContext(id, method, path, headers, params,
-            tenantId, sessionId, provider, modelName,
-            step, startTime, result);
+    public DefaultRunContext withResult(String result) {
+        this.previousResult = result;
+        return this;
     }
 
     @Override
-    public AIContext withSessionId(String sessionId) {
-        return new DefaultAIContext(id, method, path, headers, params,
-            tenantId, sessionId, provider, modelName,
-            step, startTime, previousResult);
+    public DefaultRunContext withSessionId(String sessionId) {
+        this.sessionId = sessionId;
+        return this;
     }
 
     @Override
-    public AIContext withMethod(String method) {
-        return new DefaultAIContext(id, method, path, headers, params,
-            tenantId, sessionId, provider, modelName,
-            step, startTime, previousResult);
+    public DefaultRunContext withMethod(String method) {
+        this.method = method;
+        return this;
     }
 
     @Override
-    public AIContext withPath(String path) {
-        return new DefaultAIContext(id, method, path, headers, params,
-            tenantId, sessionId, provider, modelName,
-            step, startTime, previousResult);
+    public DefaultRunContext withHeader(String key, String value) {
+        this.headers.put(key, value);
+        return this;
     }
 
     @Override
-    public AIContext withHeader(String key, String value) {
-        Map<String, String> newHeaders = new HashMap<>(headers);
-        newHeaders.put(key, value);
-        return new DefaultAIContext(id, method, path, newHeaders, params,
-            tenantId, sessionId, provider, modelName,
-            step, startTime, previousResult);
+    public DefaultRunContext withParam(String key, String value) {
+        this.params.put(key, value);
+        return this;
     }
 
     @Override
-    public AIContext withParam(String key, String value) {
-        Map<String, String> newParams = new HashMap<>(params);
-        newParams.put(key, value);
-        return new DefaultAIContext(id, method, path, headers, newParams,
-            tenantId, sessionId, provider, modelName,
-            step, startTime, previousResult);
+    public DefaultRunContext withAttribute(String key, Object value) {
+        this.attributes.put(key, value);
+        return this;
     }
 }

@@ -31,20 +31,21 @@ public class UsageRecordManager {
             return;
         }
 
-        VoiceUsageEvent.VoiceUsageData data = event.getVoiceUsageData();
-        if (data == null) {
-            log.warn("VoiceUsageEvent 数据为空，跳过统计");
-            return;
-        }
-
-        UsageRecordEntity record = getOrCreateRecord(
-                event.getTenantId(), LocalDate.now(), "VOICE",
-                event.getModelName());
+        UsageRecordEntity record = usageRecordRepository
+                .findByTenantIdAndStatDateAndUsageType(event.getTenantId(), LocalDate.now(), "VOICE")
+                .orElseGet(() -> {
+                    UsageRecordEntity newRecord = new UsageRecordEntity();
+                    newRecord.setTenantId(event.getTenantId());
+                    newRecord.setStatDate(LocalDate.now());
+                    newRecord.setUsageType("VOICE");
+                    newRecord.setModelName(event.getModelName());
+                    return newRecord;
+                });
 
         record.addVoiceUsage(
-                data.getInputChars() != null ? data.getInputChars().longValue() : 0L,
-                data.getOutputDuration() != null ? data.getOutputDuration().longValue() : 0L,
-                data.getOutputSize() != null ? data.getOutputSize().longValue() : 0L);
+                event.getInputChars() != null ? event.getInputChars().longValue() : 0L,
+                event.getOutputDuration() != null ? event.getOutputDuration().longValue() : 0L,
+                event.getOutputSize() != null ? event.getOutputSize().longValue() : 0L);
 
         usageRecordRepository.save(record);
         log.debug("VOICE 使用量统计已更新，租户={}", event.getTenantId());
@@ -59,9 +60,16 @@ public class UsageRecordManager {
             return;
         }
 
-        UsageRecordEntity record = getOrCreateRecord(
-                event.getTenantId(), LocalDate.now(), "IMAGE",
-                event.getModelName());
+        UsageRecordEntity record = usageRecordRepository
+                .findByTenantIdAndStatDateAndUsageType(event.getTenantId(), LocalDate.now(), "IMAGE")
+                .orElseGet(() -> {
+                    UsageRecordEntity newRecord = new UsageRecordEntity();
+                    newRecord.setTenantId(event.getTenantId());
+                    newRecord.setStatDate(LocalDate.now());
+                    newRecord.setUsageType("IMAGE");
+                    newRecord.setModelName(event.getModelName());
+                    return newRecord;
+                });
 
         record.addImageUsage(
                 event.getInputChars() != null ? event.getInputChars().longValue() : 0L,
@@ -82,20 +90,21 @@ public class UsageRecordManager {
             return;
         }
 
-        MusicUsageEvent.MusicUsageData data = event.getMusicUsageData();
-        if (data == null) {
-            log.warn("MusicUsageEvent 数据为空，跳过统计");
-            return;
-        }
-
-        UsageRecordEntity record = getOrCreateRecord(
-                event.getTenantId(), LocalDate.now(), "MUSIC",
-                event.getModelName());
+        UsageRecordEntity record = usageRecordRepository
+                .findByTenantIdAndStatDateAndUsageType(event.getTenantId(), LocalDate.now(), "MUSIC")
+                .orElseGet(() -> {
+                    UsageRecordEntity newRecord = new UsageRecordEntity();
+                    newRecord.setTenantId(event.getTenantId());
+                    newRecord.setStatDate(LocalDate.now());
+                    newRecord.setUsageType("MUSIC");
+                    newRecord.setModelName(event.getModelName());
+                    return newRecord;
+                });
 
         record.addMusicUsage(
-                data.getInputChars() != null ? data.getInputChars().longValue() : 0L,
-                data.getOutputDuration() != null ? data.getOutputDuration().longValue() : 0L,
-                data.getOutputSize() != null ? data.getOutputSize().longValue() : 0L);
+                event.getInputChars() != null ? event.getInputChars().longValue() : 0L,
+                event.getOutputDuration() != null ? event.getOutputDuration().longValue() : 0L,
+                event.getOutputSize() != null ? event.getOutputSize().longValue() : 0L);
 
         usageRecordRepository.save(record);
         log.debug("MUSIC 使用量统计已更新，租户={}", event.getTenantId());
@@ -110,27 +119,24 @@ public class UsageRecordManager {
             return;
         }
 
-        UsageRecordEntity record = getOrCreateRecord(
-                event.getTenantId(), LocalDate.now(), "CHAT",
-                event.getModelName());
+        UsageRecordEntity record = usageRecordRepository
+                .findByTenantIdAndStatDateAndUsageType(event.getTenantId(), LocalDate.now(), "CHAT")
+                .orElseGet(() -> {
+                    UsageRecordEntity newRecord = new UsageRecordEntity();
+                    newRecord.setTenantId(event.getTenantId());
+                    newRecord.setStatDate(LocalDate.now());
+                    newRecord.setUsageType("CHAT");
+                    newRecord.setModelName(event.getModelName());
+                    return newRecord;
+                });
 
-        record.addChatTokens(
+        record.addChatUsage(
                 event.getPromptTokens() != null ? event.getPromptTokens().longValue() : 0L,
-                event.getCompletionTokens() != null ? event.getCompletionTokens().longValue() : 0L);
+                event.getCompletionTokens() != null ? event.getCompletionTokens().longValue() : 0L,
+                event.getTotalTokens() != null ? event.getTotalTokens().longValue() : 0L
+        );
 
         usageRecordRepository.save(record);
         log.debug("CHAT Token 统计已更新，租户={}", event.getTenantId());
-    }
-
-    private UsageRecordEntity getOrCreateRecord(String tenantId, LocalDate date, String type, String model) {
-        return usageRecordRepository.findByTenantIdAndStatDateAndAiTypeAndModel(tenantId, date, type, model)
-                .orElseGet(() -> {
-                    UsageRecordEntity newRecord = new UsageRecordEntity();
-                    newRecord.setTenantId(tenantId);
-                    newRecord.setStatDate(date);
-                    newRecord.setAiType(type);
-                    newRecord.setModel(model);
-                    return newRecord;
-                });
     }
 }

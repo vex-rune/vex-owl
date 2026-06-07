@@ -8,6 +8,7 @@ import com.vex.owl.ai.domain.chat.ChatManager;
 import com.vex.owl.ai.domain.chat.ChatMessageEntity;
 import com.vex.owl.ai.domain.chat.ChatSessionEntity;
 import com.vex.security.auth.AuthHeaderConstants;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -46,5 +47,16 @@ public class ChatApi {
             @PathVariable String sessionId) {
         List<ChatMessageEntity> messages = chatManager.getMessagesAsc(sessionId);
         return ApiResponse.success(messages);
+    }
+
+    /**
+     * 顺序管道编排 (SSE 流式输出)
+     */
+    @PostMapping(value = "/pipeline", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<String> pipeline(
+            @RequestHeader(AuthHeaderConstants.HEADER_USER_ID) String userId,
+            @RequestBody @Valid PipelineRequest request) {
+        return chatApp.pipeline(userId, request.getPrompt())
+                .onErrorResume(e -> Flux.just("系统错误：" + e.getMessage()));
     }
 }
