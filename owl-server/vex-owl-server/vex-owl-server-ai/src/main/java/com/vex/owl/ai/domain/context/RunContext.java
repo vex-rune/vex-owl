@@ -4,9 +4,9 @@ import java.util.Map;
 
 /**
  * AI 公共上下文接口
- * 
+ *
  * <p>参考 Spring ServerHttpRequest 设计风格，统一贯穿整个请求生命周期</p>
- * 
+ *
  * <p>设计原则：</p>
  * <ul>
  *   <li>只读方法获取信息，变更方法返回新实例（不可变）</li>
@@ -21,70 +21,65 @@ public interface AIContext {
     /**
      * 唯一标识 (traceId)
      */
-    String id();
+    String getId();
     
     /**
      * 方法: chat / plan / orchestrate
      */
-    String method();
-    
-    /**
-     * 路径: /ai/chat / /ai/plan / ...
-     */
-    String path();
-    
+    String getMethod();
+
     // ==================== 头部/参数 ====================
     
     /**
      * 请求头
      */
-    Map<String, String> headers();
+    Map<String, String> getHeaders();
     
     /**
      * 查询参数
      */
-    Map<String, String> params();
+    Map<String, String> getParams();
     
     // ==================== 目标信息 ====================
     
     /**
      * 租户ID
      */
-    String tenantId();
+    String getTenantId();
     
     /**
      * 会话ID
      */
-    String sessionId();
+    String getSessionId();
     
     // ==================== 模型配置 ====================
     
     /**
      * 模型提供商
      */
-    String provider();
+    String getProvider();
     
     /**
      * 模型名称
      */
-    String modelName();
+    String getModelName();
     
     // ==================== 执行状态 ====================
     
     /**
      * 当前步骤
      */
-    int step();
+    int getStep();
     
     /**
      * 开始时间 (毫秒)
      */
-    long startMs();
+    long getStartTime();
     
     /**
      * 上一步结果 (Pipeline 传递)
      */
-    String previousResult();
+    String getPreviousResult();
     
     // ==================== 变更方法 ====================
     
@@ -98,26 +93,37 @@ public interface AIContext {
      */
     AIContext withResult(String result);
     
+    /**
+     * 设置会话ID
+     */
+    AIContext withSessionId(String sessionId);
+    
+    /**
+     * 设置方法
+     */
+    AIContext withMethod(String method);
+    
+    /**
+     * 设置路径
+     */
+    AIContext withPath(String path);
+    
+    /**
+     * 添加请求头
+     */
+    AIContext withHeader(String key, String value);
+    
+    /**
+     * 添加查询参数
+     */
+    AIContext withParam(String key, String value);
+    
     // ==================== 便捷方法 ====================
     
     /**
-     * 获取执行耗时 (毫秒)
+     * 获取经过的毫秒数
      */
     default long elapsedMs() {
-        return System.currentTimeMillis() - startMs();
-    }
-    
-    /**
-     * 获取请求头
-     */
-    default String header(String key) {
-        return headers() != null ? headers().get(key) : null;
-    }
-    
-    /**
-     * 获取查询参数
-     */
-    default String param(String key) {
-        return params() != null ? params().get(key) : null;
+        return System.currentTimeMillis() - getStartTime();
     }
 }

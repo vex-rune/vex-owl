@@ -1,5 +1,7 @@
 package com.vex.owl.ai.domain.event;
 
+import com.vex.owl.ai.domain.context.DefaultRunContext;
+import com.vex.owl.ai.domain.context.RunContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.messages.AssistantMessage;
@@ -10,8 +12,8 @@ import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.model.tool.ToolCallingChatOptions;
 import org.springframework.ai.model.tool.ToolCallingManager;
-import org.springframework.ai.model.tool.ToolDefinition;
 import org.springframework.ai.model.tool.ToolExecutionResult;
+import org.springframework.ai.tool.definition.ToolDefinition;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
@@ -63,20 +65,26 @@ public class ToolCallingListener implements ToolCallingManager {
         ToolExecutionResult result = toolCallingManager.executeToolCalls(prompt, chatResponse);
 
         // 发布工具调用结果事件
-        List<ToolResponseMessage> responses = result.conversationHistory().stream()
-                .filter(m -> MessageType.TOOL_RESPONSE.equals(m.getMessageType()))
+        Optional<ToolResponseMessage.ToolResponse> optional = result.conversationHistory().stream()
+                .filter(m -> MessageType.TOOL.equals(m.getMessageType()))
                 .map(m -> (ToolResponseMessage) m)
                 .filter(m -> assistantMessage.getToolCalls().stream()
                         .map(AssistantMessage.ToolCall::id)
-                        .toList().contains(m.getId()))
-                .toList();
+                        .anyMatch(id -> m.getResponses().stream().anyMatch(r -> Objects.equals(id, r.id()))))
+                .map(m -> m.getResponses().stream().findFirst())
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst();
 
-        for (ToolResponseMessage response : responses) {
+        if (optional.isPresent()) {
+
+            RunContext runContext = DefaultRunContext.fromMap(context);
+
             ToolCallResultEvent event = new ToolCallResultEvent(
-                    getString(context, "tenantId"),
-                    getString(context, "sessionId"),
+                    runContext.getTenantId(),
+                    runContext.getSessionId(),
                     ToolCallRequestEvent.EventType.AFTER_EXECUTE,
-                    response);
+                    optional.get());
             publisher.publishEvent(event);
         }
 
