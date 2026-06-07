@@ -33,6 +33,7 @@ public class CodeEntity implements Serializable {
     // 过期时间：单位 秒
     // 这里 = 5分钟过期
     @TimeToLive
+    @Builder.Default
     private Long ttl = 300L;
 
 }

@@ -3,13 +3,11 @@ package com.vex.owl.ai.app.chat;
 import com.vex.owl.ai.domain.chat.ChatManager;
 import com.vex.owl.ai.domain.chat.ChatMessageMemory;
 import com.vex.owl.ai.domain.chat.ChatSessionEntity;
-import com.vex.owl.ai.domain.event.AiContextMetadata;
 import com.vex.owl.ai.domain.llm.factory.ModelProductFactory;
 import com.vex.owl.ai.domain.tools.ToolServer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
-import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -23,44 +21,41 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 public class ChatApp {
 
-    ///  免费模型配置
     private final FreeModelPropertiesConfig modelProperties;
     private final ModelProductFactory modelProductFactory;
     private final ToolServer toolServer;
     private final ChatMessageMemory chatMessageMemory;
     private final ChatManager chatManager;
 
-    /// 免费的对话
+    /**
+     * 免费对话
+     */
     public Flux<String> chat(String tenantId, String prompt) {
-        // 0. 得到会话
+        // 1. 获取会话
         ChatSessionEntity session = chatManager.getSession("free_" + tenantId, tenantId);
 
-        // 1. 得到 ModelProperties
-        ChatClient client = modelProductFactory.getFactory(modelProperties.getProviderCode()).createClient(modelProperties);
+        // 2. 获取 ChatClient
+        ChatClient client = modelProductFactory.getFactory(modelProperties.getProviderCode())
+                .createClient(modelProperties);
 
-        // 2. 上下文组装
-        AiContextMetadata metadata = AiContextMetadata.builder()
-                .aiPlatform(modelProperties.getProviderCode())
-                .aiModel(modelProperties.getModelName())
-                .aiType(AiContextMetadata.AiType.CHAT)
-                .tenantId(tenantId)
-                .sessionId(session.getId())
-                .messageId(UUID.randomUUID().toString())
-                .build();
-
-        // 3. 获得工具
+        // 3. 获取工具
         List<ToolCallback> publicTools = toolServer.getPublicTools();
 
-        // 3. 请求AI
+        // 4. 构建记忆
         MessageChatMemoryAdvisor memoryAdvisor = MessageChatMemoryAdvisor.builder(chatMessageMemory).build();
 
+        // 5. 构建上下文
+        Map<String, Object> toolContext = Map.of(
+                "tenantId", tenantId,
+                "sessionId", session.getId(),
+                "messageId", UUID.randomUUID().toString()
+        );
 
-        Map<String, Object> toolContext = metadata.toMap();
+        Consumer<ChatClient.AdvisorSpec> advisorSpecConsumer = spe -> spe
+                .advisors(memoryAdvisor)
+                .params(toolContext);
 
-        Consumer<ChatClient.AdvisorSpec> advisorSpecConsumer =
-                spe -> spe.advisors(memoryAdvisor)
-                        .params(toolContext);
-
+        // 6. 执行对话
         return client.prompt(prompt)
                 .toolContext(toolContext)
                 .toolCallbacks(publicTools)
@@ -92,6 +87,4 @@ public class ChatApp {
                 .stream()
                 .content();
     }
-
-    // 免费计划对话 PlannerSkillExecutor
 }

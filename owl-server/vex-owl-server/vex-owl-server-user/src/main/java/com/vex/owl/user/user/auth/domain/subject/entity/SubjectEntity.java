@@ -5,10 +5,7 @@ import com.vex.queries.jpa.id.BizSnowId;
 import com.vex.queries.jpa.model.JpaBasicEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Locale;
 
@@ -23,6 +20,7 @@ import java.util.Locale;
 @Builder
 @BizIdPrefix(value = "SUB")
 @Table(name = "user_subject")
+@EqualsAndHashCode(callSuper = false)
 public class SubjectEntity extends JpaBasicEntity {
 
     @Id
@@ -36,6 +34,7 @@ public class SubjectEntity extends JpaBasicEntity {
     private String nickname;
 
     @Column(length = 50)
+    @Builder.Default
     private String role = "USER";
 
     public void setEmail(String email) {

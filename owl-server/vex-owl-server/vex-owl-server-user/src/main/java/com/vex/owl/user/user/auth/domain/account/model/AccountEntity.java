@@ -6,10 +6,7 @@ import com.vex.queries.jpa.model.JpaBasicEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 /**
  * 账号信息
@@ -22,6 +19,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @BizIdPrefix(value = "account")
 @Table(name = "user_auth_account")
+@EqualsAndHashCode(callSuper=false)
 public class AccountEntity extends JpaBasicEntity {
 
     /// ID
