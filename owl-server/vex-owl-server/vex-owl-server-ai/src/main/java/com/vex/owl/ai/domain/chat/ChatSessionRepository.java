@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -23,6 +24,11 @@ public interface ChatSessionRepository extends JpaRepository<ChatSessionEntity, 
      * 根据 ID 和租户查询会话
      */
     Optional<ChatSessionEntity> findByIdAndTenantId(String id, String tenantId);
+
+    /**
+     * 根据租户和会话类型查询第一个会话
+     */
+    Optional<ChatSessionEntity> findFirstByTenantIdAndSessionType(String tenantId, String sessionType);
 
     /**
      * 统计租户会话数量

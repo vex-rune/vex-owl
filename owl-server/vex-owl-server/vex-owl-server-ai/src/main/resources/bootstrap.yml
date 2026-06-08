@@ -115,3 +115,9 @@ vex:
     apiKey: ${MINIMAX_API_KEY:}
     modelName: MiniMax-M2.7
     baseUrl:
+  ai:
+    search:
+      # Serper API Key（免费额度 2,500 次/月）：https://serper.dev
+      api-key: ${SERPER_API_KEY:9ded06cde8537a06bd28c92c290f53b40ee9a881}
+      # 最大返回结果数
+      max-results: ${SEARCH_MAX_RESULTS:5}

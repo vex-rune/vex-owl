@@ -1,5 +1,6 @@
 package com.vex.queries.jpa.model;
 
+import com.vex.queries.jpa.id.BizIdListener;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
@@ -22,7 +23,7 @@ import java.util.Date;
  */
 @Data
 @MappedSuperclass
-@EntityListeners(AuditingEntityListener.class)
+@EntityListeners({AuditingEntityListener.class, BizIdListener.class})
 public abstract class JpaBasicEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;

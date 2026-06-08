@@ -119,24 +119,19 @@ public class UsageRecordManager {
             return;
         }
 
-        UsageRecordEntity record = usageRecordRepository
-                .findByTenantIdAndStatDateAndUsageType(event.getTenantId(), LocalDate.now(), "CHAT")
-                .orElseGet(() -> {
-                    UsageRecordEntity newRecord = new UsageRecordEntity();
-                    newRecord.setTenantId(event.getTenantId());
-                    newRecord.setStatDate(LocalDate.now());
-                    newRecord.setUsageType("CHAT");
-                    newRecord.setModelName(event.getModelName());
-                    return newRecord;
-                });
+        UsageRecordEntity newRecord = new UsageRecordEntity();
+        newRecord.setTenantId(event.getTenantId());
+        newRecord.setStatDate(LocalDate.now());
+        newRecord.setUsageType("CHAT");
+        newRecord.setModelName(event.getModelName());
 
-        record.addChatUsage(
+        newRecord.addChatUsage(
                 event.getPromptTokens() != null ? event.getPromptTokens().longValue() : 0L,
                 event.getCompletionTokens() != null ? event.getCompletionTokens().longValue() : 0L,
                 event.getTotalTokens() != null ? event.getTotalTokens().longValue() : 0L
         );
 
-        usageRecordRepository.save(record);
+        usageRecordRepository.save(newRecord);
         log.debug("CHAT Token 统计已更新，租户={}", event.getTenantId());
     }
 }

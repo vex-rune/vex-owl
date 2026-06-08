@@ -17,7 +17,7 @@ public class ChatMessageMemory implements ChatMemory {
     @Override
 //    @CacheEvict(value = "chatMemory", key = "#conversationId")
     public void add(String conversationId, List<Message> messages) {
-        chatManager.saveMessages(messages.stream().map(this::toEntity).toList());
+        chatManager.saveMessages(messages.stream().map(m -> toEntity(conversationId, m)).toList());
     }
 
 
@@ -48,11 +48,21 @@ public class ChatMessageMemory implements ChatMemory {
         };
     }
 
-    private ChatMessageEntity toEntity(Message message) {
+    private ChatMessageEntity toEntity(String conversationId, Message message) {
         ChatMessageEntity entity = new ChatMessageEntity();
+        entity.setConversationId(conversationId);
         entity.setTextContent(message.getText());
-        entity.setMessageType(message.getClass().getSimpleName());
+        entity.setMessageType(extractMessageType(message.getClass().getSimpleName()));
         entity.setMessageId(message.getMetadata().getOrDefault("id", "").toString());
         return entity;
+    }
+
+    private String extractMessageType(String className) {
+        return switch (className) {
+            case "UserMessage" -> "USER";
+            case "AssistantMessage" -> "ASSISTANT";
+            case "SystemMessage" -> "SYSTEM";
+            default -> className;
+        };
     }
 }

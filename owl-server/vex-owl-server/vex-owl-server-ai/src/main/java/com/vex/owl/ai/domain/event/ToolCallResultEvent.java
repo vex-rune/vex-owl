@@ -1,8 +1,8 @@
 package com.vex.owl.ai.domain.event;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.ai.chat.messages.ToolResponseMessage;
 
 /**
  * 工具调用结果事件
@@ -14,20 +14,25 @@ public class ToolCallResultEvent {
     private String tenantId;
     private String sessionId;
     private ToolCallRequestEvent.EventType eventType;
-    private ToolResponseMessage.ToolResponse data;
+    private String toolCallId;
+    private String toolName;
+    private String result;
     private long timestamp;
 
     public ToolCallResultEvent() {
         this.timestamp = System.currentTimeMillis();
     }
 
+    @Builder
     public ToolCallResultEvent(String tenantId, String sessionId,
-                            ToolCallRequestEvent.EventType eventType,
-                            ToolResponseMessage.ToolResponse data) {
+                               ToolCallRequestEvent.EventType eventType,
+                               String toolCallId, String toolName, String result) {
         this.tenantId = tenantId;
         this.sessionId = sessionId;
         this.eventType = eventType;
-        this.data = data;
+        this.toolCallId = toolCallId;
+        this.toolName = toolName;
+        this.result = result;
         this.timestamp = System.currentTimeMillis();
     }
 }

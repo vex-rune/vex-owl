@@ -28,10 +28,14 @@ import java.time.LocalDateTime;
 public class ChatSessionEntity extends JpaBasicEntity {
 
     @Id
+    @BizSnowId
     private String id;
 
     /** 租户ID */
     private String tenantId;
+
+    /** 会话类型（如：CHAT、AGENT、PIPELINE） */
+    private String sessionType;
 
     /** 会话标题（自动生成或用户设置） */
     private String title;

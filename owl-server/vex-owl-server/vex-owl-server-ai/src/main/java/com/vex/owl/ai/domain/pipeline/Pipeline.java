@@ -16,5 +16,5 @@ public interface Pipeline {
      * @param context 上下文
      * @return 输出结果
      */
-    String execute(String input, RunContext context);
+    SequentialPipeline.Result execute(String input, RunContext context);
 }

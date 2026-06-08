@@ -3,6 +3,7 @@ spring:
     exclude:
       - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
       - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+      - org.springframework.boot.autoconfigure.elasticsearch.RestClientAutoConfiguration
   datasource:
     url: jdbc:postgresql://localhost:10864/vex_owl
     username: vex_user
@@ -15,20 +16,21 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-  jackson:
-    serialization:
-      write-dates-as-timestamps: false
 
-# MiniMax API 配置
+# 禁用不需要的自动配置
+spring.ai:
+  vectorstore:
+    type: simple
+
 minimax:
   api:
-    url: ${MINIMAX_API_URL:https://api.minimaxi.com}
-    key: ${MINIMAX_API_KEY2:}
-    group-id: ${MINIMAX_GROUP_ID:}
+    url: http://localhost
+    key: test
+    group-id: test
 
 vex:
   free-model-properties:
-    providerCode: minimax
-    apiKey: ${MINIMAX_API_KEY:}
-    modelName: MiniMax-M2.7
-    baseUrl:
+    providerCode: deepseek
+    apiKey: test
+    modelName: deepseek-chat
+    baseUrl: http://localhost

@@ -18,6 +18,13 @@ public class ToolServer {
 
     private final List<Tools> tools;
 
+    /**
+     * 获取所有工具实例
+     */
+    public List<Tools> getAllTools() {
+        return tools;
+    }
+
     public List<ToolCallback> getPublicTools() {
         return tools.stream()
                 .filter(tool -> tool instanceof PublicTools)

@@ -31,5 +31,5 @@ public interface AgentManager {
      * @param type Agent 类型
      * @return Agent 实例，不存在返回空 Optional
      */
-    public <T extends Agent> Optional<T> getAgent(Class<T> type);
+    <T extends Agent> Optional<T> getAgent(Class<T> type);
 }

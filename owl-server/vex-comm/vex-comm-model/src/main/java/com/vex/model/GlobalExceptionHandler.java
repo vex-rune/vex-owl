@@ -41,7 +41,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiResponse<Void> handleIllegalArgument(IllegalArgumentException ex) {
-        log.warn("参数非法 | message: {}", ex.getMessage());
+        log.warn("参数非法 | message: {}", ex.getMessage(), ex);
         return ApiResponse.error("ILLEGAL_ARGUMENT", null, ex.getMessage());
     }
 

@@ -3,6 +3,7 @@ package com.vex.owl.ai.domain.chat;
 import com.vex.queries.jpa.id.BizIdPrefix;
 import com.vex.queries.jpa.id.BizSnowId;
 import com.vex.queries.jpa.model.JpaBasicEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -44,6 +45,7 @@ public class ChatMessageEntity extends JpaBasicEntity {
     private String messageType;
 
     /// 消息文本内容
+    @Column(length = 200000)
     private String textContent;
 
 }

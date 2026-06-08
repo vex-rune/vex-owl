@@ -58,22 +58,56 @@ public class ChatManager {
 
     /**
      * 获取会话详情(如果没有会创建)
+     * 根据 租户ID + 会话类型 查询，返回第一个匹配的会话
      */
     @Transactional
-    public ChatSessionEntity getSession(String sessionId, String tenantId) {
-        if (sessionRepository.existsById(sessionId)) {
-            return sessionRepository.findByIdAndTenantId(sessionId, tenantId)
-                    .orElseThrow(() -> new ChatException("会话不存在: " + sessionId));
-        }
-        ChatSessionEntity chatSessionEntity = new ChatSessionEntity();
-        chatSessionEntity.setId(sessionId);
-        chatSessionEntity.setTenantId(tenantId);
-        chatSessionEntity.setTitle("新对话");
-        chatSessionEntity.setStatus("ACTIVE");
-        chatSessionEntity.setMessageCount(0);
-        chatSessionEntity.setPinned(false);
-        chatSessionEntity.setStarred(false);
-        return sessionRepository.save(chatSessionEntity);
+    public ChatSessionEntity getSession(String tenantId, String sessionType) {
+        return sessionRepository.findFirstByTenantIdAndSessionType(tenantId, sessionType)
+                .orElseGet(() -> {
+                    ChatSessionEntity chatSessionEntity = new ChatSessionEntity();
+                    chatSessionEntity.setTenantId(tenantId);
+                    chatSessionEntity.setSessionType(sessionType);
+                    chatSessionEntity.setTitle("新对话");
+                    chatSessionEntity.setStatus("ACTIVE");
+                    chatSessionEntity.setMessageCount(0);
+                    chatSessionEntity.setPinned(false);
+                    chatSessionEntity.setStarred(false);
+                    entityManager.persist(chatSessionEntity);
+                    return chatSessionEntity;
+                });
+    }
+
+    /**
+     * 根据 ID 和租户获取会话
+     */
+    public Optional<ChatSessionEntity> getSessionById(String sessionId, String tenantId) {
+        return sessionRepository.findByIdAndTenantId(sessionId, tenantId);
+    }
+
+    /**
+     * 更新会话标题
+     */
+    @Transactional
+    public Optional<ChatSessionEntity> updateSessionTitle(String sessionId, String tenantId, String title) {
+        return sessionRepository.findByIdAndTenantId(sessionId, tenantId)
+                .map(session -> {
+                    session.setTitle(title);
+                    return sessionRepository.save(session);
+                });
+    }
+
+    /**
+     * 软删除会话
+     */
+    @Transactional
+    public boolean deleteSession(String sessionId, String tenantId) {
+        return sessionRepository.findByIdAndTenantId(sessionId, tenantId)
+                .map(session -> {
+                    session.setStatus("DELETED");
+                    sessionRepository.save(session);
+                    return true;
+                })
+                .orElse(false);
     }
 
 
@@ -84,8 +118,7 @@ public class ChatManager {
      */
     @Transactional
     public List<ChatMessageEntity> saveMessages(List<ChatMessageEntity> messages) {
-        List<ChatMessageEntity> saved = messageRepository.saveAll(messages);
-        return saved;
+        return messageRepository.saveAll(messages);
     }
 
     /**
