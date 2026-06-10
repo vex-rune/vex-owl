@@ -1,2 +1,2 @@
 com.vex.security.config.JwtSecurityAutoConfiguration
-com.vex.security.auth.filter.AuthUserFilterAutoConfiguration
+com.vex.security.web.filter.AuthUserFilterAutoConfiguration

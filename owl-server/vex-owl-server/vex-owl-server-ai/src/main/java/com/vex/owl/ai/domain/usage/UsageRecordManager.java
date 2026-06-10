@@ -1,7 +1,10 @@
 package com.vex.owl.ai.domain.usage;
 
 import com.vex.event.Event;
-import com.vex.owl.ai.domain.event.*;
+import com.vex.owl.ai.domain.event.ImageUsageEvent;
+import com.vex.owl.ai.domain.event.MusicUsageEvent;
+import com.vex.owl.ai.domain.event.TokenUsageEvent;
+import com.vex.owl.ai.domain.event.VoiceUsageEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -15,7 +18,6 @@ import java.time.LocalDate;
  * AI 使用量统计管理器
  *
  * <p>监听各种 AI 使用事件，聚合统计到数据库。</p>
- * <p>所有事件通过 {@link Event} 统一接收，从 EventMetadata 中提取 userId。</p>
  */
 @Component
 @RequiredArgsConstructor
@@ -28,7 +30,7 @@ public class UsageRecordManager {
     @EventListener
     @Transactional
     public void onEvent(Event event) {
-        String userId = event.getMetadata().userId();
+        String userId = getUserIdFromPayload(event.getPayload());
         if (userId == null || userId.isEmpty()) {
             log.warn("事件缺少 userId，跳过统计: {}", event.getMetadata().eventType());
             return;
@@ -128,8 +130,6 @@ public class UsageRecordManager {
         log.debug("CHAT Token 统计已更新，userId={}", userId);
     }
 
-    // ==================== 查询 ====================
-
     public UsageStatResponse query(String userId, LocalDate startDate, LocalDate endDate) {
         UsageStatResponse.ChatUsage chat = sumChatUsage(userId, startDate, endDate);
         UsageStatResponse.VoiceUsage voice = sumVoiceUsage(userId, startDate, endDate);
@@ -204,5 +204,16 @@ public class UsageRecordManager {
 
     private static long nvl(Long value) {
         return value != null ? value : 0L;
+    }
+
+    private static String getUserIdFromPayload(Object payload) {
+        if (payload instanceof com.vex.owl.ai.domain.event.TokenUsageEvent e) return e.getUserId();
+        if (payload instanceof com.vex.owl.ai.domain.event.VoiceUsageEvent e) return e.getUserId();
+        if (payload instanceof com.vex.owl.ai.domain.event.ImageUsageEvent e) return e.getUserId();
+        if (payload instanceof com.vex.owl.ai.domain.event.MusicUsageEvent e) return e.getUserId();
+        if (payload instanceof com.vex.owl.ai.domain.event.ToolCallRequestEvent e) return e.getUserId();
+        if (payload instanceof com.vex.owl.ai.domain.event.ToolCallResultEvent e) return e.getUserId();
+        if (payload instanceof com.vex.owl.ai.domain.event.ChatContentEvent e) return e.getUserId();
+        return "";
     }
 }

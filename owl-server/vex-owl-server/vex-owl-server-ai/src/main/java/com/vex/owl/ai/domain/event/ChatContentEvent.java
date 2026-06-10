@@ -21,6 +21,10 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class ChatContentEvent implements Serializable {
 
+    private String userId;
+    private String sessionId;
+    private String provider;
+    private String modelName;
     /** 响应内容（流式时为单个 chunk） */
     private String content;
     /** 是否为流式 chunk */

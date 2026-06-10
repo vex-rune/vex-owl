@@ -15,6 +15,7 @@ import org.springframework.ai.chat.model.Generation;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -33,6 +34,10 @@ public class TokenUsageAdvisor implements AgentAdvisor {
 
     private static final String FINISH_REASON_STOP = "STOP";
     private static final String FINISH_INFO_STREAM_COMPLETED = "stream completed";
+
+    private static final String KEY_USER_ID = "userId";
+    private static final String KEY_SESSION_ID = "sessionId";
+    private static final String KEY_PROVIDER = "provider";
 
     private final EventPublisher eventPublisher;
 
@@ -53,8 +58,11 @@ public class TokenUsageAdvisor implements AgentAdvisor {
         }
 
         if (FINISH_REASON_STOP.equals(result.getMetadata().getFinishReason())) {
+            Map<String, Object> ctx = chatClientRequest.context();
             TokenUsageEvent event = TokenUsageEvent.builder()
-                    .provider(getProvider(chatClientRequest))
+                    .userId(getString(ctx, KEY_USER_ID))
+                    .sessionId(getString(ctx, KEY_SESSION_ID))
+                    .provider(getString(ctx, KEY_PROVIDER))
                     .modelName(metadata.getModel())
                     .promptTokens(usage.getPromptTokens())
                     .completionTokens(usage.getCompletionTokens())
@@ -108,8 +116,11 @@ public class TokenUsageAdvisor implements AgentAdvisor {
         }).doOnComplete(() -> {
             log.debug("finishReason:{}", FINISH_INFO_STREAM_COMPLETED);
 
+            Map<String, Object> ctx = chatClientRequest.context();
             TokenUsageEvent event = TokenUsageEvent.builder()
-                    .provider(getProvider(chatClientRequest))
+                    .userId(getString(ctx, KEY_USER_ID))
+                    .sessionId(getString(ctx, KEY_SESSION_ID))
+                    .provider(getString(ctx, KEY_PROVIDER))
                     .modelName(modelName.get())
                     .promptTokens(promptTokens.get())
                     .completionTokens(completionTokens.get())
@@ -120,8 +131,8 @@ public class TokenUsageAdvisor implements AgentAdvisor {
         });
     }
 
-    private String getProvider(ChatClientRequest request) {
-        Object value = request.context().get("provider");
+    private static String getString(Map<String, Object> map, String key) {
+        Object value = map.get(key);
         return value != null ? value.toString() : "";
     }
 }

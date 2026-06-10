@@ -15,4 +15,9 @@ public class AuthUserFilterAutoConfiguration {
     public AuthUserFilter authUserFilter() {
         return new AuthUserFilter();
     }
+
+    @Bean
+    public CurrentUserResolverImpl currentUserResolver() {
+        return new CurrentUserResolverImpl();
+    }
 }

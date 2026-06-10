@@ -13,6 +13,9 @@ import java.io.Serializable;
 @Setter
 public class ImageUsageEvent implements Serializable {
 
+    private String userId;
+    private String sessionId;
+    private String provider;
     private String modelName;
     private Integer inputChars;
     private Integer requestCount;
@@ -26,8 +29,12 @@ public class ImageUsageEvent implements Serializable {
     }
 
     @Builder
-    public ImageUsageEvent(String modelName, Integer inputChars, Integer requestCount,
+    public ImageUsageEvent(String userId, String sessionId, String provider, String modelName,
+                           Integer inputChars, Integer requestCount,
                            Integer successCount, Integer failedCount, String aspectRatio) {
+        this.userId = userId;
+        this.sessionId = sessionId;
+        this.provider = provider;
         this.modelName = modelName;
         this.inputChars = inputChars;
         this.requestCount = requestCount;

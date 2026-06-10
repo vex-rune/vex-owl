@@ -9,6 +9,8 @@ import com.vex.owl.ai.infra.minimax.dto.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 /**
  * MiniMax 统一服务
  */
@@ -26,12 +28,18 @@ public class MiniMaxService {
         this.eventPublisher = eventPublisher;
     }
 
-    // ==================== 内部方法 ====================
+    private static String getString(Map<String, Object> map, String key) {
+        Object value = map.get(key);
+        return value != null ? value.toString() : "";
+    }
 
-    private void publishTtsUsageEvent(MiniMaxTtsRequest request, MiniMaxTtsResponse response) {
+    private void publishTtsUsageEvent(MiniMaxTtsRequest request, MiniMaxTtsResponse response, Map<String, Object> context) {
         MiniMaxTtsResponse.ExtraInfo extra = response.getExtraInfo();
 
         VoiceUsageEvent event = VoiceUsageEvent.builder()
+                .userId(getString(context, "userId"))
+                .sessionId(getString(context, "sessionId"))
+                .provider(PLATFORM)
                 .modelName(request.getModel())
                 .inputChars(request.getText() != null ? request.getText().length() : 0)
                 .outputDuration(extra != null ? extra.getAudioLength() : null)
@@ -45,10 +53,13 @@ public class MiniMaxService {
         eventPublisher.publish("VoiceUsageEvent", event);
     }
 
-    private void publishImageUsageEvent(MiniMaxImageRequest request, MiniMaxImageResponse response) {
+    private void publishImageUsageEvent(MiniMaxImageRequest request, MiniMaxImageResponse response, Map<String, Object> context) {
         MiniMaxImageResponse.Metadata imgMeta = response.getMetadata();
 
         ImageUsageEvent event = ImageUsageEvent.builder()
+                .userId(getString(context, "userId"))
+                .sessionId(getString(context, "sessionId"))
+                .provider(PLATFORM)
                 .modelName(request.getModel())
                 .inputChars(request.getPrompt() != null ? request.getPrompt().length() : 0)
                 .requestCount(request.getN())
@@ -62,12 +73,15 @@ public class MiniMaxService {
         eventPublisher.publish("ImageUsageEvent", event);
     }
 
-    private void publishMusicUsageEvent(MiniMaxMusicRequest request, MiniMaxMusicResponse response) {
+    private void publishMusicUsageEvent(MiniMaxMusicRequest request, MiniMaxMusicResponse response, Map<String, Object> context) {
         MiniMaxMusicResponse.ExtraInfo extra = response.getExtraInfo();
         int inputChars = (request.getPrompt() != null ? request.getPrompt().length() : 0)
                 + (request.getLyrics() != null ? request.getLyrics().length() : 0);
 
         MusicUsageEvent event = MusicUsageEvent.builder()
+                .userId(getString(context, "userId"))
+                .sessionId(getString(context, "sessionId"))
+                .provider(PLATFORM)
                 .modelName(request.getModel())
                 .inputChars(inputChars)
                 .outputDuration(extra != null ? extra.getMusicDuration() : null)

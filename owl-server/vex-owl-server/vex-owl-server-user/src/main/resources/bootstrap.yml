@@ -54,7 +54,7 @@ spring:
           min-idle: 0
           max-wait: -1
   datasource:
-    url: jdbc:postgresql://localhost:10864/vex_owl
+    url: jdbc:postgresql://localhost:10864/vex_user
     username: vex_user
     password: vex_password
     driver-class-name: org.postgresql.Driver

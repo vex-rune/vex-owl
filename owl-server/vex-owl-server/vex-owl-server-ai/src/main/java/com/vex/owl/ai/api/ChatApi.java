@@ -3,6 +3,7 @@ package com.vex.owl.ai.api;
 import java.util.List;
 import java.util.Map;
 
+import com.vex.event.CurrentUserResolver;
 import com.vex.model.ApiResponse;
 import com.vex.owl.ai.api.request.FreeChatMessageRequest;
 import com.vex.owl.ai.api.request.PipelineRequest;
@@ -15,7 +16,6 @@ import com.vex.owl.ai.domain.chat.ChatSessionEntity;
 import com.vex.owl.ai.domain.chat.UserMemoryEntity;
 import com.vex.owl.ai.domain.chat.UserMemoryService;
 import com.vex.owl.ai.domain.pipeline.SequentialPipeline;
-import com.vex.security.auth.AuthHeaderConstants;
 import jakarta.validation.Valid;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +38,7 @@ public class ChatApi {
     private final UserMemoryService userMemoryService;
     private final SequentialPipeline sequentialPipeline;
     private final FreeModelPropertiesConfig modelProperties;
+    private final CurrentUserResolver currentUserResolver;
 
     // ==================== 对话 ====================
 
@@ -45,8 +46,8 @@ public class ChatApi {
      * 对话-自由对话
      */
     @PostMapping(value = "/free")
-    public ApiResponse<String> chat(@RequestHeader(AuthHeaderConstants.HEADER_USER_ID) String userId,
-                                    @Valid @RequestBody FreeChatMessageRequest request) {
+    public ApiResponse<String> chat(@Valid @RequestBody FreeChatMessageRequest request) {
+        String userId = currentUserResolver.resolveCurrentUser().get().getUserId();
         return ApiResponse.success(chatApp.chat(userId, request.getUserMessage()));
     }
 
@@ -55,10 +56,10 @@ public class ChatApi {
      */
     @PostMapping(value = "/pipeline")
     public ApiResponse<SequentialPipeline.Result> pipeline(
-            @RequestHeader(AuthHeaderConstants.HEADER_USER_ID) String userId,
             @RequestHeader(value = "X-Session-Id", required = false) String sessionId,
             @RequestBody @Valid PipelineRequest request) {
 
+        String userId = currentUserResolver.resolveCurrentUser().get().getUserId();
         RunContext context = RunContext.builder()
                 .modelProperties(modelProperties)
                 .userId(userId)
@@ -78,9 +79,9 @@ public class ChatApi {
      */
     @GetMapping("/sessions")
     public ApiResponse<List<ChatSessionEntity>> sessions(
-            @RequestHeader(AuthHeaderConstants.HEADER_USER_ID) String userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "50") int size) {
+        String userId = currentUserResolver.resolveCurrentUser().get().getUserId();
         Page<ChatSessionEntity> sessions = chatManager.getSessions(userId, page, size);
         return ApiResponse.success(sessions.getContent());
     }
@@ -89,9 +90,8 @@ public class ChatApi {
      * 会话-查询指定会话
      */
     @GetMapping("/sessions/{sessionId}")
-    public ApiResponse<ChatSessionEntity> session(
-            @RequestHeader(AuthHeaderConstants.HEADER_USER_ID) String userId,
-            @PathVariable String sessionId) {
+    public ApiResponse<ChatSessionEntity> session(@PathVariable String sessionId) {
+        String userId = currentUserResolver.resolveCurrentUser().get().getUserId();
         return chatManager.getSessionById(sessionId, userId)
                 .map(ApiResponse::success)
                 .orElse(ApiResponse.error("SESSION_NOT_FOUND", null, "会话不存在"));
@@ -102,9 +102,9 @@ public class ChatApi {
      */
     @PutMapping("/sessions/{sessionId}")
     public ApiResponse<Void> updateSession(
-            @RequestHeader(AuthHeaderConstants.HEADER_USER_ID) String userId,
             @PathVariable String sessionId,
             @RequestBody Map<String, String> body) {
+        String userId = currentUserResolver.resolveCurrentUser().get().getUserId();
         String title = body.get("title");
         if (title != null) {
             chatManager.updateSessionTitle(sessionId, userId, title);
@@ -116,9 +116,8 @@ public class ChatApi {
      * 会话-删除
      */
     @DeleteMapping("/sessions/{sessionId}")
-    public ApiResponse<Void> deleteSession(
-            @RequestHeader(AuthHeaderConstants.HEADER_USER_ID) String userId,
-            @PathVariable String sessionId) {
+    public ApiResponse<Void> deleteSession(@PathVariable String sessionId) {
+        String userId = currentUserResolver.resolveCurrentUser().get().getUserId();
         boolean deleted = chatManager.deleteSession(sessionId, userId);
         if (deleted) {
             return ApiResponse.success(null);
@@ -132,9 +131,7 @@ public class ChatApi {
      * 消息-查询指定会话的消息
      */
     @GetMapping("/sessions/{sessionId}/messages")
-    public ApiResponse<List<ChatMessageEntity>> messages(
-            @RequestHeader(AuthHeaderConstants.HEADER_USER_ID) String userId,
-            @PathVariable String sessionId) {
+    public ApiResponse<List<ChatMessageEntity>> messages(@PathVariable String sessionId) {
         return ApiResponse.success(chatManager.getMessagesAsc(sessionId));
     }
 
@@ -144,9 +141,8 @@ public class ChatApi {
      * 记忆-查询用户记忆
      */
     @GetMapping("/memories")
-    public ApiResponse<List<UserMemoryEntity>> memories(
-            @RequestHeader(AuthHeaderConstants.HEADER_USER_ID) String userId,
-            @RequestParam(required = false) String category) {
+    public ApiResponse<List<UserMemoryEntity>> memories(@RequestParam(required = false) String category) {
+        String userId = currentUserResolver.resolveCurrentUser().get().getUserId();
         List<UserMemoryEntity> list = (category != null)
                 ? userMemoryService.getMemories(userId, category)
                 : userMemoryService.getMemories(userId);
@@ -157,9 +153,8 @@ public class ChatApi {
      * 记忆-新增用户记忆
      */
     @PostMapping("/memories")
-    public ApiResponse<UserMemoryEntity> addMemory(
-            @RequestHeader(AuthHeaderConstants.HEADER_USER_ID) String userId,
-            @RequestBody AddMemoryRequest request) {
+    public ApiResponse<UserMemoryEntity> addMemory(@RequestBody AddMemoryRequest request) {
+        String userId = currentUserResolver.resolveCurrentUser().get().getUserId();
         UserMemoryEntity entity = userMemoryService.addMemory(
                 userId, request.getCategory(), request.getContent(), request.getWeight());
         return ApiResponse.success(entity);
@@ -169,9 +164,8 @@ public class ChatApi {
      * 记忆-删除用户记忆
      */
     @DeleteMapping("/memories/{category}")
-    public ApiResponse<Void> clearMemories(
-            @RequestHeader(AuthHeaderConstants.HEADER_USER_ID) String userId,
-            @PathVariable String category) {
+    public ApiResponse<Void> clearMemories(@PathVariable String category) {
+        String userId = currentUserResolver.resolveCurrentUser().get().getUserId();
         userMemoryService.clearCategory(userId, category);
         return ApiResponse.success(null);
     }

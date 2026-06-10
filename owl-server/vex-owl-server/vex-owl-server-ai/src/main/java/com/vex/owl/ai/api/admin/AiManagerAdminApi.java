@@ -1,10 +1,10 @@
 package com.vex.owl.ai.api.admin;
 
+import com.vex.event.CurrentUserResolver;
 import com.vex.model.ApiResponse;
 import com.vex.owl.ai.domain.AiManager;
 import com.vex.owl.ai.domain.agent.AgentDefinition;
 import com.vex.owl.ai.domain.tools.ToolDefinition;
-import com.vex.security.auth.AuthHeaderConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,13 +21,14 @@ import java.util.List;
 public class AiManagerAdminApi {
 
     private final AiManager aiManager;
+    private final CurrentUserResolver currentUserResolver;
 
     /**
      * Agent-查询所有
      */
     @GetMapping("/agents")
-    public ApiResponse<List<AgentDefinition>> getAgents(
-            @RequestHeader(AuthHeaderConstants.HEADER_USER_ID) String userId) {
+    public ApiResponse<List<AgentDefinition>> getAgents() {
+        String userId = currentUserResolver.resolveCurrentUser().get().getUserId();
         return ApiResponse.success(aiManager.getAgents(userId));
     }
 
@@ -35,9 +36,8 @@ public class AiManagerAdminApi {
      * Agent-查询指定 Agent
      */
     @GetMapping("/agents/{name}")
-    public ApiResponse<AgentDefinition> getAgent(
-            @RequestHeader(AuthHeaderConstants.HEADER_USER_ID) String userId,
-            @PathVariable String name) {
+    public ApiResponse<AgentDefinition> getAgent(@PathVariable String name) {
+        String userId = currentUserResolver.resolveCurrentUser().get().getUserId();
         return aiManager.getAgent(userId, name)
                 .map(agent -> ApiResponse.success(agent.getDefinition()))
                 .orElse(ApiResponse.error("AGENT_NOT_FOUND", null, "Agent 不存在: " + name));
@@ -47,8 +47,8 @@ public class AiManagerAdminApi {
      * Tool-查询所有
      */
     @GetMapping("/tools")
-    public ApiResponse<List<ToolDefinition>> getTools(
-            @RequestHeader(AuthHeaderConstants.HEADER_USER_ID) String userId) {
+    public ApiResponse<List<ToolDefinition>> getTools() {
+        String userId = currentUserResolver.resolveCurrentUser().get().getUserId();
         return ApiResponse.success(aiManager.getTools(userId));
     }
 
@@ -56,8 +56,8 @@ public class AiManagerAdminApi {
      * 资源-查询汇总（Agent + Tool）
      */
     @GetMapping("/capabilities")
-    public ApiResponse<AiManager.AiCapability> getCapabilities(
-            @RequestHeader(AuthHeaderConstants.HEADER_USER_ID) String userId) {
+    public ApiResponse<AiManager.AiCapability> getCapabilities() {
+        String userId = currentUserResolver.resolveCurrentUser().get().getUserId();
         return ApiResponse.success(aiManager.getCapabilities(userId));
     }
 }

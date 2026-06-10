@@ -20,10 +20,37 @@ public class CurrentUserResolverImpl implements CurrentUserResolver {
 
     @Override
     public Optional<CurrentUser> resolveCurrentUser() {
-        return Mono.deferContextual(ctx -> ctx.<Mono<CurrentUser>>get(USER_KEY)).blockOptional();
+        try {
+            CurrentUser user = Mono.deferContextual(ctx -> {
+                CurrentUser u = ctx.hasKey(USER_KEY) ? ctx.get(USER_KEY) : null;
+                if (u != null) return Mono.just(u);
+                CurrentTrace trace = ctx.hasKey(TRACE_KEY) ? ctx.get(TRACE_KEY) : null;
+                if (trace != null) {
+                    return Mono.just(CurrentUser.builder()
+                            .sessionId(trace.getSessionId())
+                            .traceId(trace.getTraceId())
+                            .build());
+                }
+                return Mono.just(CurrentUser.anonymous());
+            }).contextWrite(Context.empty()).block();
+            return Optional.ofNullable(user);
+        } catch (Exception e) {
+            return Optional.of(CurrentUser.anonymous());
+        }
     }
+
     @Override
     public Optional<CurrentTrace> resolveCurrentTrace() {
-        return Mono.deferContextual(ctx -> ctx.<Mono<CurrentTrace>>get(TRACE_KEY)).blockOptional();
+        try {
+            CurrentTrace trace = Mono.deferContextual(ctx -> {
+                if (ctx.hasKey(TRACE_KEY)) {
+                    return Mono.just(ctx.get(TRACE_KEY));
+                }
+                return Mono.just(CurrentTrace.anonymous());
+            }).contextWrite(Context.empty()).block();
+            return Optional.ofNullable(trace);
+        } catch (Exception e) {
+            return Optional.of(CurrentTrace.anonymous());
+        }
     }
 }

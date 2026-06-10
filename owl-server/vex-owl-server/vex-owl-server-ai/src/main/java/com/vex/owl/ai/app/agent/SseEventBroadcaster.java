@@ -46,7 +46,7 @@ public class SseEventBroadcaster {
 
     @EventListener
     public void onEvent(Event event) {
-        String userId = event.getMetadata().userId();
+        String userId = event.getMetadata().user().getUserId();
         if (userId == null || userId.isEmpty()) return;
 
         String eventType = event.getMetadata().eventType();

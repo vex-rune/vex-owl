@@ -69,6 +69,13 @@
             <version>1.0.0</version>
         </dependency>
 
+        <!-- Vex Common Event (含 EventPublisher) -->
+        <dependency>
+            <groupId>com.vex</groupId>
+            <artifactId>vex-comm-event</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
         <!-- Vex Common Model -->
         <dependency>
             <groupId>com.vex</groupId>

@@ -85,3 +85,87 @@
 - ✅ 新增、修改接口必须使用@Valid
 - ✅ 查询参数使用@RequestBody接收
 - ✅ 统一使用ApiResponse作为返回封装体
+
+
+
+## 用户上下文获取规范
+
+### 核心原则
+
+获取当前用户信息**禁止**使用 `@RequestHeader` 从请求头中提取，应通过 `CurrentUserResolver` 获取。
+
+### 原因
+
+| 方式 | 问题 |
+|-----|------|
+| `@RequestHeader(AuthHeaderConstants.HEADER_USER_ID)` | 依赖请求头传值，前端必须手动携带，容易遗漏或伪造 |
+| `CurrentUserResolver` | 网关过滤器统一解析写入上下文，安全可靠，全自动获取 |
+
+### 使用方式
+
+```java
+import com.vex.event.CurrentUserResolver;
+
+// 1. 注入依赖
+private final CurrentUserResolver currentUserResolver;
+
+// 2. 获取用户ID
+String userId = currentUserResolver.resolveCurrentUser().get().getUserId();
+```
+
+### 完整示例
+
+```java
+@RestController
+@RequestMapping("/api/example")
+@RequiredArgsConstructor
+public class ExampleApi {
+
+    private final ExampleService exampleService;
+    private final CurrentUserResolver currentUserResolver;
+
+    @GetMapping("/list")
+    public ApiResponse<List<Entity>> list() {
+        // ✅ 从上下文中安全获取用户ID
+        String userId = currentUserResolver.resolveCurrentUser().get().getUserId();
+        return ApiResponse.success(exampleService.findByUser(userId));
+    }
+
+    @PostMapping
+    public ApiResponse<Entity> create(@RequestBody @Valid CreateRequest request) {
+        String userId = currentUserResolver.resolveCurrentUser().get().getUserId();
+        return ApiResponse.success(exampleService.create(userId, request));
+    }
+}
+```
+
+### 依赖配置
+
+模块 `pom.xml` 中需添加 `vex-comm-event` 依赖：
+
+```xml
+<!-- Vex Common Event (含 CurrentUserResolver, EventPublisher) -->
+<dependency>
+    <groupId>com.vex</groupId>
+    <artifactId>vex-comm-event</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+主启动类需添加 `@ComponentScan` 以扫描 `com.vex.event` 包：
+
+```java
+@SpringBootApplication
+@ComponentScan(basePackages = {"com.vex.owl.ai", "com.vex.event"})
+public class OwlAiApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(OwlAiApplication.class, args);
+    }
+}
+```
+
+### 禁止事项
+
+- ❌ **禁止**在 Controller 方法参数中使用 `@RequestHeader(AuthHeaderConstants.HEADER_USER_ID)`
+- ❌ **禁止**直接从请求头中读取 userId 进行业务处理
+- ❌ **禁止**假设 userId 一定存在，应使用 `Optional` 处理边界情况

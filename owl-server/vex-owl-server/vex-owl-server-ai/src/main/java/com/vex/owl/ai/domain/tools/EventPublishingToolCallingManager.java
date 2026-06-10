@@ -15,6 +15,7 @@ import org.springframework.ai.model.tool.ToolExecutionResult;
 import org.springframework.ai.tool.definition.ToolDefinition;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -26,6 +27,11 @@ import java.util.Optional;
  */
 @Slf4j
 public class EventPublishingToolCallingManager implements ToolCallingManager {
+
+    private static final String KEY_USER_ID = "userId";
+    private static final String KEY_SESSION_ID = "sessionId";
+    private static final String KEY_PROVIDER = "provider";
+    private static final String KEY_MODEL = "model";
 
     private final DefaultToolCallingManager delegate;
     private final EventPublisher eventPublisher;
@@ -43,6 +49,12 @@ public class EventPublishingToolCallingManager implements ToolCallingManager {
 
     @Override
     public ToolExecutionResult executeToolCalls(Prompt prompt, ChatResponse chatResponse) {
+        Map<String, Object> ctx = extractContext(prompt);
+        String userId = getString(ctx, KEY_USER_ID);
+        String sessionId = getString(ctx, KEY_SESSION_ID);
+        String provider = getString(ctx, KEY_PROVIDER);
+        String model = getString(ctx, KEY_MODEL);
+
         Optional<AssistantMessage> toolCallMsg = chatResponse.getResults().stream()
                 .filter(g -> !g.getOutput().getToolCalls().isEmpty())
                 .map(g -> (AssistantMessage) g.getOutput())
@@ -54,6 +66,10 @@ public class EventPublishingToolCallingManager implements ToolCallingManager {
             for (AssistantMessage.ToolCall tc : assistantMessage.getToolCalls()) {
                 log.debug("执行工具调用, toolCallId={}, toolName={}", tc.id(), tc.name());
                 eventPublisher.publish("ToolCallRequestEvent", ToolCallRequestEvent.builder()
+                        .userId(userId)
+                        .sessionId(sessionId)
+                        .provider(provider)
+                        .modelName(model)
                         .eventType(ToolCallRequestEvent.EventType.BEFORE_EXECUTE)
                         .toolCallId(tc.id())
                         .toolName(tc.name())
@@ -77,6 +93,10 @@ public class EventPublishingToolCallingManager implements ToolCallingManager {
                     .flatMap(m -> m.getResponses().stream())
                     .forEach(response -> {
                         ToolCallResultEvent resultEvent = ToolCallResultEvent.builder()
+                                .userId(userId)
+                                .sessionId(sessionId)
+                                .provider(provider)
+                                .modelName(model)
                                 .eventType(ToolCallRequestEvent.EventType.AFTER_EXECUTE)
                                 .toolCallId(response.id())
                                 .toolName(response.name())
@@ -88,5 +108,18 @@ public class EventPublishingToolCallingManager implements ToolCallingManager {
         }
 
         return result;
+    }
+
+    private Map<String, Object> extractContext(Prompt prompt) {
+        if (prompt.getOptions() instanceof ToolCallingChatOptions options) {
+            Map<String, Object> ctx = options.getToolContext();
+            return ctx != null ? ctx : Map.of();
+        }
+        return Map.of();
+    }
+
+    private static String getString(Map<String, Object> map, String key) {
+        Object value = map.get(key);
+        return value != null ? value.toString() : "";
     }
 }

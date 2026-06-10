@@ -13,6 +13,10 @@ import java.io.Serializable;
 @Setter
 public class ToolCallRequestEvent implements Serializable {
 
+    private String userId;
+    private String sessionId;
+    private String provider;
+    private String modelName;
     private EventType eventType;
     private String toolCallId;
     private String toolName;
@@ -24,7 +28,12 @@ public class ToolCallRequestEvent implements Serializable {
     }
 
     @Builder
-    public ToolCallRequestEvent(EventType eventType, String toolCallId, String toolName, String arguments) {
+    public ToolCallRequestEvent(String userId, String sessionId, String provider, String modelName,
+                                 EventType eventType, String toolCallId, String toolName, String arguments) {
+        this.userId = userId;
+        this.sessionId = sessionId;
+        this.provider = provider;
+        this.modelName = modelName;
         this.eventType = eventType;
         this.toolCallId = toolCallId;
         this.toolName = toolName;

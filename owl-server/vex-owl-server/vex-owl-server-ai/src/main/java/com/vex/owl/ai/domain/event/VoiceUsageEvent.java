@@ -13,6 +13,9 @@ import java.io.Serializable;
 @Setter
 public class VoiceUsageEvent implements Serializable {
 
+    private String userId;
+    private String sessionId;
+    private String provider;
     private String modelName;
     private Integer inputChars;
     private Integer outputDuration;
@@ -27,8 +30,12 @@ public class VoiceUsageEvent implements Serializable {
     }
 
     @Builder
-    public VoiceUsageEvent(String modelName, Integer inputChars, Integer outputDuration,
-                           Integer outputSize, Integer callCount, String voiceId, String audioFormat) {
+    public VoiceUsageEvent(String userId, String sessionId, String provider, String modelName,
+                           Integer inputChars, Integer outputDuration, Integer outputSize,
+                           Integer callCount, String voiceId, String audioFormat) {
+        this.userId = userId;
+        this.sessionId = sessionId;
+        this.provider = provider;
         this.modelName = modelName;
         this.inputChars = inputChars;
         this.outputDuration = outputDuration;

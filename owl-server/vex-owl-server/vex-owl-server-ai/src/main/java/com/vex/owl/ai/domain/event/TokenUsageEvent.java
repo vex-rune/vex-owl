@@ -15,6 +15,8 @@ import java.io.Serializable;
 @ToString
 public class TokenUsageEvent implements Serializable {
 
+    private String userId;
+    private String sessionId;
     private String provider;
     private String modelName;
     private Integer promptTokens;
@@ -27,8 +29,10 @@ public class TokenUsageEvent implements Serializable {
     }
 
     @Builder
-    public TokenUsageEvent(String provider, String modelName, Integer promptTokens,
-                          Integer completionTokens, Integer totalTokens) {
+    public TokenUsageEvent(String userId, String sessionId, String provider, String modelName,
+                           Integer promptTokens, Integer completionTokens, Integer totalTokens) {
+        this.userId = userId;
+        this.sessionId = sessionId;
         this.provider = provider;
         this.modelName = modelName;
         this.promptTokens = promptTokens;

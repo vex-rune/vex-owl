@@ -2,6 +2,7 @@ package com.vex.owl.ai.domain.context;
 
 import com.vex.owl.ai.domain.llm.repo.ModelProperties;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 
 import java.util.HashMap;
@@ -14,10 +15,12 @@ import java.util.UUID;
  * <p>纯数据对象，不持有任何 Spring Bean 引用。
  * 需要获取 AiManager/ModelProductFactory 时通过方法参数传入。</p>
  */
+@Data
+@Builder
 public class RunContext {
 
     @Getter
-    private final String id;
+    private String id;
     @Getter
     private Map<String, String> headers;
     @Getter
@@ -27,29 +30,15 @@ public class RunContext {
     @Getter
     private String sessionId;
     @Getter
-    private final ModelProperties modelProperties;
+    private ModelProperties modelProperties;
     @Getter
-    private int step;
+    @Builder.Default
+    private int step = 1;
     @Getter
-    private final long startTime;
+    @Builder.Default
+    private long startTime = System.currentTimeMillis();
     @Getter
     private String previousResult;
-
-    @Builder
-    public RunContext(ModelProperties modelProperties,
-                      Map<String, String> headers,
-                      Map<String, String> params,
-                      String userId,
-                      String sessionId) {
-        this.id = UUID.randomUUID().toString();
-        this.headers = headers != null ? new HashMap<>(headers) : new HashMap<>();
-        this.params = params != null ? new HashMap<>(params) : new HashMap<>();
-        this.userId = userId;
-        this.sessionId = sessionId;
-        this.modelProperties = modelProperties;
-        this.step = 1;
-        this.startTime = System.currentTimeMillis();
-    }
 
     public RunContext addStep() {
         this.step++;
@@ -63,16 +52,15 @@ public class RunContext {
 
     public Map<String, Object> toMap() {
         HashMap<String, Object> map = new HashMap<>();
-        map.put("id", id);
-        map.put("headers", headers);
-        map.put("params", params);
-        map.put("userId", userId);
-        map.put("sessionId", sessionId);
+        map.put("id", id!=null?id:"");
+        map.put("headers", headers!=null?headers:"");
+        map.put("params", params!=null?params:"");
+        map.put("userId", userId!=null?userId:"");
+        map.put("sessionId", sessionId!=null?sessionId:"");
         map.put("step", step);
         map.put("startTime", startTime);
         map.put("provider", modelProperties.getProviderCode());
         map.put("model", modelProperties.getModelName());
-        map.put("baseUrl", modelProperties.getBaseUrl());
         return map;
     }
 }

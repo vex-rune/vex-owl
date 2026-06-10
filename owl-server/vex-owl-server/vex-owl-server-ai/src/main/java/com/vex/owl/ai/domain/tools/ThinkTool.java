@@ -8,6 +8,9 @@ import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.ai.chat.model.ToolContext;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+import java.util.Optional;
+
 /**
  * 内置思考工具
  *
@@ -20,6 +23,11 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ThinkTool {
+
+    private static final String KEY_USER_ID = "userId";
+    private static final String KEY_SESSION_ID = "sessionId";
+    private static final String KEY_PROVIDER = "provider";
+    private static final String KEY_MODEL = "model";
 
     private final EventPublisher eventPublisher;
 
@@ -37,7 +45,13 @@ public class ThinkTool {
 
         log.debug("[Think] {}", thought);
 
+        Map<String, Object> ctx = toolContext != null ? toolContext.getContext() : Map.of();
+
         eventPublisher.publish("ChatContentEvent", ChatContentEvent.builder()
+                .userId(getString(ctx, KEY_USER_ID))
+                .sessionId(getString(ctx, KEY_SESSION_ID))
+                .provider(getString(ctx, KEY_PROVIDER))
+                .modelName(getString(ctx, KEY_MODEL))
                 .content(thought)
                 .stream(false)
                 .finish(false)
@@ -45,5 +59,10 @@ public class ThinkTool {
                 .build());
 
         return "思考已记录";
+    }
+
+    private static String getString(Map<String, Object> map, String key) {
+        Object value = map.get(key);
+        return value != null ? value.toString() : "";
     }
 }
