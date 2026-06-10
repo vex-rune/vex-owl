@@ -1,0 +1,2 @@
+com.vex.security.web.filter.TraceIdFilterAutoConfiguration
+com.vex.security.web.filter.AuthUserFilterAutoConfiguration

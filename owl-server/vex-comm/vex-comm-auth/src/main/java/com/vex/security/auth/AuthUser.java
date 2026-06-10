@@ -1,4 +1,4 @@
-package com.vex.security;
+package com.vex.security.auth;
 
 import lombok.Builder;
 import lombok.Data;
@@ -10,45 +10,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 登录用户视图对象
+ * JWT 认证用户
  */
 @Data
 @Builder
-public class LoginUser implements Serializable {
+public class JwtUser implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 用户ID
-     */
     private String subjectId;
-
-    /**
-     * 昵称
-     */
     private String nickName;
-
-    /**
-     * 手机号
-     */
     private String phone;
-
-    /**
-     * email
-     */
     private String email;
-
-    /**
-     * 权限/角色集合
-     */
     private Collection<String> authorities;
-
-    /**
-     * 角色
-     */
     private String role;
-
 
     public Map<String, Object> toMap() {
         HashMap<String, Object> map = new HashMap<>();

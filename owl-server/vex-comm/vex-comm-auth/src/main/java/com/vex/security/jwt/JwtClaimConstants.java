@@ -1,8 +1,8 @@
-package com.vex.security.auth;
+package com.vex.security.jwt;
 
-public final class AuthConstants {
+public final class JwtClaimConstants {
 
-    private AuthConstants() {}
+    private JwtClaimConstants() {}
 
     public static final String VEX_SYSTEM = "vex-owl";
 

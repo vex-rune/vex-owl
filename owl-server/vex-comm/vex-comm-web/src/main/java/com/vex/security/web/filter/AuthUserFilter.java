@@ -1,8 +1,8 @@
-package com.vex.security.auth.filter;
+package com.vex.security.web.filter;
 
 import com.vex.security.auth.AuthHeaderConstants;
-import com.vex.security.auth.AuthHeaders;
-import com.vex.security.auth.RequestUserHolder;
+import com.vex.event.CurrentTrace;
+import com.vex.event.CurrentUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -14,11 +14,6 @@ import reactor.core.publisher.Mono;
 
 /**
  * 从 Gateway 转发的 Header 中提取用户信息，注入 Reactor Context
- *
- * <p>所有下游代码可通过 {@link RequestUserHolder#current()} 获取当前用户，
- * 无需逐层传递 @RequestHeader 参数。</p>
- *
- * <p>由 {@link AuthUserFilterAutoConfiguration} 自动注册，无需手动配置。</p>
  */
 @Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -36,20 +31,23 @@ public class AuthUserFilter implements WebFilter {
         String email = request.getHeaders().getFirst(AuthHeaderConstants.HEADER_EMAIL);
         String nickname = request.getHeaders().getFirst(AuthHeaderConstants.HEADER_NICKNAME);
 
-        AuthHeaders authHeaders = AuthHeaders.builder()
-                .authEnabled(userId != null && !userId.isBlank())
-                .userId(userId != null ? userId : "")
-                .userName(userName != null ? userName : "")
-                .userGroup(userGroup != null ? userGroup : AuthHeaderConstants.DEFAULT_USER_GROUP)
-                .loginTime(loginTime != null ? loginTime : AuthHeaderConstants.DEFAULT_LOGIN_TIME)
-                .role(role != null ? role : "")
-                .email(email != null ? email : "")
-                .nickname(nickname != null ? nickname : "")
-                .build();
-
-        log.debug("AuthUserFilter | userId={} | path={}", authHeaders.getUserId(), request.getURI().getPath());
-
         return chain.filter(exchange)
-                .contextWrite(ctx -> ctx.put("auth.headers", authHeaders));
+                .contextWrite(ctx -> {
+                    CurrentTrace trace = ctx.hasKey("trace.context")
+                            ? ctx.get("trace.context") : CurrentTrace.anonymous();
+                    CurrentUser user = CurrentUser.builder()
+                            .authEnabled(userId != null && !userId.isBlank())
+                            .userId(userId != null ? userId : "")
+                            .userName(userName != null ? userName : "")
+                            .userGroup(userGroup != null ? userGroup : AuthHeaderConstants.DEFAULT_USER_GROUP)
+                            .loginTime(loginTime != null ? loginTime : AuthHeaderConstants.DEFAULT_LOGIN_TIME)
+                            .role(role != null ? role : "")
+                            .email(email != null ? email : "")
+                            .nickname(nickname != null ? nickname : "")
+                            .sessionId(trace.getSessionId())
+                            .traceId(trace.getTraceId())
+                            .build();
+                    return ctx.put("user.context", user);
+                });
     }
 }
