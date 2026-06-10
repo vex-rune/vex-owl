@@ -3,7 +3,6 @@ package com.vex.owl.ai.domain.agent;
 import com.vex.owl.ai.domain.context.RunContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
@@ -38,8 +37,8 @@ public class SimpleChatAgent extends BaseAgent {
                         始终保持专业、友善、有耐心，努力成为用户信赖的 AI 助手。
                         """;
 
-    public SimpleChatAgent(List<ToolCallback> tools, List<Advisor> advisors) {
-        super("SimpleAgent", "通用助手", tools, advisors);
+    public SimpleChatAgent(List<ToolCallback> tools) {
+        super("SimpleAgent", "通用助手", tools);
     }
 
     @Override
@@ -55,7 +54,8 @@ public class SimpleChatAgent extends BaseAgent {
     @Override
     public String call(String input, ChatClient client, RunContext runContext) {
         return spec(input, client, runContext)
-                .call().content();
+                .call()
+                .content();
     }
 
     @Override

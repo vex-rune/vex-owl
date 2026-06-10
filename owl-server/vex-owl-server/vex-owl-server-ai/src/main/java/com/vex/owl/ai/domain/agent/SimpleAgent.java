@@ -3,7 +3,6 @@ package com.vex.owl.ai.domain.agent;
 import com.vex.owl.ai.domain.context.RunContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
@@ -16,8 +15,8 @@ public class SimpleAgent extends BaseAgent {
 
     private static final String SYSTEM_PROMPT = "You are a helpful assistant.";
 
-    public SimpleAgent(List<ToolCallback> tools, List<Advisor> advisors) {
-        super("SimpleAgent", "通用助手", tools, advisors);
+    public SimpleAgent(List<ToolCallback> tools) {
+        super("SimpleAgent", "通用助手", tools);
     }
 
     @Override

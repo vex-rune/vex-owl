@@ -3,7 +3,6 @@ package com.vex.owl.ai.domain;
 import com.vex.owl.ai.domain.agent.Agent;
 import com.vex.owl.ai.domain.agent.AgentDefinition;
 import com.vex.owl.ai.domain.context.RunContext;
-import com.vex.owl.ai.domain.tools.AgentAdvisor;
 import com.vex.owl.ai.domain.tools.ToolDefinition;
 import org.springframework.ai.chat.client.ChatClient;
 
@@ -33,10 +32,6 @@ public interface AiManager {
      * 根据 RunContext 创建 ChatClient
      */
     ChatClient createClient(RunContext runContext);
-
-    // === Advisor ===
-
-    List<AgentAdvisor> getAdvisors(String userId);
 
     // === 汇总 ===
 

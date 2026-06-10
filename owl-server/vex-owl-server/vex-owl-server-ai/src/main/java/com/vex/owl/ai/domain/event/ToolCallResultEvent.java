@@ -17,10 +17,10 @@ public class ToolCallResultEvent implements Serializable {
     private String sessionId;
     private String provider;
     private String modelName;
-    private ToolCallRequestEvent.EventType eventType;
     private String toolCallId;
     private String toolName;
     private String result;
+    private boolean finish;
     private long timestamp;
 
     public ToolCallResultEvent() {
@@ -29,16 +29,15 @@ public class ToolCallResultEvent implements Serializable {
 
     @Builder
     public ToolCallResultEvent(String userId, String sessionId, String provider, String modelName,
-                               ToolCallRequestEvent.EventType eventType,
-                               String toolCallId, String toolName, String result) {
+                               String toolCallId, String toolName, String result, boolean finish) {
         this.userId = userId;
         this.sessionId = sessionId;
         this.provider = provider;
         this.modelName = modelName;
-        this.eventType = eventType;
         this.toolCallId = toolCallId;
         this.toolName = toolName;
         this.result = result;
+        this.finish = finish;
         this.timestamp = System.currentTimeMillis();
     }
 }

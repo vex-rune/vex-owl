@@ -3,7 +3,7 @@ package com.vex.owl.ai.api;
 import java.util.List;
 import java.util.Map;
 
-import com.vex.event.CurrentUserResolver;
+import com.vex.event.CurrentResolver;
 import com.vex.model.ApiResponse;
 import com.vex.owl.ai.api.request.FreeChatMessageRequest;
 import com.vex.owl.ai.api.request.PipelineRequest;
@@ -38,7 +38,7 @@ public class ChatApi {
     private final UserMemoryService userMemoryService;
     private final SequentialPipeline sequentialPipeline;
     private final FreeModelPropertiesConfig modelProperties;
-    private final CurrentUserResolver currentUserResolver;
+    private final CurrentResolver currentUserResolver;
 
     // ==================== 对话 ====================
 

@@ -1,1 +1,2 @@
 com.vex.security.config.JwtSecurityAutoConfiguration
+com.vex.security.auth.CurrentResolverAutoConfiguration

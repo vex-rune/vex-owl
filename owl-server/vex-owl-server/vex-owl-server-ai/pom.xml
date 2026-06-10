@@ -62,10 +62,10 @@
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
         </dependency>
 
-        <!-- Vex Common Web (含 auth + filter + RequestUserHolder) -->
+        <!-- Vex Common Auth (含 CurrentResolver) -->
         <dependency>
             <groupId>com.vex</groupId>
-            <artifactId>vex-comm-web</artifactId>
+            <artifactId>vex-comm-auth</artifactId>
             <version>1.0.0</version>
         </dependency>
 

@@ -2,7 +2,7 @@ package com.vex.owl.ai.api.admin;
 
 import java.time.LocalDate;
 
-import com.vex.event.CurrentUserResolver;
+import com.vex.event.CurrentResolver;
 import com.vex.model.ApiResponse;
 import com.vex.owl.ai.domain.usage.UsageRecordManager;
 import com.vex.owl.ai.domain.usage.UsageStatResponse;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class UsageAdminApi {
 
     private final UsageRecordManager usageRecordManager;
-    private final CurrentUserResolver currentUserResolver;
+    private final CurrentResolver currentUserResolver;
 
     /**
      * 使用量-查询

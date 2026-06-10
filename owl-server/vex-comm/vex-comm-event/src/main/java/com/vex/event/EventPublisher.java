@@ -13,15 +13,15 @@ import java.util.Optional;
 public class EventPublisher {
 
     private final ApplicationEventPublisher springPublisher;
-    private final ObjectProvider<CurrentUserResolver> currentUserResolver;
+    private final ObjectProvider<CurrentResolver> currentUserResolver;
 
     public <T extends Serializable> void publish(String eventType, T payload) {
-        Optional<CurrentUserResolver> opt = currentUserResolver.stream().findFirst();
+        Optional<CurrentResolver> opt = currentUserResolver.stream().findFirst();
 
         EventMetadata metadata;
 
         if (opt.isPresent()) {
-            CurrentUserResolver resolver = opt.get();
+            CurrentResolver resolver = opt.get();
             metadata = EventMetadata.of(eventType,
                     resolver.resolveCurrentUser().orElse(CurrentUser.anonymous()),
                     resolver.resolveCurrentTrace().orElse(CurrentTrace.anonymous())

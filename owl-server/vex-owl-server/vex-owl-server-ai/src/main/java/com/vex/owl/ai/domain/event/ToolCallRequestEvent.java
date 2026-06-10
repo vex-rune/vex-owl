@@ -17,7 +17,6 @@ public class ToolCallRequestEvent implements Serializable {
     private String sessionId;
     private String provider;
     private String modelName;
-    private EventType eventType;
     private String toolCallId;
     private String toolName;
     private String arguments;
@@ -29,20 +28,14 @@ public class ToolCallRequestEvent implements Serializable {
 
     @Builder
     public ToolCallRequestEvent(String userId, String sessionId, String provider, String modelName,
-                                 EventType eventType, String toolCallId, String toolName, String arguments) {
+                                 String toolCallId, String toolName, String arguments) {
         this.userId = userId;
         this.sessionId = sessionId;
         this.provider = provider;
         this.modelName = modelName;
-        this.eventType = eventType;
         this.toolCallId = toolCallId;
         this.toolName = toolName;
         this.arguments = arguments;
         this.timestamp = System.currentTimeMillis();
-    }
-
-    public enum EventType {
-        BEFORE_EXECUTE,
-        AFTER_EXECUTE
     }
 }

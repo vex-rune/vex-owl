@@ -1,6 +1,6 @@
 package com.vex.owl.ai.api.admin;
 
-import com.vex.event.CurrentUserResolver;
+import com.vex.event.CurrentResolver;
 import com.vex.model.ApiResponse;
 import com.vex.owl.ai.domain.AiManager;
 import com.vex.owl.ai.domain.agent.AgentDefinition;
@@ -21,7 +21,7 @@ import java.util.List;
 public class AiManagerAdminApi {
 
     private final AiManager aiManager;
-    private final CurrentUserResolver currentUserResolver;
+    private final CurrentResolver currentUserResolver;
 
     /**
      * Agent-查询所有

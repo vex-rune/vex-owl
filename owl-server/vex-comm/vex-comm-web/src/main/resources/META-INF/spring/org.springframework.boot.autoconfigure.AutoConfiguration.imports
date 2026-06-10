@@ -1,2 +1,1 @@
-com.vex.security.web.filter.TraceIdFilterAutoConfiguration
-com.vex.security.web.filter.AuthUserFilterAutoConfiguration
+# This module is deprecated. Use vex-comm-auth instead.

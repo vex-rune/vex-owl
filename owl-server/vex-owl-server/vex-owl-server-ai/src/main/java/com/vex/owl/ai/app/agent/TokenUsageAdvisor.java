@@ -38,12 +38,21 @@ public class TokenUsageAdvisor implements AgentAdvisor {
     private static final String KEY_USER_ID = "userId";
     private static final String KEY_SESSION_ID = "sessionId";
     private static final String KEY_PROVIDER = "provider";
+    private static final String KEY_EXECUTED = "tokenUsageAdvisor.executed";
 
     private final EventPublisher eventPublisher;
 
     @Override
     public ChatClientResponse adviseCall(ChatClientRequest chatClientRequest,
                                          CallAdvisorChain callAdvisorChain) {
+        Map<String, Object> ctx = chatClientRequest.context();
+
+        // 防重入：已执行过则直接跳过
+        if (Boolean.TRUE.equals(ctx.get(KEY_EXECUTED))) {
+            return callAdvisorChain.nextCall(chatClientRequest);
+        }
+        ctx.put(KEY_EXECUTED, true);
+
         ChatClientResponse response = callAdvisorChain.nextCall(chatClientRequest);
 
         ChatResponse chatResponse = response.chatResponse();
@@ -58,7 +67,6 @@ public class TokenUsageAdvisor implements AgentAdvisor {
         }
 
         if (FINISH_REASON_STOP.equals(result.getMetadata().getFinishReason())) {
-            Map<String, Object> ctx = chatClientRequest.context();
             TokenUsageEvent event = TokenUsageEvent.builder()
                     .userId(getString(ctx, KEY_USER_ID))
                     .sessionId(getString(ctx, KEY_SESSION_ID))
@@ -89,6 +97,14 @@ public class TokenUsageAdvisor implements AgentAdvisor {
             ChatClientRequest chatClientRequest,
             StreamAdvisorChain streamAdvisorChain) {
 
+        Map<String, Object> ctx = chatClientRequest.context();
+
+        // 防重入：已执行过则直接跳过
+        if (Boolean.TRUE.equals(ctx.get(KEY_EXECUTED))) {
+            return streamAdvisorChain.nextStream(chatClientRequest);
+        }
+        ctx.put(KEY_EXECUTED, true);
+
         AtomicInteger promptTokens = new AtomicInteger(0);
         AtomicInteger completionTokens = new AtomicInteger(0);
         AtomicInteger totalTokens = new AtomicInteger(0);
@@ -116,7 +132,6 @@ public class TokenUsageAdvisor implements AgentAdvisor {
         }).doOnComplete(() -> {
             log.debug("finishReason:{}", FINISH_INFO_STREAM_COMPLETED);
 
-            Map<String, Object> ctx = chatClientRequest.context();
             TokenUsageEvent event = TokenUsageEvent.builder()
                     .userId(getString(ctx, KEY_USER_ID))
                     .sessionId(getString(ctx, KEY_SESSION_ID))

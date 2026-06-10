@@ -44,6 +44,7 @@ public class MemoryAdvisor implements AgentAdvisor {
     private static final String KEY_SESSION_ID = "sessionId";
     private static final String KEY_MEMORY_INDEX = "memoryIndex";
     private static final String KEY_HISTORY_SIZE = "historySize";
+    private static final String KEY_EXECUTED = "memoryAdvisor.executed";
 
     private static final int DEFAULT_HISTORY_SIZE = 20;
     private static final int DEFAULT_MEMORY_INDEX = 10;
@@ -55,8 +56,18 @@ public class MemoryAdvisor implements AgentAdvisor {
     @Override
     public ChatClientResponse adviseCall(ChatClientRequest request, CallAdvisorChain chain) {
         Map<String, Object> ctx = request.context();
+
+        // 防重入：已执行过则直接跳过
+        if (Boolean.TRUE.equals(ctx.get(KEY_EXECUTED))) {
+            return chain.nextCall(request);
+        }
+        ctx.put(KEY_EXECUTED, true);
+
         String userId = getString(ctx, KEY_USER_ID);
         String sessionId = getString(ctx, KEY_SESSION_ID);
+
+        // 执行前发送用户输入事件
+        publishUserInputEvent(userId, sessionId, ctx);
 
         // 向 prompt instructions 添加记忆上下文
         injectMemoryContext(request, userId, sessionId, ctx);
@@ -64,19 +75,24 @@ public class MemoryAdvisor implements AgentAdvisor {
         log.debug("MemoryAdvisor | userId={} | sessionId={}", userId, sessionId);
 
         // 执行调用
-        ChatClientResponse response = chain.nextCall(request);
-
-        // 发送消息保存事件
-        publishMessageEvent(userId, sessionId, ctx);
-
-        return response;
+        return chain.nextCall(request);
     }
 
     @Override
     public Flux<ChatClientResponse> adviseStream(ChatClientRequest request, StreamAdvisorChain chain) {
         Map<String, Object> ctx = request.context();
+
+        // 防重入：已执行过则直接跳过
+        if (Boolean.TRUE.equals(ctx.get(KEY_EXECUTED))) {
+            return chain.nextStream(request);
+        }
+        ctx.put(KEY_EXECUTED, true);
+
         String userId = getString(ctx, KEY_USER_ID);
         String sessionId = getString(ctx, KEY_SESSION_ID);
+
+        // 执行前发送用户输入事件
+        publishUserInputEvent(userId, sessionId, ctx);
 
         // 向 prompt instructions 添加记忆上下文
         injectMemoryContext(request, userId, sessionId, ctx);
@@ -162,7 +178,10 @@ public class MemoryAdvisor implements AgentAdvisor {
 
     // ==================== 发送消息事件 ====================
 
-    private void publishMessageEvent(String userId, String sessionId, Map<String, Object> ctx) {
+    /**
+     * 执行前发送用户输入事件
+     */
+    private void publishUserInputEvent(String userId, String sessionId, Map<String, Object> ctx) {
         String userText = extractPromptText(ctx);
         if (sessionId == null || sessionId.isEmpty() || userText == null || userText.isEmpty()) return;
 
@@ -172,6 +191,7 @@ public class MemoryAdvisor implements AgentAdvisor {
                 .messageType("USER")
                 .textContent(userText)
                 .build());
+        log.debug("发送用户输入事件 userId={} sessionId={}", userId, sessionId);
     }
 
     // ==================== 工具方法 ====================

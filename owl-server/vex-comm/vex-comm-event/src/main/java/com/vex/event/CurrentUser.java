@@ -23,8 +23,6 @@ public class CurrentUser implements Serializable {
     private String role;
     private String email;
     private String nickname;
-    private String sessionId;
-    private String traceId;
 
     public static CurrentUser anonymous() {
         return CurrentUser.builder()
@@ -36,8 +34,6 @@ public class CurrentUser implements Serializable {
                 .role("")
                 .email("")
                 .nickname("")
-                .sessionId("")
-                .traceId("")
                 .build();
     }
 }

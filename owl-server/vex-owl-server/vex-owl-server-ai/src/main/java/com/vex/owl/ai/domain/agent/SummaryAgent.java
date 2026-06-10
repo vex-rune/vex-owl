@@ -3,7 +3,6 @@ package com.vex.owl.ai.domain.agent;
 import com.vex.owl.ai.domain.context.RunContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
@@ -30,8 +29,8 @@ public class SummaryAgent extends BaseAgent {
             - 关键数据和结论必须保留
             """;
 
-    public SummaryAgent(List<ToolCallback> tools, List<Advisor> advisors) {
-        super("SummaryAgent", "专注于内容总结、提炼要点、生成摘要", tools, advisors);
+    public SummaryAgent(List<ToolCallback> tools) {
+        super("SummaryAgent", "专注于内容总结、提炼要点、生成摘要", tools);
     }
 
     @Override
