@@ -31,7 +31,7 @@ public class LoggingFilter implements GlobalFilter, Ordered {
         String clientIp = getClientIp(exchange);
         
         // 获取用户ID（由JWT过滤器添加）
-        String userId = request.getHeaders().getFirst("X-User-Id");
+        String userId = request.getHeaders().getFirst("Vex-User-Id");
         
         // 记录请求开始时间
         long startTime = System.currentTimeMillis();

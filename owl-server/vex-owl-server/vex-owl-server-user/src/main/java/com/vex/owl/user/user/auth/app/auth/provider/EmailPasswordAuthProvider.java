@@ -5,7 +5,7 @@ import com.vex.owl.user.user.auth.domain.account.model.AccountEntity;
 import com.vex.owl.user.user.auth.domain.account.model.AccountType;
 import com.vex.owl.user.user.auth.domain.subject.SubjectManager;
 import com.vex.owl.user.user.auth.domain.subject.entity.SubjectEntity;
-import com.vex.security.LoginUser;
+import com.vex.security.auth.AuthUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -58,7 +58,7 @@ public class EmailPasswordAuthProvider implements AuthenticationProvider {
 
         SubjectEntity subject = optSub.orElseThrow(() -> new AccountExpiredException("主体不存在"));
 
-        LoginUser.builder()
+        AuthUser.builder()
                 .subjectId(subject.getId())
                 .nickName(subject.getNickname())
                 .phone(null)
@@ -67,7 +67,7 @@ public class EmailPasswordAuthProvider implements AuthenticationProvider {
                 .build();
 
         // 5. 返回已认证对象
-        return new UsernamePasswordAuthenticationToken(LoginUser.builder()
+        return new UsernamePasswordAuthenticationToken(AuthUser.builder()
                 .subjectId(subject.getId())
                 .nickName(subject.getNickname())
                 .phone(null)

@@ -51,7 +51,7 @@ public class NotificationApp {
             helper.setSubject(subject);
             helper.setText(content, true);
             mailSender.send(mimeMessage);
-            log.info("邮件发送成功: to={}, subject={}", to, subject);
+            log.debug("邮件发送成功: to={}, subject={}", to, subject);
         } catch (Exception e) {
             log.error("邮件发送失败: to={}, error={}", to, e.getMessage());
             throw new RuntimeException("邮件发送失败", e);

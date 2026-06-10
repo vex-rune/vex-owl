@@ -10,11 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
 /**
- * SSE 事件订阅端点
- *
- * <p>客户端通过此端点订阅实时事件（工具调用、Token 使用量等）</p>
- *
- * <p>用法：GET /api/ai/events?sessionId=xxx</p>
+ * AI事件订阅
  */
 @RestController
 @RequestMapping("/api/ai")
@@ -23,10 +19,13 @@ public class SseApi {
 
     private final SseEventBroadcaster broadcaster;
 
+    /**
+     * 事件-订阅指定会话
+     */
     @GetMapping(value = "/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> events(@RequestParam String sessionId) {
-        return broadcaster.subscribe(sessionId)
-                .doOnCancel(() -> broadcaster.unsubscribe(sessionId))
-                .doOnTerminate(() -> broadcaster.unsubscribe(sessionId));
+    public Flux<String> events(@RequestParam String userId) {
+        return broadcaster.subscribe(userId)
+                .doOnCancel(() -> broadcaster.unsubscribe(userId))
+                .doOnTerminate(() -> broadcaster.unsubscribe(userId));
     }
 }

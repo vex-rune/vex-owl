@@ -17,12 +17,11 @@ import com.vex.owl.ai.domain.chat.UserMemoryService;
 import com.vex.owl.ai.domain.pipeline.SequentialPipeline;
 import com.vex.security.auth.AuthHeaderConstants;
 import jakarta.validation.Valid;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
 
 /**
  * AI 对话业务接口
@@ -42,16 +41,17 @@ public class ChatApi {
 
     // ==================== 对话 ====================
 
-    @PostMapping(value = "/free", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> chat(@RequestHeader(AuthHeaderConstants.HEADER_USER_ID) String userId,
-                             @RequestHeader(value = "X-Session-Id", required = false) String sessionId,
-                             @RequestBody FreeChatMessageRequest request) {
-        return chatApp.chat(userId, sessionId, request.getPrompt())
-                .onErrorResume(e -> Flux.just("系统错误：" + e.getMessage()));
+    /**
+     * 对话-自由对话
+     */
+    @PostMapping(value = "/free")
+    public ApiResponse<String> chat(@RequestHeader(AuthHeaderConstants.HEADER_USER_ID) String userId,
+                                    @Valid @RequestBody FreeChatMessageRequest request) {
+        return ApiResponse.success(chatApp.chat(userId, request.getUserMessage()));
     }
 
     /**
-     * 顺序管道编排
+     * 管道编排-顺序执行
      */
     @PostMapping(value = "/pipeline")
     public ApiResponse<SequentialPipeline.Result> pipeline(
@@ -61,7 +61,7 @@ public class ChatApi {
 
         RunContext context = RunContext.builder()
                 .modelProperties(modelProperties)
-                .tenantId(userId)
+                .userId(userId)
                 .sessionId(sessionId)
                 .headers(Map.of())
                 .params(Map.of())
@@ -73,6 +73,9 @@ public class ChatApi {
 
     // ==================== 会话管理 ====================
 
+    /**
+     * 会话-查询所有
+     */
     @GetMapping("/sessions")
     public ApiResponse<List<ChatSessionEntity>> sessions(
             @RequestHeader(AuthHeaderConstants.HEADER_USER_ID) String userId,
@@ -82,6 +85,9 @@ public class ChatApi {
         return ApiResponse.success(sessions.getContent());
     }
 
+    /**
+     * 会话-查询指定会话
+     */
     @GetMapping("/sessions/{sessionId}")
     public ApiResponse<ChatSessionEntity> session(
             @RequestHeader(AuthHeaderConstants.HEADER_USER_ID) String userId,
@@ -91,6 +97,9 @@ public class ChatApi {
                 .orElse(ApiResponse.error("SESSION_NOT_FOUND", null, "会话不存在"));
     }
 
+    /**
+     * 会话-更新
+     */
     @PutMapping("/sessions/{sessionId}")
     public ApiResponse<Void> updateSession(
             @RequestHeader(AuthHeaderConstants.HEADER_USER_ID) String userId,
@@ -103,6 +112,9 @@ public class ChatApi {
         return ApiResponse.success(null);
     }
 
+    /**
+     * 会话-删除
+     */
     @DeleteMapping("/sessions/{sessionId}")
     public ApiResponse<Void> deleteSession(
             @RequestHeader(AuthHeaderConstants.HEADER_USER_ID) String userId,
@@ -116,6 +128,9 @@ public class ChatApi {
 
     // ==================== 消息历史 ====================
 
+    /**
+     * 消息-查询指定会话的消息
+     */
     @GetMapping("/sessions/{sessionId}/messages")
     public ApiResponse<List<ChatMessageEntity>> messages(
             @RequestHeader(AuthHeaderConstants.HEADER_USER_ID) String userId,
@@ -125,6 +140,9 @@ public class ChatApi {
 
     // ==================== 用户记忆 ====================
 
+    /**
+     * 记忆-查询用户记忆
+     */
     @GetMapping("/memories")
     public ApiResponse<List<UserMemoryEntity>> memories(
             @RequestHeader(AuthHeaderConstants.HEADER_USER_ID) String userId,
@@ -135,6 +153,9 @@ public class ChatApi {
         return ApiResponse.success(list);
     }
 
+    /**
+     * 记忆-新增用户记忆
+     */
     @PostMapping("/memories")
     public ApiResponse<UserMemoryEntity> addMemory(
             @RequestHeader(AuthHeaderConstants.HEADER_USER_ID) String userId,
@@ -144,6 +165,9 @@ public class ChatApi {
         return ApiResponse.success(entity);
     }
 
+    /**
+     * 记忆-删除用户记忆
+     */
     @DeleteMapping("/memories/{category}")
     public ApiResponse<Void> clearMemories(
             @RequestHeader(AuthHeaderConstants.HEADER_USER_ID) String userId,
@@ -154,7 +178,10 @@ public class ChatApi {
 
     // ==================== 请求体 ====================
 
-    @lombok.Data
+    /**
+     * 记忆-新增用户记忆请求体
+     */
+    @Data
     public static class AddMemoryRequest {
         @jakarta.validation.constraints.NotBlank
         private String category;

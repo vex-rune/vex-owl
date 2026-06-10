@@ -32,8 +32,8 @@ public interface AiModelRepository extends JpaRepository<ModelEntity, String> {
     /**
      * 按租户ID查询该租户下所有模型
      *
-     * @param tenantId 租户ID
+     * @param userId 租户ID
      * @return 该租户下的模型列表
      */
-    List<ModelEntity> findByTenantId(String tenantId);
+    List<ModelEntity> findByUserId(String userId);
 }

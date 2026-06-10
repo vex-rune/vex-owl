@@ -2,7 +2,7 @@ package com.vex.owl.user.user.auth.app.auth.provider;
 
 import com.vex.owl.user.user.auth.domain.account.AccountManager;
 import com.vex.owl.user.user.auth.domain.subject.SubjectManager;
-import com.vex.security.LoginUser;
+import com.vex.security.auth.AuthUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -45,7 +45,7 @@ public class AdminAuthProvider implements AuthenticationProvider {
         // 3. 封装权限
         List<SimpleGrantedAuthority> auths = Collections.singletonList(USER_GRANTED_AUTHORITY);
 
-        LoginUser user = LoginUser.builder()
+        AuthUser user = AuthUser.builder()
                 .subjectId("admin")
                 .nickName("admin")
                 .authorities(Collections.singletonList("admin"))

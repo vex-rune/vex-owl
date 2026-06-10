@@ -29,7 +29,7 @@ class ChatManagerTest extends SpringIntegrationTest {
         ChatSessionEntity session = chatManager.createSession("tenant-1", "测试会话");
 
         assertThat(session.getId()).isNotBlank();
-        assertThat(session.getTenantId()).isEqualTo("tenant-1");
+        assertThat(session.getUserId()).isEqualTo("tenant-1");
         assertThat(session.getTitle()).isEqualTo("测试会话");
         assertThat(session.getStatus()).isEqualTo("ACTIVE");
         assertThat(session.getMessageCount()).isEqualTo(0);
@@ -43,22 +43,22 @@ class ChatManagerTest extends SpringIntegrationTest {
     }
 
     @Test
-    void getSession_shouldReturnExistingSession() {
-        ChatSessionEntity created = chatManager.getSession("tenant-1", "CHAT");
+    void findSession_shouldReturnExistingSessionByType() {
+        ChatSessionEntity created = chatManager.createSessionByType("tenant-1", "CHAT");
 
-        ChatSessionEntity fetched = chatManager.getSession("tenant-1", "CHAT");
+        ChatSessionEntity fetched = chatManager.createSessionByType("tenant-1", "CHAT");
 
         assertThat(fetched.getId()).isEqualTo(created.getId());
-        assertThat(fetched.getTenantId()).isEqualTo("tenant-1");
+        assertThat(fetched.getUserId()).isEqualTo("tenant-1");
         assertThat(fetched.getSessionType()).isEqualTo("CHAT");
     }
 
     @Test
-    void getSession_shouldCreateNewIfNotExists() {
-        ChatSessionEntity session = chatManager.getSession("tenant-1", "NEW_TYPE");
+    void findSession_ByType_shouldCreateNewIfNotExists() {
+        ChatSessionEntity session = chatManager.createSessionByType("tenant-1", "NEW_TYPE");
 
         assertThat(session.getId()).isNotBlank();
-        assertThat(session.getTenantId()).isEqualTo("tenant-1");
+        assertThat(session.getUserId()).isEqualTo("tenant-1");
         assertThat(session.getSessionType()).isEqualTo("NEW_TYPE");
         assertThat(session.getStatus()).isEqualTo("ACTIVE");
     }
@@ -69,13 +69,13 @@ class ChatManagerTest extends SpringIntegrationTest {
 
         List<ChatMessageEntity> messages = List.of(
                 ChatMessageEntity.builder()
-                        .tenantId("tenant-1")
+                        .userId("tenant-1")
                         .conversationId(session.getId())
                         .messageType("USER")
                         .textContent("你好")
                         .build(),
                 ChatMessageEntity.builder()
-                        .tenantId("tenant-1")
+                        .userId("tenant-1")
                         .conversationId(session.getId())
                         .messageType("ASSISTANT")
                         .textContent("你好！")
@@ -119,9 +119,9 @@ class ChatManagerTest extends SpringIntegrationTest {
         assertThat(messages.get(1).getTextContent()).isEqualTo("第二条");
     }
 
-    private ChatMessageEntity createMessage(String sessionId, String tenantId, String type, String text) {
+    private ChatMessageEntity createMessage(String sessionId, String userId, String type, String text) {
         return ChatMessageEntity.builder()
-                .tenantId(tenantId)
+                .userId(userId)
                 .conversationId(sessionId)
                 .messageType(type)
                 .textContent(text)

@@ -1,5 +1,6 @@
 package com.vex.owl.ai.app.agent;
 
+import com.vex.event.EventPublisher;
 import com.vex.owl.ai.domain.tools.AgentAdvisor;
 import com.vex.owl.ai.domain.event.TokenUsageEvent;
 import lombok.RequiredArgsConstructor;
@@ -10,12 +11,10 @@ import org.springframework.ai.chat.client.advisor.api.*;
 import org.springframework.ai.chat.metadata.ChatResponseMetadata;
 import org.springframework.ai.chat.metadata.Usage;
 import org.springframework.ai.chat.model.ChatResponse;
-import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.ai.chat.model.Generation;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
-import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -29,46 +28,40 @@ import java.util.concurrent.atomic.AtomicReference;
 @RequiredArgsConstructor
 public class TokenUsageAdvisor implements AgentAdvisor {
 
-    /**
-     * Advisor 名称
-     */
     public static final String NAME = "TokenUsageListenerAdvisor";
-
-    /**
-     * Advisor 顺序
-     */
     public static final int ORDER = 2;
 
-    /**
-     * 魔法值
-     */
     private static final String FINISH_REASON_STOP = "STOP";
     private static final String FINISH_INFO_STREAM_COMPLETED = "stream completed";
 
-    private final ApplicationEventPublisher publisher;
+    private final EventPublisher eventPublisher;
 
     @Override
     public ChatClientResponse adviseCall(ChatClientRequest chatClientRequest,
                                          CallAdvisorChain callAdvisorChain) {
         ChatClientResponse response = callAdvisorChain.nextCall(chatClientRequest);
 
-        Map<String, Object> context = chatClientRequest.context();
         ChatResponse chatResponse = response.chatResponse();
         ChatResponseMetadata metadata = chatResponse.getMetadata();
         Usage usage = metadata.getUsage();
 
-        if (FINISH_REASON_STOP.equals(chatResponse.getResult().getMetadata().getFinishReason())) {
+        Generation result = chatResponse.getResult();
+
+        if (result == null) {
+            log.debug("result:{}", result);
+            return response;
+        }
+
+        if (FINISH_REASON_STOP.equals(result.getMetadata().getFinishReason())) {
             TokenUsageEvent event = TokenUsageEvent.builder()
-                    .tenantId(getString(context, "tenantId"))
-                    .sessionId(getString(context, "sessionId"))
-                    .provider(getString(context, "provider"))
+                    .provider(getProvider(chatClientRequest))
                     .modelName(metadata.getModel())
                     .promptTokens(usage.getPromptTokens())
                     .completionTokens(usage.getCompletionTokens())
                     .totalTokens(usage.getTotalTokens())
                     .build();
-            log.info("发送事件 TokenUsageEvent:{}", event);
-            publisher.publishEvent(event);
+            log.debug("发送事件 TokenUsageEvent:{}", event);
+            eventPublisher.publish("TokenUsageEvent", event);
         }
 
         return response;
@@ -86,8 +79,7 @@ public class TokenUsageAdvisor implements AgentAdvisor {
 
     public Flux<ChatClientResponse> adviseStream(
             ChatClientRequest chatClientRequest,
-            StreamAdvisorChain streamAdvisorChain
-    ) {
+            StreamAdvisorChain streamAdvisorChain) {
 
         AtomicInteger promptTokens = new AtomicInteger(0);
         AtomicInteger completionTokens = new AtomicInteger(0);
@@ -114,27 +106,22 @@ public class TokenUsageAdvisor implements AgentAdvisor {
                 }
             }
         }).doOnComplete(() -> {
-            log.info("finishReason:{}", FINISH_INFO_STREAM_COMPLETED);
-
-
-            Map<String, Object> context = chatClientRequest.context();
+            log.debug("finishReason:{}", FINISH_INFO_STREAM_COMPLETED);
 
             TokenUsageEvent event = TokenUsageEvent.builder()
-                    .tenantId(getString(context, "tenantId"))
-                    .sessionId(getString(context, "sessionId"))
-                    .provider(getString(context, "provider"))
+                    .provider(getProvider(chatClientRequest))
                     .modelName(modelName.get())
                     .promptTokens(promptTokens.get())
                     .completionTokens(completionTokens.get())
                     .totalTokens(totalTokens.get())
                     .build();
-            log.info("发送事件 TokenUsageEvent:{}", event);
-            publisher.publishEvent(event);
+            log.debug("发送事件 TokenUsageEvent:{}", event);
+            eventPublisher.publish("TokenUsageEvent", event);
         });
     }
 
-    private String getString(Map<String, Object> map, String key) {
-        Object value = map.get(key);
-        return Objects.isNull(value) ? "" : value.toString();
+    private String getProvider(ChatClientRequest request) {
+        Object value = request.context().get("provider");
+        return value != null ? value.toString() : "";
     }
 }

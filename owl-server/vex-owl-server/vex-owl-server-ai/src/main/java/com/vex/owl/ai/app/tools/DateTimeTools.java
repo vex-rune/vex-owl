@@ -32,7 +32,7 @@ public class DateTimeTools implements PublicTools {
      * 获取当前系统时间
      * <p>根据指定时区返回 ISO 8601 标准格式的当前时间，包含时区偏移信息。</p>
      *
-     * @param toolContext Spring AI 自动注入的工具上下文，包含应用层传入的 tenantId
+     * @param toolContext Spring AI 自动注入的工具上下文，包含应用层传入的 userId
      * @param zoneId      时区ID，如 "Asia/Shanghai"、"America/New_York"，为空则使用系统默认时区
      * @return ISO 8601 格式的时间字符串，如 "2026-05-25T14:30:00+08:00"
      */
@@ -41,24 +41,24 @@ public class DateTimeTools implements PublicTools {
             ToolContext toolContext,
             @ToolParam(description = "时区ID，如 Asia/Shanghai、America/New_York，为空则使用系统默认时区") String zoneId) {
 
-        String tenantId = toolContextExtractor.getTenantId(toolContext).orElse("unknown");
-        log.info("获取系统时间, tenantId={}, zoneId={}", tenantId, zoneId);
+        String userId = toolContextExtractor.getUserId(toolContext).orElse("unknown");
+        log.debug("获取系统时间, userId={}, zoneId={}", userId, zoneId);
 
-        ZoneId zone = resolveZoneId(tenantId, zoneId);
+        ZoneId zone = resolveZoneId(userId, zoneId);
         ZonedDateTime now = ZonedDateTime.now(zone);
         String formattedTime = now.format(FORMATTER);
 
-        log.info("系统时间返回, tenantId={}, time={}, zone={}", tenantId, formattedTime, zone);
+        log.debug("系统时间返回, userId={}, time={}, zone={}", userId, formattedTime, zone);
         return formattedTime;
     }
 
-    private ZoneId resolveZoneId(String tenantId, String zoneId) {
+    private ZoneId resolveZoneId(String userId, String zoneId) {
         try {
             return (zoneId == null || zoneId.isBlank())
                     ? ZoneId.systemDefault()
                     : ZoneId.of(zoneId);
         } catch (Exception e) {
-            log.warn("无效时区ID, tenantId={}, zoneId={}, 使用系统默认时区", tenantId, zoneId);
+            log.warn("无效时区ID, userId={}, zoneId={}, 使用系统默认时区", userId, zoneId);
             return ZoneId.systemDefault();
         }
     }

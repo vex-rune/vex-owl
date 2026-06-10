@@ -21,7 +21,7 @@ class UserMemoryServiceTest extends SpringIntegrationTest {
                 "tenant-1", "preference", "用户喜欢简洁回答", 80);
 
         assertThat(memory.getId()).isNotBlank();
-        assertThat(memory.getTenantId()).isEqualTo("tenant-1");
+        assertThat(memory.getUserId()).isEqualTo("tenant-1");
         assertThat(memory.getCategory()).isEqualTo("preference");
         assertThat(memory.getContent()).isEqualTo("用户喜欢简洁回答");
         assertThat(memory.getWeight()).isEqualTo(80);

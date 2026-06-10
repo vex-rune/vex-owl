@@ -18,14 +18,14 @@ public interface UsageRecordRepository extends JpaRepository<UsageRecordEntity, 
     /**
      * 根据租户、日期、AI 类型查找统计记录
      */
-    Optional<UsageRecordEntity> findByTenantIdAndStatDateAndUsageType(
-            String tenantId, LocalDate statDate, String usageType);
+    Optional<UsageRecordEntity> findByUserIdAndStatDateAndUsageType(
+            String userId, LocalDate statDate, String usageType);
 
     /**
      * 查询租户在某日期范围内的所有统计记录
      */
-    List<UsageRecordEntity> findByTenantIdAndStatDateBetween(
-            String tenantId, LocalDate startDate, LocalDate endDate);
+    List<UsageRecordEntity> findByUserIdAndStatDateBetween(
+            String userId, LocalDate startDate, LocalDate endDate);
 
     /**
      * 查询某日期范围内的所有统计记录（按类型分组）
@@ -41,12 +41,12 @@ public interface UsageRecordRepository extends JpaRepository<UsageRecordEntity, 
                COALESCE(SUM(u.totalTokens), 0),
                COALESCE(SUM(u.chatCallCount), 0)
         FROM UsageRecordEntity u
-        WHERE u.tenantId = :tenantId
+        WHERE u.userId = :userId
           AND u.statDate BETWEEN :startDate AND :endDate
           AND u.usageType = 'CHAT'
     """)
-    Object[] sumChatUsageByTenantIdAndDateRange(
-            @Param("tenantId") String tenantId,
+    Object[] sumChatUsageByUserIdAndDateRange(
+            @Param("userId") String userId,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
 
@@ -59,12 +59,12 @@ public interface UsageRecordRepository extends JpaRepository<UsageRecordEntity, 
                COALESCE(SUM(u.outputDuration), 0),
                COALESCE(SUM(u.outputSize), 0)
         FROM UsageRecordEntity u
-        WHERE u.tenantId = :tenantId
+        WHERE u.userId = :userId
           AND u.statDate BETWEEN :startDate AND :endDate
           AND u.usageType = 'VOICE'
     """)
-    Object[] sumVoiceUsageByTenantIdAndDateRange(
-            @Param("tenantId") String tenantId,
+    Object[] sumVoiceUsageByUserIdAndDateRange(
+            @Param("userId") String userId,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
 
@@ -77,12 +77,12 @@ public interface UsageRecordRepository extends JpaRepository<UsageRecordEntity, 
                COALESCE(SUM(u.imageFailedCount), 0),
                COALESCE(SUM(u.inputChars), 0)
         FROM UsageRecordEntity u
-        WHERE u.tenantId = :tenantId
+        WHERE u.userId = :userId
           AND u.statDate BETWEEN :startDate AND :endDate
           AND u.usageType = 'IMAGE'
     """)
-    Object[] sumImageUsageByTenantIdAndDateRange(
-            @Param("tenantId") String tenantId,
+    Object[] sumImageUsageByUserIdAndDateRange(
+            @Param("userId") String userId,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
 
@@ -95,12 +95,12 @@ public interface UsageRecordRepository extends JpaRepository<UsageRecordEntity, 
                COALESCE(SUM(u.outputDuration), 0),
                COALESCE(SUM(u.outputSize), 0)
         FROM UsageRecordEntity u
-        WHERE u.tenantId = :tenantId
+        WHERE u.userId = :userId
           AND u.statDate BETWEEN :startDate AND :endDate
           AND u.usageType = 'MUSIC'
     """)
-    Object[] sumMusicUsageByTenantIdAndDateRange(
-            @Param("tenantId") String tenantId,
+    Object[] sumMusicUsageByUserIdAndDateRange(
+            @Param("userId") String userId,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate);
 }

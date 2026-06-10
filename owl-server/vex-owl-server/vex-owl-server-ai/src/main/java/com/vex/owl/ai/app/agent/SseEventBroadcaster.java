@@ -1,10 +1,8 @@
 package com.vex.owl.ai.app.agent;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vex.owl.ai.domain.event.ChatContentEvent;
-import com.vex.owl.ai.domain.event.TokenUsageEvent;
-import com.vex.owl.ai.domain.event.ToolCallRequestEvent;
-import com.vex.owl.ai.domain.event.ToolCallResultEvent;
+import com.vex.event.Event;
+import com.vex.owl.ai.domain.event.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -19,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * SSE 事件广播器
  *
- * <p>订阅 Spring 事件，按 sessionId 路由到对应的 SSE 流。</p>
+ * <p>订阅 Spring 事件，按 userId 路由到对应的 SSE 流。</p>
  */
 @Slf4j
 @Component
@@ -31,45 +29,39 @@ public class SseEventBroadcaster {
     private final Map<String, Sinks.Many<String>> sessions = new ConcurrentHashMap<>();
     private final Map<String, AtomicInteger> sessionRefs = new ConcurrentHashMap<>();
 
-    public Flux<String> subscribe(String sessionId) {
-        Sinks.Many<String> sink = sessions.computeIfAbsent(sessionId,
+    public Flux<String> subscribe(String userId) {
+        Sinks.Many<String> sink = sessions.computeIfAbsent(userId,
                 k -> Sinks.many().multicast().onBackpressureBuffer());
-        sessionRefs.computeIfAbsent(sessionId, k -> new AtomicInteger(0)).incrementAndGet();
+        sessionRefs.computeIfAbsent(userId, k -> new AtomicInteger(0)).incrementAndGet();
         return sink.asFlux();
     }
 
-    public void unsubscribe(String sessionId) {
-        AtomicInteger ref = sessionRefs.get(sessionId);
+    public void unsubscribe(String userId) {
+        AtomicInteger ref = sessionRefs.get(userId);
         if (ref != null && ref.decrementAndGet() <= 0) {
-            sessions.remove(sessionId);
-            sessionRefs.remove(sessionId);
+            sessions.remove(userId);
+            sessionRefs.remove(userId);
         }
     }
 
     @EventListener
-    public void onToolCallRequest(ToolCallRequestEvent event) {
-        broadcast(event.getSessionId(), "tool_call_request", event);
+    public void onEvent(Event event) {
+        String userId = event.getMetadata().userId();
+        if (userId == null || userId.isEmpty()) return;
+
+        String eventType = event.getMetadata().eventType();
+        Object payload = event.getPayload();
+
+        if (payload instanceof ToolCallRequestEvent
+                || payload instanceof ToolCallResultEvent
+                || payload instanceof TokenUsageEvent
+                || payload instanceof ChatContentEvent) {
+            broadcast(userId, eventType, payload);
+        }
     }
 
-    @EventListener
-    public void onToolCallResult(ToolCallResultEvent event) {
-        broadcast(event.getSessionId(), "tool_call_result", event);
-    }
-
-    @EventListener
-    public void onTokenUsage(TokenUsageEvent event) {
-        broadcast(event.getSessionId(), "token_usage", event);
-    }
-
-    @EventListener
-    public void onChatContent(ChatContentEvent event) {
-        broadcast(event.getSessionId(), "chat_content", event);
-    }
-
-    private void broadcast(String sessionId, String eventType, Object data) {
-        if (sessionId == null || sessionId.isEmpty()) return;
-
-        Sinks.Many<String> sink = sessions.get(sessionId);
+    private void broadcast(String userId, String eventType, Object data) {
+        Sinks.Many<String> sink = sessions.get(userId);
         if (sink == null) return;
 
         try {
@@ -80,7 +72,7 @@ public class SseEventBroadcaster {
             String json = objectMapper.writeValueAsString(envelope);
             sink.tryEmitNext(json);
         } catch (Exception e) {
-            log.warn("广播事件失败: session={}, event={}", sessionId, eventType, e);
+            log.warn("广播事件失败: userId={}, event={}", userId, eventType, e);
         }
     }
 }

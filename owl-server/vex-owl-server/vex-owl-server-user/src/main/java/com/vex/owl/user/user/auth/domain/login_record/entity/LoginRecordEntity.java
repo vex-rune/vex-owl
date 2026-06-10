@@ -1,9 +1,11 @@
 package com.vex.owl.user.user.auth.domain.login_record.entity;
 
-import com.vex.queries.jpa.id.BizIdPrefix;
 import com.vex.queries.jpa.id.BizSnowId;
 import com.vex.queries.jpa.model.JpaBasicEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 /**
  * 登录日志
@@ -11,11 +13,10 @@ import jakarta.persistence.*;
  */
 @Entity
 @Table(name = "user_auth_login_record")
-@BizIdPrefix(value = "LOG")
 public class LoginRecordEntity extends JpaBasicEntity {
 
     @Id
-    @BizSnowId
+    @BizSnowId("log")
     private String id;
 
     /// 主体

@@ -1,14 +1,12 @@
 package com.vex.owl.ai.domain.tools;
 
+import com.vex.event.EventPublisher;
 import com.vex.owl.ai.domain.event.ChatContentEvent;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.chat.model.ToolContext;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
-import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.ai.chat.model.ToolContext;
 import org.springframework.stereotype.Component;
-
-import java.util.Map;
 
 /**
  * 内置思考工具
@@ -17,16 +15,16 @@ import java.util.Map;
  * 模型在执行 Action 前必须先调用 think 记录思考过程，
  * 确保每一步推理都有可观测的思维链。</p>
  *
- * <p>思考记录通过 Spring 事件发布，由 SseEventBroadcaster 推送到前端。</p>
+ * <p>思考记录通过 EventPublisher 发布，由 SseEventBroadcaster 推送到前端。</p>
  */
 @Slf4j
 @Component
 public class ThinkTool {
 
-    private final ApplicationEventPublisher publisher;
+    private final EventPublisher eventPublisher;
 
-    public ThinkTool(ApplicationEventPublisher publisher) {
-        this.publisher = publisher;
+    public ThinkTool(EventPublisher eventPublisher) {
+        this.eventPublisher = eventPublisher;
     }
 
     @Tool(description = """
@@ -37,14 +35,9 @@ public class ThinkTool {
             @ToolParam(description = "你的完整思考过程，包括现状分析、问题识别、下一步计划") String thought,
             ToolContext toolContext) {
 
-        String tenantId = toolContextExtractor.getTenantId(toolContext).orElse("unknown");
-        String sessionId = toolContextExtractor.getSessionId(toolContext).orElse("unknown");
+        log.debug("[Think] {}", thought);
 
-        log.info("[Think] tenant={}, session={}\n{}", tenantId, sessionId, thought);
-
-        publisher.publishEvent(ChatContentEvent.builder()
-                .tenantId(tenantId)
-                .sessionId(sessionId)
+        eventPublisher.publish("ChatContentEvent", ChatContentEvent.builder()
                 .content(thought)
                 .stream(false)
                 .finish(false)
@@ -53,6 +46,4 @@ public class ThinkTool {
 
         return "思考已记录";
     }
-
-    private final ToolContextExtractor toolContextExtractor = ToolContextExtractor.getInstance();
 }

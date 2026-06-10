@@ -17,21 +17,21 @@ public interface ChatSessionRepository extends JpaRepository<ChatSessionEntity, 
     /**
      * 查询租户的会话列表（排除已删除）
      */
-    Page<ChatSessionEntity> findByTenantIdAndStatusNotOrderByPinnedDescCreateTimeDesc(
-            String tenantId, String status, Pageable pageable);
+    Page<ChatSessionEntity> findByUserIdAndStatusNotOrderByPinnedDescCreateTimeDesc(
+            String userId, String status, Pageable pageable);
 
     /**
      * 根据 ID 和租户查询会话
      */
-    Optional<ChatSessionEntity> findByIdAndTenantId(String id, String tenantId);
+    Optional<ChatSessionEntity> findByIdAndUserId(String id, String userId);
 
     /**
      * 根据租户和会话类型查询第一个会话
      */
-    Optional<ChatSessionEntity> findFirstByTenantIdAndSessionType(String tenantId, String sessionType);
+    Optional<ChatSessionEntity> findFirstByUserIdAndSessionType(String userId, String sessionType);
 
     /**
      * 统计租户会话数量
      */
-    long countByTenantIdAndStatus(String tenantId, String status);
+    long countByUserIdAndStatus(String userId, String status);
 }

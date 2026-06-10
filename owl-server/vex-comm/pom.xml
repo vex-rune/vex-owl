@@ -22,6 +22,8 @@
         <module>vex-comm-criteria</module>
         <module>vex-comm-criteria-jpa</module>
         <module>vex-comm-auth</module>
+        <module>vex-comm-event</module>
+        <module>vex-comm-web</module>
     </modules>
 
 

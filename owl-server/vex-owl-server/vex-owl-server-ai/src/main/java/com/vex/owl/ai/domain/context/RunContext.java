@@ -23,7 +23,7 @@ public class RunContext {
     @Getter
     private Map<String, String> params;
     @Getter
-    private String tenantId;
+    private String userId;
     @Getter
     private String sessionId;
     @Getter
@@ -39,12 +39,12 @@ public class RunContext {
     public RunContext(ModelProperties modelProperties,
                       Map<String, String> headers,
                       Map<String, String> params,
-                      String tenantId,
+                      String userId,
                       String sessionId) {
         this.id = UUID.randomUUID().toString();
         this.headers = headers != null ? new HashMap<>(headers) : new HashMap<>();
         this.params = params != null ? new HashMap<>(params) : new HashMap<>();
-        this.tenantId = tenantId;
+        this.userId = userId;
         this.sessionId = sessionId;
         this.modelProperties = modelProperties;
         this.step = 1;
@@ -66,10 +66,13 @@ public class RunContext {
         map.put("id", id);
         map.put("headers", headers);
         map.put("params", params);
-        map.put("tenantId", tenantId);
+        map.put("userId", userId);
         map.put("sessionId", sessionId);
         map.put("step", step);
         map.put("startTime", startTime);
+        map.put("provider", modelProperties.getProviderCode());
+        map.put("model", modelProperties.getModelName());
+        map.put("baseUrl", modelProperties.getBaseUrl());
         return map;
     }
 }

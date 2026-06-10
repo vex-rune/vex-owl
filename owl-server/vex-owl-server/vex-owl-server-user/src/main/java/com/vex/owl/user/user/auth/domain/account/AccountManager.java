@@ -52,7 +52,7 @@ public class AccountManager {
                 .credential(encryptedPassword)
                 .salt(salt)
                 .build();
-        log.info("创建账号, subjectId: {}, account: {}", account.subjectId(), account.account());
+        log.debug("创建账号, subjectId: {}, account: {}", account.subjectId(), account.account());
         accountRepository.save(entity);
     }
 
@@ -82,7 +82,7 @@ public class AccountManager {
             builder.credential(existingAccount.getCredential());
         }
 
-        log.info("更新账号, accountId: {}", accountUpdate.id());
+        log.debug("更新账号, accountId: {}", accountUpdate.id());
         accountRepository.save(builder.build());
     }
 

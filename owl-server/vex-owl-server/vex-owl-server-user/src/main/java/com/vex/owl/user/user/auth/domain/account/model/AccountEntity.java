@@ -1,10 +1,8 @@
 package com.vex.owl.user.user.auth.domain.account.model;
 
-import com.vex.queries.jpa.id.BizIdPrefix;
 import com.vex.queries.jpa.id.BizSnowId;
 import com.vex.queries.jpa.model.JpaBasicEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -17,14 +15,13 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @Entity
-@BizIdPrefix(value = "account")
 @Table(name = "user_auth_account")
 @EqualsAndHashCode(callSuper=false)
 public class AccountEntity extends JpaBasicEntity {
 
     /// ID
     @Id
-    @BizSnowId
+    @BizSnowId("account")
     private String id;
 
     /// 主体ID

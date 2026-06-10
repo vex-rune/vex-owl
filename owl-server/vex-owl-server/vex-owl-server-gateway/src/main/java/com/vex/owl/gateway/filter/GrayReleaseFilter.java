@@ -56,7 +56,7 @@ public class GrayReleaseFilter implements GlobalFilter, Ordered {
             builder.header(HEADER_GRAY_USERS, grayUsers);
         }
 
-        log.info("灰度请求 | 版本: {} | 用户ID: {} | 路径: {}", grayVersion, currentUserId, path);
+        log.debug("灰度请求 | 版本: {} | 用户ID: {} | 路径: {}", grayVersion, currentUserId, path);
 
         return chain.filter(exchange.mutate().request(builder.build()).build());
     }

@@ -18,15 +18,15 @@ public class UserMemoryService {
     /**
      * 获取用户的所有有效记忆（按权重降序）
      */
-    public List<UserMemoryEntity> getMemories(String tenantId) {
-        return userMemoryRepository.findByTenantIdAndActiveTrueOrderByWeightDesc(tenantId);
+    public List<UserMemoryEntity> getMemories(String userId) {
+        return userMemoryRepository.findByUserIdAndActiveTrueOrderByWeightDesc(userId);
     }
 
     /**
      * 获取指定分类的记忆
      */
-    public List<UserMemoryEntity> getMemories(String tenantId, String category) {
-        return userMemoryRepository.findByTenantIdAndActiveTrueOrderByWeightDesc(tenantId)
+    public List<UserMemoryEntity> getMemories(String userId, String category) {
+        return userMemoryRepository.findByUserIdAndActiveTrueOrderByWeightDesc(userId)
                 .stream()
                 .filter(m -> category.equals(m.getCategory()))
                 .toList();
@@ -36,9 +36,9 @@ public class UserMemoryService {
      * 添加记忆
      */
     @Transactional
-    public UserMemoryEntity addMemory(String tenantId, String category, String content, int weight) {
+    public UserMemoryEntity addMemory(String userId, String category, String content, int weight) {
         UserMemoryEntity entity = UserMemoryEntity.builder()
-                .tenantId(tenantId)
+                .userId(userId)
                 .category(category)
                 .content(content)
                 .weight(weight)
@@ -51,7 +51,7 @@ public class UserMemoryService {
      * 清除指定分类的记忆
      */
     @Transactional
-    public void clearCategory(String tenantId, String category) {
-        userMemoryRepository.deleteByTenantIdAndCategory(tenantId, category);
+    public void clearCategory(String userId, String category) {
+        userMemoryRepository.deleteByUserIdAndCategory(userId, category);
     }
 }

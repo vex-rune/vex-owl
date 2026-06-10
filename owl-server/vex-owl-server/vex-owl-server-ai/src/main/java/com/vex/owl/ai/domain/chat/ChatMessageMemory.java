@@ -15,14 +15,18 @@ public class ChatMessageMemory implements ChatMemory {
     private final ChatManager chatManager;
 
     @Override
-//    @CacheEvict(value = "chatMemory", key = "#conversationId")
+    @CacheEvict(value = "chatMemory", key = "#conversationId")
     public void add(String conversationId, List<Message> messages) {
-        chatManager.saveMessages(messages.stream().map(m -> toEntity(conversationId, m)).toList());
+        try {
+            chatManager.saveMessages(messages.stream().map(m -> toEntity(conversationId, m)).toList());
+        } catch (Exception e) {
+            // todo
+        }
     }
 
 
     @Override
-//    @CacheEvict(value = "chatMemory", key = "#conversationId")
+    @CacheEvict(value = "chatMemory", key = "#conversationId")
     public List<Message> get(String conversationId) {
         // 只获取 50 条
         return chatManager.getMessages(conversationId, 50)
@@ -34,7 +38,7 @@ public class ChatMessageMemory implements ChatMemory {
     }
 
     @Override
-//    @CacheEvict(value = "chatMemory", key = "#conversationId")
+    @CacheEvict(value = "chatMemory", key = "#conversationId")
     public void clear(String conversationId) {
     }
 

@@ -34,7 +34,7 @@ public class SequentialPipeline implements Pipeline {
 
     @Override
     public Result execute(String input, RunContext context) {
-        log.info("SequentialPipeline 开始编排");
+        log.debug("SequentialPipeline 开始编排");
 
         ChatClient client = aiManager.createClient(context);
 
@@ -61,12 +61,12 @@ public class SequentialPipeline implements Pipeline {
             resultList.add(object);
         }
 
-        log.info("SequentialPipeline 总结: {}", resultList);
+        log.debug("SequentialPipeline 总结: {}", resultList);
         SummaryAgent summaryAgent = agentManager.getAgent(SummaryAgent.class)
                 .orElseThrow(() -> new RuntimeException("SummaryAgent 未找到"));
 
         String call = summaryAgent.call(resultList.toString(), client, context);
-        log.info("SequentialPipeline 总结: {}", call);
+        log.debug("SequentialPipeline 总结: {}", call);
 
         return new Result(input, pipelineStep, resultList, call);
     }

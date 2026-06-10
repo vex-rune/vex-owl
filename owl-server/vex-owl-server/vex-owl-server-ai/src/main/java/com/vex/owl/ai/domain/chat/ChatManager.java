@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -35,9 +34,9 @@ public class ChatManager {
      * 创建新会话
      */
     @Transactional
-    public ChatSessionEntity createSession(String tenantId, String title) {
+    public ChatSessionEntity createSession(String userId, String title) {
         ChatSessionEntity session = ChatSessionEntity.builder()
-                .tenantId(tenantId)
+                .userId(userId)
                 .title(title != null ? title : "新对话")
                 .status("ACTIVE")
                 .messageCount(0)
@@ -51,9 +50,9 @@ public class ChatManager {
     /**
      * 查询租户会话列表（分页）
      */
-    public Page<ChatSessionEntity> getSessions(String tenantId, int page, int size) {
-        return sessionRepository.findByTenantIdAndStatusNotOrderByPinnedDescCreateTimeDesc(
-                tenantId, "DELETED", org.springframework.data.domain.PageRequest.of(page, size));
+    public Page<ChatSessionEntity> getSessions(String userId, int page, int size) {
+        return sessionRepository.findByUserIdAndStatusNotOrderByPinnedDescCreateTimeDesc(
+                userId, "DELETED", org.springframework.data.domain.PageRequest.of(page, size));
     }
 
     /**
@@ -61,11 +60,11 @@ public class ChatManager {
      * 根据 租户ID + 会话类型 查询，返回第一个匹配的会话
      */
     @Transactional
-    public ChatSessionEntity getSession(String tenantId, String sessionType) {
-        return sessionRepository.findFirstByTenantIdAndSessionType(tenantId, sessionType)
+    public ChatSessionEntity createSessionByType(String userId, String sessionType) {
+        return sessionRepository.findFirstByUserIdAndSessionType(userId, sessionType)
                 .orElseGet(() -> {
                     ChatSessionEntity chatSessionEntity = new ChatSessionEntity();
-                    chatSessionEntity.setTenantId(tenantId);
+                    chatSessionEntity.setUserId(userId);
                     chatSessionEntity.setSessionType(sessionType);
                     chatSessionEntity.setTitle("新对话");
                     chatSessionEntity.setStatus("ACTIVE");
@@ -80,16 +79,16 @@ public class ChatManager {
     /**
      * 根据 ID 和租户获取会话
      */
-    public Optional<ChatSessionEntity> getSessionById(String sessionId, String tenantId) {
-        return sessionRepository.findByIdAndTenantId(sessionId, tenantId);
+    public Optional<ChatSessionEntity> getSessionById(String sessionId, String userId) {
+        return sessionRepository.findByIdAndUserId(sessionId, userId);
     }
 
     /**
      * 更新会话标题
      */
     @Transactional
-    public Optional<ChatSessionEntity> updateSessionTitle(String sessionId, String tenantId, String title) {
-        return sessionRepository.findByIdAndTenantId(sessionId, tenantId)
+    public Optional<ChatSessionEntity> updateSessionTitle(String sessionId, String userId, String title) {
+        return sessionRepository.findByIdAndUserId(sessionId, userId)
                 .map(session -> {
                     session.setTitle(title);
                     return sessionRepository.save(session);
@@ -100,8 +99,8 @@ public class ChatManager {
      * 软删除会话
      */
     @Transactional
-    public boolean deleteSession(String sessionId, String tenantId) {
-        return sessionRepository.findByIdAndTenantId(sessionId, tenantId)
+    public boolean deleteSession(String sessionId, String userId) {
+        return sessionRepository.findByIdAndUserId(sessionId, userId)
                 .map(session -> {
                     session.setStatus("DELETED");
                     sessionRepository.save(session);
@@ -147,6 +146,11 @@ public class ChatManager {
     public List<ChatSessionEntity> querySession(@Valid QueriesPageRequest request) {
         return JpaQueriesExecutor.of(ChatSessionEntity.class, null)
                 .page(request);
+    }
+
+    public Optional<ChatSessionEntity> findById(String conversationId) {
+        log.debug("findById, conversationId: {}", conversationId);
+        return sessionRepository.findById(conversationId);
     }
 
     /**

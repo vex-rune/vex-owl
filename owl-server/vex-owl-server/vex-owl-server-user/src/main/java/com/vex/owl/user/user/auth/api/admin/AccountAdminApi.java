@@ -31,7 +31,7 @@ public class AccountAdminApi {
      */
     @PostMapping("/query")
     public ApiResponse<List<AccountEntity>> query(@Valid @RequestBody QueriesPageRequest request) {
-        log.info("账号通用查询, request: {}", request);
+        log.debug("账号通用查询, request: {}", request);
         List<AccountEntity> result = accountManager.query(request);
         return ApiResponse.success(result);
     }

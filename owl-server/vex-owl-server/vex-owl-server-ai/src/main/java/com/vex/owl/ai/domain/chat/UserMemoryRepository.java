@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface UserMemoryRepository extends JpaRepository<UserMemoryEntity, String> {
 
-    List<UserMemoryEntity> findByTenantIdAndActiveTrueOrderByWeightDesc(String tenantId);
+    List<UserMemoryEntity> findByUserIdAndActiveTrueOrderByWeightDesc(String userId);
 
-    void deleteByTenantIdAndCategory(String tenantId, String category);
+    void deleteByUserIdAndCategory(String userId, String category);
 }

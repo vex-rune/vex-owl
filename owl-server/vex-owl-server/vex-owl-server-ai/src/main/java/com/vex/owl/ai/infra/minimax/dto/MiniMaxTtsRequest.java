@@ -31,6 +31,7 @@ public class MiniMaxTtsRequest {
     /**
      * 控制是否流式输出，默认 false
      */
+    @Builder.Default
     private Boolean stream = false;
 
     /**

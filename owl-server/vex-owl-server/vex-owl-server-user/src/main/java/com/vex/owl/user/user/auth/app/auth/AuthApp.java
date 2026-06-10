@@ -13,7 +13,7 @@ import com.vex.owl.user.user.auth.domain.account.model.AccountType;
 import com.vex.owl.user.user.auth.domain.code.CodeManager;
 import com.vex.owl.user.user.auth.domain.subject.SubjectManager;
 import com.vex.owl.user.user.auth.domain.subject.entity.SubjectEntity;
-import com.vex.security.LoginUser;
+import com.vex.security.auth.AuthUser;
 import com.vex.security.jwt.JwtTokenProvider;
 import com.vex.security.jwt.VexToken;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * 认证应用服务
@@ -63,7 +62,7 @@ public class AuthApp {
      * @return 用户会话凭证
      */
     public VexToken login(String principal, String credentials, LoginType loginType) {
-        log.info("[登录] principal: {}, loginType: {}", principal, loginType.getValue());
+        log.debug("[登录] principal: {}, loginType: {}", principal, loginType.getValue());
 
         Authentication token = switch (loginType) {
             case ADMIN -> new AdminAuthToken(principal, credentials);
@@ -74,8 +73,8 @@ public class AuthApp {
 
 
         Authentication authentication = providerManager.authenticate(token);
-        LoginUser user = (LoginUser) authentication.getPrincipal();
-        log.info("[登录] 成功, principal: {}, loginType: {}", principal, loginType.getValue());
+        AuthUser user = (AuthUser) authentication.getPrincipal();
+        log.debug("[登录] 成功, principal: {}, loginType: {}", principal, loginType.getValue());
         return jwtTokenProvider.generateByUser(user);
     }
 
@@ -111,7 +110,7 @@ public class AuthApp {
                 () -> password
         ));
 
-        log.info("[注册] 成功, email: {}, subjectId: {}", email, subject.getId());
+        log.debug("[注册] 成功, email: {}, subjectId: {}", email, subject.getId());
         return login(subject.getId(), null, LoginType.INTERNAL);
     }
 

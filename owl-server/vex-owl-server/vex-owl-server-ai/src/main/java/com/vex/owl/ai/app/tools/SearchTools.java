@@ -47,11 +47,11 @@ public class SearchTools implements PublicTools {
             ToolContext toolContext,
             @ToolParam(description = "搜索关键词") String query) {
 
-        String tenantId = toolContextExtractor.getTenantId(toolContext).orElse("unknown");
-        log.info("执行搜索, tenantId={}, query={}", tenantId, query);
+        String userId = toolContextExtractor.getUserId(toolContext).orElse("unknown");
+        log.debug("执行搜索, userId={}, query={}", userId, query);
 
         if (apiKey == null || apiKey.isBlank()) {
-            log.warn("搜索 API Key 未配置, tenantId={}", tenantId);
+            log.warn("搜索 API Key 未配置, userId={}", userId);
             return "搜索服务未配置，请联系管理员配置 SERPER_API_KEY";
         }
 
@@ -64,15 +64,15 @@ public class SearchTools implements PublicTools {
 
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
                 String result = formatResults(response.getBody());
-                log.info("搜索完成, tenantId={}, query={}", tenantId, query);
+                log.debug("搜索完成, userId={}, query={}", userId, query);
                 return result;
             }
 
-            log.error("搜索 API 返回异常, tenantId={}, status={}", tenantId, response.getStatusCode());
+            log.error("搜索 API 返回异常, userId={}, status={}", userId, response.getStatusCode());
             return "搜索请求失败，状态码：" + response.getStatusCode();
 
         } catch (Exception e) {
-            log.error("搜索异常, tenantId={}, query={}", tenantId, query, e);
+            log.error("搜索异常, userId={}, query={}", userId, query, e);
             return "搜索过程发生异常：" + e.getMessage();
         }
     }

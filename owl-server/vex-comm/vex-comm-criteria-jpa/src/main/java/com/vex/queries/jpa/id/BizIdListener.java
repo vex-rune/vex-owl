@@ -53,7 +53,7 @@ public class BizIdListener {
     }
 
     private String resolvePrefix(Object entity) {
-        BizIdPrefix bizPrefix = entity.getClass().getAnnotation(BizIdPrefix.class);
+        BizSnowId bizPrefix = entity.getClass().getAnnotation(BizSnowId.class);
         if (bizPrefix != null) {
             return bizPrefix.value();
         }

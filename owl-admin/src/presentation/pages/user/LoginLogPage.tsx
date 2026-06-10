@@ -24,8 +24,8 @@ const LoginTypeBadge = styled.span`
   padding: 2px 8px;
   border-radius: 12px;
   font-size: 12px;
-  background-color: ${AppColors.info}20;
-  color: ${AppColors.info};
+  background-color: ${AppColors.debug}20;
+  color: ${AppColors.debug};
 `;
 
 export const LoginLogPage: React.FC = () => {

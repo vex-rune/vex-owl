@@ -1,6 +1,5 @@
 package com.vex.owl.notification.domain.template.entity;
 
-import com.vex.queries.jpa.id.BizIdPrefix;
 import com.vex.queries.jpa.id.BizSnowId;
 import com.vex.queries.jpa.model.JpaBasicEntity;
 import jakarta.persistence.*;
@@ -16,12 +15,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Entity
-@BizIdPrefix(value = "template")
 @Table(name = "notification_template")
 public class TemplateEntity extends JpaBasicEntity {
 
     @Id
-    @BizSnowId
+    @BizSnowId ("template")
     private String id;
 
     @Column(nullable = false)

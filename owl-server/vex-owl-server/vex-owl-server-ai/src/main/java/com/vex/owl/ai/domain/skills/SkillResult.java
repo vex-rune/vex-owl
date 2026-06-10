@@ -57,7 +57,7 @@ public class SkillResult<R> {
         /// 调用的技能名称（用于记录）
         private String skillName;
         /// 租户ID（贯穿全程）
-        private String tenantId;
+        private String userId;
         /// Token 消耗
         private TokenUsage tokenUsage;
         /// 使用的模型名称

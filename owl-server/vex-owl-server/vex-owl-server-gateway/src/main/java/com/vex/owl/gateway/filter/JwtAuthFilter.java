@@ -1,7 +1,7 @@
 package com.vex.owl.gateway.filter;
 
 import com.vex.owl.gateway.config.JwtConfig;
-import com.vex.security.auth.AuthConstants;
+import com.vex.security.jwt.JwtClaimConstants;
 import com.vex.security.auth.AuthHeaderConstants;
 import com.vex.security.auth.AuthHeaders;
 import io.jsonwebtoken.Claims;
@@ -117,34 +117,34 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         String email = "";
         String nickname = "";
 
-        if (claimsMap.containsKey(AuthConstants.CLAIM_USER_ID)) {
-            userId = String.valueOf(claimsMap.get(AuthConstants.CLAIM_USER_ID));
+        if (claimsMap.containsKey(JwtClaimConstants.CLAIM_USER_ID)) {
+            userId = String.valueOf(claimsMap.get(JwtClaimConstants.CLAIM_USER_ID));
         } else {
             userId = claims.getSubject();
         }
 
-        if (claimsMap.containsKey(AuthConstants.CLAIM_USER_NAME)) {
-            userName = String.valueOf(claimsMap.get(AuthConstants.CLAIM_USER_NAME));
+        if (claimsMap.containsKey(JwtClaimConstants.CLAIM_USER_NAME)) {
+            userName = String.valueOf(claimsMap.get(JwtClaimConstants.CLAIM_USER_NAME));
         }
 
-        if (claimsMap.containsKey(AuthConstants.CLAIM_USER_GROUP)) {
-            userGroup = String.valueOf(claimsMap.get(AuthConstants.CLAIM_USER_GROUP));
+        if (claimsMap.containsKey(JwtClaimConstants.CLAIM_USER_GROUP)) {
+            userGroup = String.valueOf(claimsMap.get(JwtClaimConstants.CLAIM_USER_GROUP));
         }
 
-        if (claimsMap.containsKey(AuthConstants.CLAIM_LOGIN_TIME)) {
-            loginTime = String.valueOf(claimsMap.get(AuthConstants.CLAIM_LOGIN_TIME));
+        if (claimsMap.containsKey(JwtClaimConstants.CLAIM_LOGIN_TIME)) {
+            loginTime = String.valueOf(claimsMap.get(JwtClaimConstants.CLAIM_LOGIN_TIME));
         }
 
-        if (claimsMap.containsKey(AuthConstants.CLAIM_ROLE)) {
-            role = String.valueOf(claimsMap.get(AuthConstants.CLAIM_ROLE));
+        if (claimsMap.containsKey(JwtClaimConstants.CLAIM_ROLE)) {
+            role = String.valueOf(claimsMap.get(JwtClaimConstants.CLAIM_ROLE));
         }
 
-        if (claimsMap.containsKey(AuthConstants.CLAIM_EMAIL)) {
-            email = String.valueOf(claimsMap.get(AuthConstants.CLAIM_EMAIL));
+        if (claimsMap.containsKey(JwtClaimConstants.CLAIM_EMAIL)) {
+            email = String.valueOf(claimsMap.get(JwtClaimConstants.CLAIM_EMAIL));
         }
 
-        if (claimsMap.containsKey(AuthConstants.CLAIM_NICKNAME)) {
-            nickname = String.valueOf(claimsMap.get(AuthConstants.CLAIM_NICKNAME));
+        if (claimsMap.containsKey(JwtClaimConstants.CLAIM_NICKNAME)) {
+            nickname = String.valueOf(claimsMap.get(JwtClaimConstants.CLAIM_NICKNAME));
         }
 
         return AuthHeaders.builder()

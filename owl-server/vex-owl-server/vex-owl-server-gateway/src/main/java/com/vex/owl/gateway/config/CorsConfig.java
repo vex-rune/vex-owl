@@ -40,7 +40,7 @@ public class CorsConfig {
         corsConfig.setExposedHeaders(List.of(
                 "Authorization",
                 "Content-Type",
-                "X-User-Id"
+                "Vex-User-Id"
         ));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

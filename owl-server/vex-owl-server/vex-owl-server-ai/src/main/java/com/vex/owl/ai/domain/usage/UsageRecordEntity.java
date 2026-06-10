@@ -1,6 +1,5 @@
 package com.vex.owl.ai.domain.usage;
 
-import com.vex.queries.jpa.id.BizIdPrefix;
 import com.vex.queries.jpa.id.BizSnowId;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,20 +31,19 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @Entity
-@BizIdPrefix(value = "usage")
-@Table(name = "ai_usage_record", indexes = {
-    @Index(name = "idx_usage_tenant_date", columnList = "tenantId, statDate"),
+@Table(name = "usage_record", indexes = {
+    @Index(name = "idx_usage_tenant_date", columnList = "userId, statDate"),
     @Index(name = "idx_usage_type_date", columnList = "usageType, statDate")
 })
 public class UsageRecordEntity {
 
     /** 主键 */
     @Id
-    @BizSnowId
+    @BizSnowId("usage")
     private String id;
 
     /** 租户ID */
-    private String tenantId;
+    private String userId;
 
     /** 统计日期 */
     private LocalDate statDate;

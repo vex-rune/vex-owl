@@ -27,7 +27,7 @@ public class TemplateDataInitializer implements CommandLineRunner {
 
     private void initRegisterCodeTemplate() {
         if (templateManager.findByCode(CODE_REGISTER).isPresent()) {
-            log.info("[模板初始化] 注册验证码模板已存在，跳过");
+            log.debug("[模板初始化] 注册验证码模板已存在，跳过");
             return;
         }
 
@@ -40,12 +40,12 @@ public class TemplateDataInitializer implements CommandLineRunner {
                 .build();
 
         templateManager.create(template);
-        log.info("[模板初始化] 注册验证码模板创建成功");
+        log.debug("[模板初始化] 注册验证码模板创建成功");
     }
 
     private void initLoginCodeTemplate() {
         if (templateManager.findByCode(CODE_LOGIN).isPresent()) {
-            log.info("[模板初始化] 登录验证码模板已存在，跳过");
+            log.debug("[模板初始化] 登录验证码模板已存在，跳过");
             return;
         }
 
@@ -58,7 +58,7 @@ public class TemplateDataInitializer implements CommandLineRunner {
                 .build();
 
         templateManager.create(template);
-        log.info("[模板初始化] 登录验证码模板创建成功");
+        log.debug("[模板初始化] 登录验证码模板创建成功");
     }
 
     private String buildRegisterEmailContent() {
@@ -83,7 +83,7 @@ public class TemplateDataInitializer implements CommandLineRunner {
                         .warning { background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px 20px; border-radius: 6px; margin: 20px 0; }
                         .warning-title { font-weight: 600; color: #856404; margin-bottom: 5px; }
                         .warning-text { color: #856404; font-size: 14px; margin: 0; line-height: 1.6; }
-                        .info { color: #888; font-size: 13px; line-height: 1.8; }
+                        .debug { color: #888; font-size: 13px; line-height: 1.8; }
                         .footer { background-color: #f8f9fa; padding: 25px 30px; text-align: center; border-top: 1px solid #eee; }
                         .footer p { margin: 5px 0; color: #999; font-size: 13px; }
                         .footer .brand { font-weight: 600; color: #667eea; }
@@ -146,7 +146,7 @@ public class TemplateDataInitializer implements CommandLineRunner {
                         .warning { background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px 20px; border-radius: 6px; margin: 20px 0; }
                         .warning-title { font-weight: 600; color: #856404; margin-bottom: 5px; }
                         .warning-text { color: #856404; font-size: 14px; margin: 0; line-height: 1.6; }
-                        .info { color: #888; font-size: 13px; line-height: 1.8; }
+                        .debug { color: #888; font-size: 13px; line-height: 1.8; }
                         .footer { background-color: #f8f9fa; padding: 25px 30px; text-align: center; border-top: 1px solid #eee; }
                         .footer p { margin: 5px 0; color: #999; font-size: 13px; }
                         .footer .brand { font-weight: 600; color: #11998e; }

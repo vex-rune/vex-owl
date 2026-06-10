@@ -10,6 +10,7 @@ import com.vex.owl.ai.domain.skills.SkillResult;
 import com.vex.owl.ai.domain.skills.SkillResult.Metadata;
 import com.vex.owl.ai.domain.skills.SkillResult.ResultType;
 import com.vex.owl.ai.domain.skills.SkillResult.TokenUsage;
+import com.vex.owl.ai.domain.tools.MemoryAdvisor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -109,19 +110,13 @@ public class PlannerSkillExecutor implements SkillExecutor<Plan, String> {
     private final ChatClient chatClient;
     private final Map<String, Object> toolContext;
     private final List<ToolCallback> tools;
-    private final ChatMemory chatMemory;
+    private final MemoryAdvisor memoryAdvisor;
 
-    /**
-     * @param chatClient  已绑定模型的 ChatClient
-     * @param toolContext 工具上下文（tenantId / sessionId / messageId）
-     * @param tools       本次执行可用的 ToolCallback 列表
-     * @param chatMemory  对话记忆（支持多轮上下文，可为 null）
-     */
-    public PlannerSkillExecutor(@NonNull ChatClient chatClient, @NonNull Map<String, Object> toolContext, @NonNull List<ToolCallback> tools, ChatMemory chatMemory) {
+    public PlannerSkillExecutor(@NonNull ChatClient chatClient, @NonNull Map<String, Object> toolContext, @NonNull List<ToolCallback> tools, MemoryAdvisor  memoryAdvisor) {
         this.chatClient = chatClient;
         this.toolContext = Map.copyOf(toolContext);
         this.tools = List.copyOf(tools);
-        this.chatMemory = chatMemory;
+        this.memoryAdvisor = memoryAdvisor;
     }
 
     /**
@@ -145,8 +140,8 @@ public class PlannerSkillExecutor implements SkillExecutor<Plan, String> {
                     .toolContext(toolContext)
                     .toolCallbacks(allTools);
 
-            if (chatMemory != null) {
-                prompt = prompt.advisors(MessageChatMemoryAdvisor.builder(chatMemory).build());
+            if (memoryAdvisor != null) {
+                prompt = prompt.advisors(memoryAdvisor);
             }
 
             response = prompt.call().chatResponse();
@@ -188,8 +183,8 @@ public class PlannerSkillExecutor implements SkillExecutor<Plan, String> {
                     .toolContext(toolContext)
                     .toolCallbacks(allTools);
 
-            if (chatMemory != null) {
-                prompt = prompt.advisors(MessageChatMemoryAdvisor.builder(chatMemory).build());
+            if (memoryAdvisor != null) {
+                prompt = prompt.advisors(memoryAdvisor);
             }
 
             response = prompt.call().chatResponse();
@@ -228,7 +223,7 @@ public class PlannerSkillExecutor implements SkillExecutor<Plan, String> {
                 .sessionId((String) toolContext.getOrDefault("sessionId", ""))
                 .messageId((String) toolContext.getOrDefault("messageId", ""))
                 .skillName(NAME)
-                .tenantId((String) toolContext.getOrDefault("tenantId", ""))
+                .userId((String) toolContext.getOrDefault("userId", ""))
                 .tokenUsage(tokenUsage)
                 .modelName(modelName)
                 .build();

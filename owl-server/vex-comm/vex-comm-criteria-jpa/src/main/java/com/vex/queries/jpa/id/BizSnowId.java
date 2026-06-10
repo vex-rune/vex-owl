@@ -12,4 +12,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @IdGeneratorType(BizSnowflakeGenerator.class) // 绑定你的生成器！
 public @interface BizSnowId {
+
+    String value() default "";
 }

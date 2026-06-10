@@ -1,5 +1,6 @@
 package com.vex.owl.ai.domain.usage;
 
+import com.vex.event.Event;
 import com.vex.owl.ai.domain.event.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +14,8 @@ import java.time.LocalDate;
 /**
  * AI 使用量统计管理器
  *
- * <p>监听各种 AI 使用事件，聚合统计到数据库</p>
+ * <p>监听各种 AI 使用事件，聚合统计到数据库。</p>
+ * <p>所有事件通过 {@link Event} 统一接收，从 EventMetadata 中提取 userId。</p>
  */
 @Component
 @RequiredArgsConstructor
@@ -25,17 +27,32 @@ public class UsageRecordManager {
     @Async
     @EventListener
     @Transactional
-    public void onVoiceUsage(VoiceUsageEvent event) {
-        if (event.getTenantId() == null) {
-            log.warn("VoiceUsageEvent 缺少租户信息，跳过统计");
+    public void onEvent(Event event) {
+        String userId = event.getMetadata().userId();
+        if (userId == null || userId.isEmpty()) {
+            log.warn("事件缺少 userId，跳过统计: {}", event.getMetadata().eventType());
             return;
         }
 
+        Object payload = event.getPayload();
+
+        if (payload instanceof VoiceUsageEvent voice) {
+            onVoiceUsage(userId, voice);
+        } else if (payload instanceof ImageUsageEvent image) {
+            onImageUsage(userId, image);
+        } else if (payload instanceof MusicUsageEvent music) {
+            onMusicUsage(userId, music);
+        } else if (payload instanceof TokenUsageEvent token) {
+            onTokenUsage(userId, token);
+        }
+    }
+
+    private void onVoiceUsage(String userId, VoiceUsageEvent event) {
         UsageRecordEntity record = usageRecordRepository
-                .findByTenantIdAndStatDateAndUsageType(event.getTenantId(), LocalDate.now(), "VOICE")
+                .findByUserIdAndStatDateAndUsageType(userId, LocalDate.now(), "VOICE")
                 .orElseGet(() -> {
                     UsageRecordEntity newRecord = new UsageRecordEntity();
-                    newRecord.setTenantId(event.getTenantId());
+                    newRecord.setUserId(userId);
                     newRecord.setStatDate(LocalDate.now());
                     newRecord.setUsageType("VOICE");
                     newRecord.setModelName(event.getModelName());
@@ -48,23 +65,15 @@ public class UsageRecordManager {
                 event.getOutputSize() != null ? event.getOutputSize().longValue() : 0L);
 
         usageRecordRepository.save(record);
-        log.debug("VOICE 使用量统计已更新，租户={}", event.getTenantId());
+        log.debug("VOICE 使用量统计已更新，userId={}", userId);
     }
 
-    @Async
-    @EventListener
-    @Transactional
-    public void onImageUsage(ImageUsageEvent event) {
-        if (event.getTenantId() == null) {
-            log.warn("ImageUsageEvent 缺少租户信息，跳过统计");
-            return;
-        }
-
+    private void onImageUsage(String userId, ImageUsageEvent event) {
         UsageRecordEntity record = usageRecordRepository
-                .findByTenantIdAndStatDateAndUsageType(event.getTenantId(), LocalDate.now(), "IMAGE")
+                .findByUserIdAndStatDateAndUsageType(userId, LocalDate.now(), "IMAGE")
                 .orElseGet(() -> {
                     UsageRecordEntity newRecord = new UsageRecordEntity();
-                    newRecord.setTenantId(event.getTenantId());
+                    newRecord.setUserId(userId);
                     newRecord.setStatDate(LocalDate.now());
                     newRecord.setUsageType("IMAGE");
                     newRecord.setModelName(event.getModelName());
@@ -78,23 +87,15 @@ public class UsageRecordManager {
                 event.getFailedCount() != null ? event.getFailedCount().longValue() : 0L);
 
         usageRecordRepository.save(record);
-        log.debug("IMAGE 使用量统计已更新，租户={}", event.getTenantId());
+        log.debug("IMAGE 使用量统计已更新，userId={}", userId);
     }
 
-    @Async
-    @EventListener
-    @Transactional
-    public void onMusicUsage(MusicUsageEvent event) {
-        if (event.getTenantId() == null) {
-            log.warn("MusicUsageEvent 缺少租户信息，跳过统计");
-            return;
-        }
-
+    private void onMusicUsage(String userId, MusicUsageEvent event) {
         UsageRecordEntity record = usageRecordRepository
-                .findByTenantIdAndStatDateAndUsageType(event.getTenantId(), LocalDate.now(), "MUSIC")
+                .findByUserIdAndStatDateAndUsageType(userId, LocalDate.now(), "MUSIC")
                 .orElseGet(() -> {
                     UsageRecordEntity newRecord = new UsageRecordEntity();
-                    newRecord.setTenantId(event.getTenantId());
+                    newRecord.setUserId(userId);
                     newRecord.setStatDate(LocalDate.now());
                     newRecord.setUsageType("MUSIC");
                     newRecord.setModelName(event.getModelName());
@@ -107,20 +108,12 @@ public class UsageRecordManager {
                 event.getOutputSize() != null ? event.getOutputSize().longValue() : 0L);
 
         usageRecordRepository.save(record);
-        log.debug("MUSIC 使用量统计已更新，租户={}", event.getTenantId());
+        log.debug("MUSIC 使用量统计已更新，userId={}", userId);
     }
 
-    @Async
-    @EventListener
-    @Transactional
-    public void onTokenUsage(TokenUsageEvent event) {
-        if (event.getTenantId() == null) {
-            log.warn("TokenUsageEvent 缺少租户信息，跳过统计");
-            return;
-        }
-
+    private void onTokenUsage(String userId, TokenUsageEvent event) {
         UsageRecordEntity newRecord = new UsageRecordEntity();
-        newRecord.setTenantId(event.getTenantId());
+        newRecord.setUserId(userId);
         newRecord.setStatDate(LocalDate.now());
         newRecord.setUsageType("CHAT");
         newRecord.setModelName(event.getModelName());
@@ -132,6 +125,84 @@ public class UsageRecordManager {
         );
 
         usageRecordRepository.save(newRecord);
-        log.debug("CHAT Token 统计已更新，租户={}", event.getTenantId());
+        log.debug("CHAT Token 统计已更新，userId={}", userId);
+    }
+
+    // ==================== 查询 ====================
+
+    public UsageStatResponse query(String userId, LocalDate startDate, LocalDate endDate) {
+        UsageStatResponse.ChatUsage chat = sumChatUsage(userId, startDate, endDate);
+        UsageStatResponse.VoiceUsage voice = sumVoiceUsage(userId, startDate, endDate);
+        UsageStatResponse.ImageUsage image = sumImageUsage(userId, startDate, endDate);
+        UsageStatResponse.MusicUsage music = sumMusicUsage(userId, startDate, endDate);
+
+        long totalCallCount = nvl(chat.getCallCount()) + nvl(voice.getCallCount())
+                + nvl(image.getRequestCount()) + nvl(music.getCallCount());
+
+        return UsageStatResponse.builder()
+                .userId(userId)
+                .startDate(startDate)
+                .endDate(endDate)
+                .chatUsage(chat)
+                .voiceUsage(voice)
+                .imageUsage(image)
+                .musicUsage(music)
+                .totalCallCount(totalCallCount)
+                .build();
+    }
+
+    UsageStatResponse.ChatUsage sumChatUsage(String userId, LocalDate startDate, LocalDate endDate) {
+        Object[] row = usageRecordRepository.sumChatUsageByUserIdAndDateRange(userId, startDate, endDate);
+        return UsageStatResponse.ChatUsage.builder()
+                .promptTokens(toLong(row[0]))
+                .completionTokens(toLong(row[1]))
+                .totalTokens(toLong(row[2]))
+                .callCount(toLong(row[3]))
+                .build();
+    }
+
+    UsageStatResponse.VoiceUsage sumVoiceUsage(String userId, LocalDate startDate, LocalDate endDate) {
+        Object[] row = usageRecordRepository.sumVoiceUsageByUserIdAndDateRange(userId, startDate, endDate);
+        return UsageStatResponse.VoiceUsage.builder()
+                .callCount(toLong(row[0]))
+                .inputChars(toLong(row[1]))
+                .outputDuration(toLong(row[2]))
+                .outputDurationSeconds(toLong(row[2]) != null ? toLong(row[2]) / 1000 : null)
+                .outputSize(toLong(row[3]))
+                .outputSizeMB(toLong(row[3]) != null ? toLong(row[3]) / 1024 / 1024 : null)
+                .build();
+    }
+
+    UsageStatResponse.ImageUsage sumImageUsage(String userId, LocalDate startDate, LocalDate endDate) {
+        Object[] row = usageRecordRepository.sumImageUsageByUserIdAndDateRange(userId, startDate, endDate);
+        return UsageStatResponse.ImageUsage.builder()
+                .requestCount(toLong(row[0]))
+                .successCount(toLong(row[1]))
+                .failedCount(toLong(row[2]))
+                .inputChars(toLong(row[3]))
+                .build();
+    }
+
+    UsageStatResponse.MusicUsage sumMusicUsage(String userId, LocalDate startDate, LocalDate endDate) {
+        Object[] row = usageRecordRepository.sumMusicUsageByUserIdAndDateRange(userId, startDate, endDate);
+        return UsageStatResponse.MusicUsage.builder()
+                .callCount(toLong(row[0]))
+                .inputChars(toLong(row[1]))
+                .outputDuration(toLong(row[2]))
+                .outputDurationSeconds(toLong(row[2]) != null ? toLong(row[2]) / 1000 : null)
+                .outputSize(toLong(row[3]))
+                .outputSizeMB(toLong(row[3]) != null ? toLong(row[3]) / 1024 / 1024 : null)
+                .build();
+    }
+
+    private static Long toLong(Object value) {
+        if (value instanceof Number n) {
+            return n.longValue();
+        }
+        return null;
+    }
+
+    private static long nvl(Long value) {
+        return value != null ? value : 0L;
     }
 }

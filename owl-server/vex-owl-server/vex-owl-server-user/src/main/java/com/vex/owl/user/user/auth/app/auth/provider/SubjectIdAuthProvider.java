@@ -2,7 +2,7 @@ package com.vex.owl.user.user.auth.app.auth.provider;
 
 import com.vex.owl.user.user.auth.domain.subject.SubjectManager;
 import com.vex.owl.user.user.auth.domain.subject.entity.SubjectEntity;
-import com.vex.security.LoginUser;
+import com.vex.security.auth.AuthUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,7 +32,7 @@ public class SubjectIdAuthProvider implements AuthenticationProvider {
         List<SimpleGrantedAuthority> grantedAuthorities = buildGrantedAuthorities(subject.getRole());
         List<String> roleAuthorities = buildRoleAuthorities(subject.getRole());
 
-        LoginUser loginUser = LoginUser.builder()
+        AuthUser loginUser = AuthUser.builder()
                 .subjectId(subject.getId())
                 .nickName(subject.getNickname())
                 .email(subject.getEmail())

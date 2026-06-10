@@ -1,10 +1,11 @@
 package com.vex.owl.user.user.auth.domain.subject.entity;
 
-import com.vex.queries.jpa.id.BizIdPrefix;
 import com.vex.queries.jpa.id.BizSnowId;
 import com.vex.queries.jpa.model.JpaBasicEntity;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.*;
 
 import java.util.Locale;
@@ -18,13 +19,12 @@ import java.util.Locale;
 @NoArgsConstructor
 @Entity
 @Builder
-@BizIdPrefix(value = "SUB")
 @Table(name = "user_subject")
 @EqualsAndHashCode(callSuper = false)
 public class SubjectEntity extends JpaBasicEntity {
 
     @Id
-    @BizSnowId
+    @BizSnowId("sub")
     private String id;
 
     @Column(length = 300)

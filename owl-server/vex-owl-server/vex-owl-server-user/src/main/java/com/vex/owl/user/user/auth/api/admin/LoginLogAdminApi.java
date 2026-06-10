@@ -31,7 +31,7 @@ public class LoginLogAdminApi {
      */
     @PostMapping("/query")
     public ApiResponse<List<LoginRecordEntity>> query(@Valid @RequestBody QueriesPageRequest request) {
-        log.info("登录日志通用查询, request: {}", request);
+        log.debug("登录日志通用查询, request: {}", request);
         List<LoginRecordEntity> result = loginRecordManager.query(request);
         return ApiResponse.success(result);
     }

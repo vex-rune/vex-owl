@@ -21,16 +21,16 @@ public class AiModelAdminApi {
     private final AiModelRepository modelRepository;
 
     /**
-     * 查询租户下所有模型
+     * 模型-查询所有
      */
     @GetMapping
     public ApiResponse<List<ModelEntity>> list(
             @RequestHeader("X-User-Id") String userId) {
-        return ApiResponse.success(modelRepository.findByTenantId(userId));
+        return ApiResponse.success(modelRepository.findByUserId(userId));
     }
 
     /**
-     * 查询指定模型
+     * 模型-查询指定模型
      */
     @GetMapping("/{id}")
     public ApiResponse<ModelEntity> get(@PathVariable String id) {
@@ -40,7 +40,7 @@ public class AiModelAdminApi {
     }
 
     /**
-     * 新增模型
+     * 模型-新增
      */
     @PostMapping
     public ApiResponse<ModelEntity> create(@RequestBody ModelEntity entity) {
@@ -48,7 +48,7 @@ public class AiModelAdminApi {
     }
 
     /**
-     * 更新模型
+     * 模型-更新
      */
     @PutMapping("/{id}")
     public ApiResponse<ModelEntity> update(@PathVariable String id, @RequestBody ModelEntity entity) {
@@ -60,7 +60,7 @@ public class AiModelAdminApi {
     }
 
     /**
-     * 删除模型
+     * 模型-删除指定模型
      */
     @DeleteMapping("/{id}")
     public ApiResponse<Void> delete(@PathVariable String id) {

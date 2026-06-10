@@ -21,13 +21,13 @@ class ChatMessageMemoryTest extends SpringIntegrationTest {
     @Autowired
     private ChatManager chatManager;
 
-    private ChatSessionEntity createSession(String tenantId) {
-        return chatManager.createSession(tenantId, "测试会话");
+    private ChatSessionEntity createSession(String userId) {
+        return chatManager.createSession(userId, "测试会话");
     }
 
-    private ChatMessageEntity createMessage(String sessionId, String tenantId, String type, String text) {
+    private ChatMessageEntity createMessage(String sessionId, String userId, String type, String text) {
         return ChatMessageEntity.builder()
-                .tenantId(tenantId)
+                .userId(userId)
                 .conversationId(sessionId)
                 .messageType(type)
                 .textContent(text)

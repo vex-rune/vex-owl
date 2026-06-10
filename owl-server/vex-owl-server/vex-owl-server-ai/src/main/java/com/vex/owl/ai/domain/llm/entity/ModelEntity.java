@@ -1,7 +1,6 @@
 package com.vex.owl.ai.domain.llm.entity;
 
 import com.vex.owl.ai.domain.llm.repo.ModelProperties;
-import com.vex.queries.jpa.id.BizIdPrefix;
 import com.vex.queries.jpa.id.BizSnowId;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,11 +10,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Map;
-
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+
+import java.util.Map;
 
 /**
  * AI模型实体
@@ -28,17 +26,16 @@ import org.hibernate.type.SqlTypes;
 @NoArgsConstructor
 @Builder
 @Entity
-@BizIdPrefix(value = "model")
-@Table(name = "ai_model")
+@Table(name = "model")
 public class ModelEntity implements ModelProperties {
 
     /** 主键，带业务前缀的雪花ID */
     @Id
-    @BizSnowId
+    @BizSnowId("model")
     private String id;
 
     /** 租户ID，用于多租户数据隔离 */
-    private String tenantId;
+    private String userId;
 
     /** Provider 代码，如 "dashscope"、"deepseek"、"minimax"，用于工厂路由 */
     private String providerCode;

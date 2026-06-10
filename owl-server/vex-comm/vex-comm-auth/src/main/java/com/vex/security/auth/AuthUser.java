@@ -14,7 +14,7 @@ import java.util.Map;
  */
 @Data
 @Builder
-public class JwtUser implements Serializable {
+public class AuthUser implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;

@@ -1,13 +1,12 @@
 package com.vex.owl.ai.domain.chat;
 
-import com.vex.queries.jpa.id.BizIdPrefix;
 import com.vex.queries.jpa.id.BizSnowId;
 import com.vex.queries.jpa.model.JpaBasicEntity;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -16,23 +15,24 @@ import java.time.LocalDateTime;
  *
  * <p>管理用户的对话会话，支持多租户隔离</p>
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "ai_chat_session", indexes = {
-    @Index(name = "idx_session_tenant", columnList = "tenantId"),
-    @Index(name = "idx_session_create_time", columnList = "tenantId,createTime")
+@Table(name = "chat_session", indexes = {
+    @Index(name = "idx_session_tenant", columnList = "userId"),
+    @Index(name = "idx_session_create_time", columnList = "userId,createTime")
 })
 public class ChatSessionEntity extends JpaBasicEntity {
 
     @Id
-    @BizSnowId
+    @BizSnowId( "chat")
     private String id;
 
     /** 租户ID */
-    private String tenantId;
+    private String userId;
 
     /** 会话类型（如：CHAT、AGENT、PIPELINE） */
     private String sessionType;

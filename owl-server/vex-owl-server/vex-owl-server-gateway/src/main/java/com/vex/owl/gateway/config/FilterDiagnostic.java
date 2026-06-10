@@ -25,9 +25,9 @@ public class FilterDiagnostic implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        log.info("╔══════════════════════════════════════════════════════════╗");
-        log.info("║           Gateway GlobalFilter 诊断报告                 ║");
-        log.info("╚══════════════════════════════════════════════════════════╝");
+        log.debug("╔══════════════════════════════════════════════════════════╗");
+        log.debug("║           Gateway GlobalFilter 诊断报告                 ║");
+        log.debug("╚══════════════════════════════════════════════════════════╝");
         
         // 获取所有 GlobalFilter
         Map<String, GlobalFilter> filters = applicationContext.getBeansOfType(GlobalFilter.class);
@@ -37,7 +37,7 @@ public class FilterDiagnostic implements CommandLineRunner {
             return;
         }
         
-        log.info("📊 共发现 {} 个 GlobalFilter:\n", filters.size());
+        log.debug("📊 共发现 {} 个 GlobalFilter:\n", filters.size());
         
         // 按 order 排序
         TreeMap<Integer, String> orderedFilters = new TreeMap<>();
@@ -56,14 +56,14 @@ public class FilterDiagnostic implements CommandLineRunner {
         // 打印排序后的过滤器
         int index = 1;
         for (Map.Entry<Integer, String> entry : orderedFilters.entrySet()) {
-            log.info("  {}. {} ← 优先级 {}", index++, entry.getValue(), 
+            log.debug("  {}. {} ← 优先级 {}", index++, entry.getValue(), 
                     entry.getKey() == -200 ? "最高" : 
                     entry.getKey() == -150 ? "高" : 
                     entry.getKey() == -100 ? "中" : "低");
         }
         
-        log.info("\n💡 提示: order 值越小，优先级越高（越先执行）");
-        log.info("═══════════════════════════════════════════════════════════");
+        log.debug("\n💡 提示: order 值越小，优先级越高（越先执行）");
+        log.debug("═══════════════════════════════════════════════════════════");
     }
     
     /**

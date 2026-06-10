@@ -110,9 +110,9 @@ public class SequentialPipelineAgent implements Agent<SequentialPipelineAgent.Pi
 
         List<PlanStep> steps = pipelinePlanner.getSteps();
         if (steps == null || steps.isEmpty()) {
-            log.info("任务评估为简单级别，跳过编排, tenantId={}", runContext.getTenantId());
+            log.debug("任务评估为简单级别，跳过编排, userId={}", runContext.getUserId());
         } else {
-            log.info("任务编排完成，共 {} 个步骤, tenantId={}", steps.size(), runContext.getTenantId());
+            log.debug("任务编排完成，共 {} 个步骤, userId={}", steps.size(), runContext.getUserId());
         }
 
         return new PipelineStep(SYSTEM_PROMPT, steps);

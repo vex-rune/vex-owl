@@ -32,17 +32,17 @@ public class DefaultAiManager implements AiManager {
     private final ThinkTool thinkTool;
 
     @Override
-    public List<AgentDefinition> getAgents(String tenantId) {
+    public List<AgentDefinition> getAgents(String userId) {
         return agentManager.getAvailableAgents();
     }
 
     @Override
-    public Optional<Agent> getAgent(String tenantId, String name) {
+    public Optional<Agent> getAgent(String userId, String name) {
         return agentManager.getAgent(name);
     }
 
     @Override
-    public List<ToolDefinition> getTools(String tenantId) {
+    public List<ToolDefinition> getTools(String userId) {
         return toolServer.getAllTools().stream()
                 .map(tool -> ToolDefinition.of(tool.getName(), tool.getClass().getSimpleName()))
                 .toList();
@@ -61,7 +61,7 @@ public class DefaultAiManager implements AiManager {
                         runContext.getModelProperties())
                 .mutate()
                 .defaultToolContext(Map.of(
-                        "tenantId", runContext.getTenantId(),
+                        "userId", runContext.getUserId(),
                         "sessionId", runContext.getSessionId() != null ? runContext.getSessionId() : ""))
                 .defaultAdvisors(advisors)
                 .defaultToolCallbacks(builtInTools)
@@ -69,12 +69,12 @@ public class DefaultAiManager implements AiManager {
     }
 
     @Override
-    public List<AgentAdvisor> getAdvisors(String tenantId) {
+    public List<AgentAdvisor> getAdvisors(String userId) {
         return agentAdvisors;
     }
 
     @Override
-    public AiCapability getCapabilities(String tenantId) {
-        return new AiCapability(tenantId, getAgents(tenantId), getTools(tenantId));
+    public AiCapability getCapabilities(String userId) {
+        return new AiCapability(userId, getAgents(userId), getTools(userId));
     }
 }

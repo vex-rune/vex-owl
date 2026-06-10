@@ -4,15 +4,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 /**
  * 工具调用结果事件
  */
 @Getter
 @Setter
-public class ToolCallResultEvent {
+public class ToolCallResultEvent implements Serializable {
 
-    private String tenantId;
-    private String sessionId;
     private ToolCallRequestEvent.EventType eventType;
     private String toolCallId;
     private String toolName;
@@ -24,11 +24,8 @@ public class ToolCallResultEvent {
     }
 
     @Builder
-    public ToolCallResultEvent(String tenantId, String sessionId,
-                               ToolCallRequestEvent.EventType eventType,
-                               String toolCallId, String toolName, String result) {
-        this.tenantId = tenantId;
-        this.sessionId = sessionId;
+    public ToolCallResultEvent(ToolCallRequestEvent.EventType eventType, String toolCallId,
+                               String toolName, String result) {
         this.eventType = eventType;
         this.toolCallId = toolCallId;
         this.toolName = toolName;

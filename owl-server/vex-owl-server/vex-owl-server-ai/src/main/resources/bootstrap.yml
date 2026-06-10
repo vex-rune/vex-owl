@@ -76,7 +76,8 @@ spring:
 logging:
   level:
     root: INFO
-    org.springframework.ai.chat.client: DEBUG
+    com.vex.owl.ai: DEBUG
+    org.springframework.context.event: DEBUG
   pattern:
     console: "%d{HH:mm:ss.SSS} %5p %-40.40logger{39} : %m%n"
   file:

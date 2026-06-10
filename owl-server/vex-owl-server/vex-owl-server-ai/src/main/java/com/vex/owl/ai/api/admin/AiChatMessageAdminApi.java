@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 对话消息管理
  */
 @RestController
-@RequestMapping("/api/ai/admin")
+@RequestMapping("/api/ai/admin/admin")
 @RequiredArgsConstructor
 @Slf4j
 public class AiChatMessageAdminApi {
@@ -29,7 +29,6 @@ public class AiChatMessageAdminApi {
 
     /**
      * 对话会话-通用查询
-     * <p>支持分页、排序和多条件组合查询</p>
      */
     @PostMapping("/chat-session/query")
     public ApiResponse<List<ChatSessionEntity>> querySession(@Valid @RequestBody QueriesPageRequest request) {
@@ -39,10 +38,6 @@ public class AiChatMessageAdminApi {
 
     /**
      * 对话消息-通用查询
-     * <p>支持分页、排序和多条件组合查询</p>
-     *
-     * @param request 查询条件参数，包含predicate、order、page
-     * @return 对话消息列表
      */
     @PostMapping("/chat-message/query")
     public ApiResponse<List<ChatMessageEntity>> queryMessages(@Valid @RequestBody QueriesPageRequest request) {

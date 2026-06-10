@@ -51,6 +51,8 @@ public abstract class BaseAgent implements Agent<String> {
             spec.advisors(p -> p.advisors(advisors).params(contextMap));
         }
 
+        spec.advisors(p -> p.params(contextMap));
+
         return spec;
     }
 

@@ -19,13 +19,13 @@ public interface AiManager {
 
     // === Agent ===
 
-    List<AgentDefinition> getAgents(String tenantId);
+    List<AgentDefinition> getAgents(String userId);
 
-    Optional<Agent> getAgent(String tenantId, String name);
+    Optional<Agent> getAgent(String userId, String name);
 
     // === Tool ===
 
-    List<ToolDefinition> getTools(String tenantId);
+    List<ToolDefinition> getTools(String userId);
 
     // === ChatClient ===
 
@@ -36,14 +36,14 @@ public interface AiManager {
 
     // === Advisor ===
 
-    List<AgentAdvisor> getAdvisors(String tenantId);
+    List<AgentAdvisor> getAdvisors(String userId);
 
     // === 汇总 ===
 
-    AiCapability getCapabilities(String tenantId);
+    AiCapability getCapabilities(String userId);
 
     record AiCapability(
-            String tenantId,
+            String userId,
             List<AgentDefinition> agents,
             List<ToolDefinition> tools
     ) {}

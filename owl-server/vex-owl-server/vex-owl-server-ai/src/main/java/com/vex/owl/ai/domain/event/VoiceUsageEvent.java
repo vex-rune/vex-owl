@@ -4,15 +4,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 /**
  * TTS 语音合成使用量事件
  */
 @Getter
 @Setter
-public class VoiceUsageEvent {
+public class VoiceUsageEvent implements Serializable {
 
-    private String tenantId;
-    private String sessionId;
     private String modelName;
     private Integer inputChars;
     private Integer outputDuration;
@@ -27,11 +27,8 @@ public class VoiceUsageEvent {
     }
 
     @Builder
-    public VoiceUsageEvent(String tenantId, String sessionId, String modelName,
-                           Integer inputChars, Integer outputDuration, Integer outputSize,
-                           Integer callCount, String voiceId, String audioFormat) {
-        this.tenantId = tenantId;
-        this.sessionId = sessionId;
+    public VoiceUsageEvent(String modelName, Integer inputChars, Integer outputDuration,
+                           Integer outputSize, Integer callCount, String voiceId, String audioFormat) {
         this.modelName = modelName;
         this.inputChars = inputChars;
         this.outputDuration = outputDuration;

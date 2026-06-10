@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClientRequest;
 import org.springframework.ai.chat.client.ChatClientResponse;
+import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.chat.client.advisor.api.CallAdvisorChain;
 import org.springframework.ai.chat.client.advisor.api.StreamAdvisorChain;
 import org.springframework.ai.chat.messages.AssistantMessage;
@@ -31,7 +32,7 @@ import java.util.*;
  *   <li>自动保存：调用完成后持久化 user/assistant 消息</li>
  * </ul>
  *
- * <p>通过 advisor params 获取 tenantId 和 sessionId（与 RunContext.toMap() 一致）。</p>
+ * <p>通过 advisor params 获取 userId 和 sessionId（与 RunContext.toMap() 一致）。</p>
  */
 @Slf4j
 @Component
@@ -48,14 +49,14 @@ public class MemoryAdvisor implements AgentAdvisor {
     @Override
     public ChatClientResponse adviseCall(ChatClientRequest request, CallAdvisorChain chain) {
         Map<String, Object> ctx = request.context();
-        String tenantId = getString(ctx, "tenantId");
+        String userId = getString(ctx, "userId");
         String sessionId = getString(ctx, "sessionId");
 
         // 1. 提取原始 prompt 文本
         String originalText = extractPromptText(request.prompt());
 
         // 2. 加载记忆并构建增强 prompt
-        String enrichedText = buildEnrichedPrompt(tenantId, sessionId, originalText);
+        String enrichedText = buildEnrichedPrompt(userId, sessionId, originalText);
         Prompt enrichedPrompt = new Prompt(enrichedText, request.prompt().getOptions());
         ChatClientRequest enrichedRequest = request.mutate().prompt(enrichedPrompt).build();
 
@@ -63,7 +64,7 @@ public class MemoryAdvisor implements AgentAdvisor {
         ChatClientResponse response = chain.nextCall(enrichedRequest);
 
         // 4. 保存消息
-        saveMessages(tenantId, sessionId, originalText, response);
+        saveMessages(userId, sessionId, originalText, response);
 
         return response;
     }
@@ -71,18 +72,18 @@ public class MemoryAdvisor implements AgentAdvisor {
     @Override
     public Flux<ChatClientResponse> adviseStream(ChatClientRequest request, StreamAdvisorChain chain) {
         Map<String, Object> ctx = request.context();
-        String tenantId = getString(ctx, "tenantId");
+        String userId = getString(ctx, "userId");
         String sessionId = getString(ctx, "sessionId");
 
         String originalText = extractPromptText(request.prompt());
-        String enrichedText = buildEnrichedPrompt(tenantId, sessionId, originalText);
+        String enrichedText = buildEnrichedPrompt(userId, sessionId, originalText);
         Prompt enrichedPrompt = new Prompt(enrichedText, request.prompt().getOptions());
         ChatClientRequest enrichedRequest = request.mutate().prompt(enrichedPrompt).build();
 
         return chain.nextStream(enrichedRequest)
                 .doOnComplete(() -> {
                     if (originalText != null && !originalText.isEmpty()) {
-                        saveEntity(tenantId, sessionId, originalText, "USER");
+                        saveEntity(userId, sessionId, originalText, "USER");
                     }
                 });
     }
@@ -94,16 +95,16 @@ public class MemoryAdvisor implements AgentAdvisor {
 
     @Override
     public int getOrder() {
-        return ORDER;
+        return Advisor.DEFAULT_CHAT_MEMORY_PRECEDENCE_ORDER - 100;
     }
 
     // ==================== 构建增强 Prompt ====================
 
-    private String buildEnrichedPrompt(String tenantId, String sessionId, String prompt) {
+    private String buildEnrichedPrompt(String userId, String sessionId, String prompt) {
         StringBuilder sb = new StringBuilder();
 
         // 用户长期记忆
-        String userMemory = buildUserMemorySection(tenantId);
+        String userMemory = buildUserMemorySection(userId);
         if (userMemory != null) {
             sb.append(userMemory).append("\n\n");
         }
@@ -120,10 +121,10 @@ public class MemoryAdvisor implements AgentAdvisor {
         return sb.toString();
     }
 
-    private String buildUserMemorySection(String tenantId) {
-        if (tenantId == null || tenantId.isEmpty()) return null;
+    private String buildUserMemorySection(String userId) {
+        if (userId == null || userId.isEmpty()) return null;
 
-        List<UserMemoryEntity> memories = userMemoryService.getMemories(tenantId);
+        List<UserMemoryEntity> memories = userMemoryService.getMemories(userId);
         if (memories.isEmpty()) return null;
 
         StringBuilder sb = new StringBuilder();
@@ -163,27 +164,27 @@ public class MemoryAdvisor implements AgentAdvisor {
 
     // ==================== 保存消息 ====================
 
-    private void saveMessages(String tenantId, String sessionId,
+    private void saveMessages(String userId, String sessionId,
                               String userText, ChatClientResponse response) {
         if (sessionId == null || sessionId.isEmpty()) return;
 
         if (userText != null && !userText.isEmpty()) {
-            saveEntity(tenantId, sessionId, userText, "USER");
+            saveEntity(userId, sessionId, userText, "USER");
         }
 
         ChatResponse chatResponse = response.chatResponse();
         if (chatResponse != null && chatResponse.getResult() != null) {
             String assistantText = chatResponse.getResult().getOutput().getText();
             if (assistantText != null && !assistantText.isEmpty()) {
-                saveEntity(tenantId, sessionId, assistantText, "ASSISTANT");
+                saveEntity(userId, sessionId, assistantText, "ASSISTANT");
             }
         }
     }
 
-    private void saveEntity(String tenantId, String sessionId, String text, String type) {
+    private void saveEntity(String userId, String sessionId, String text, String type) {
         try {
             ChatMessageEntity entity = ChatMessageEntity.builder()
-                    .tenantId(tenantId)
+                    .userId(userId)
                     .conversationId(sessionId)
                     .messageType(type)
                     .textContent(text)

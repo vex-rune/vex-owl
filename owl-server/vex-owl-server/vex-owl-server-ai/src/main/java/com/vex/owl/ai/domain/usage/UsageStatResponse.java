@@ -14,7 +14,7 @@ import java.util.List;
 public class UsageStatResponse {
 
     /** 租户ID */
-    private String tenantId;
+    private String userId;
 
     /** 统计日期 */
     private LocalDate statDate;

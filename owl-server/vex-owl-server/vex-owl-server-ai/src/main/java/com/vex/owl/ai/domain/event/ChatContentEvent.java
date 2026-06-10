@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 /**
  * LLM 响应内容事件
  *
@@ -17,10 +19,8 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatContentEvent {
+public class ChatContentEvent implements Serializable {
 
-    private String tenantId;
-    private String sessionId;
     /** 响应内容（流式时为单个 chunk） */
     private String content;
     /** 是否为流式 chunk */

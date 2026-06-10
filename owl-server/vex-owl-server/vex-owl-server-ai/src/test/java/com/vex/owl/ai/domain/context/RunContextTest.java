@@ -22,11 +22,11 @@ class RunContextTest {
     void builder_shouldCreateInstance() {
         RunContext ctx = RunContext.builder()
                 .modelProperties(sampleProperties())
-                .tenantId("tenant-1")
+                .userId("tenant-1")
                 .sessionId("session-1")
                 .build();
 
-        assertThat(ctx.getTenantId()).isEqualTo("tenant-1");
+        assertThat(ctx.getUserId()).isEqualTo("tenant-1");
         assertThat(ctx.getSessionId()).isEqualTo("session-1");
         assertThat(ctx.getStep()).isEqualTo(1);
         assertThat(ctx.getId()).isNotBlank();
@@ -46,7 +46,7 @@ class RunContextTest {
     void toMap_shouldContainAllFields() {
         RunContext ctx = RunContext.builder()
                 .modelProperties(sampleProperties())
-                .tenantId("tenant-1")
+                .userId("tenant-1")
                 .sessionId("session-1")
                 .headers(Map.of("h1", "v1"))
                 .params(Map.of("p1", "v1"))
@@ -54,7 +54,7 @@ class RunContextTest {
 
         Map<String, Object> map = ctx.toMap();
 
-        assertThat(map).containsEntry("tenantId", "tenant-1");
+        assertThat(map).containsEntry("userId", "tenant-1");
         assertThat(map).containsEntry("sessionId", "session-1");
         assertThat(map).containsEntry("step", 1);
         assertThat(map).containsKey("id");

@@ -30,8 +30,8 @@ public class ToolContextExtractor {
      * @param toolContext Spring AI 自动注入的工具上下文
      * @return 租户ID的 Optional，未设置时返回 {@link Optional#empty()}
      */
-    public Optional<String> getTenantId(ToolContext toolContext) {
-        return getString(toolContext, "tenantId");
+    public Optional<String> getUserId(ToolContext toolContext) {
+        return getString(toolContext, "userId");
     }
 
     /**
