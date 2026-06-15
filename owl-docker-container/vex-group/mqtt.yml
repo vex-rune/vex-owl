@@ -1,0 +1,21 @@
+services:
+  mqtt:
+    image: emqx/emqx:5.7.2
+    container_name: emqx
+    ports:
+      - "1883:1883"
+      - "8883:8883"
+      - "18083:18083"
+    environment:
+      - EMQX_ALLOW_ANONYMOUS=false
+      - EMQX_LISTENER__TCP__DEFAULT=1883
+      # 注释关闭SSL/TLS加密监听，本地调试无需证书、不走加密端口8883
+      # - EMQX_LISTENER__SSL__DEFAULT=8883
+      # 注释证书配置，本地明文连接不需要加载域名证书文件
+      # - EMQX_SSL__CERTFILE=/nginx_ssl/iot.vexrune.top.pem
+      # - EMQX_SSL__KEYFILE=/nginx_ssl/iot.vexrune.top.key
+      - EMQX_DASHBOARD__DEFAULT_USERNAME=vex_admin
+      - EMQX_DASHBOARD__DEFAULT_PASSWORD=vex_admin_SDFI3FOUID8
+    volumes:
+      - /app/nginx/ssl:/nginx_ssl
+    restart: unless-stopped
