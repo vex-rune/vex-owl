@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div id="msg"></div>
+<script>
+    const es = new EventSource('http://127.0.0.1:8080/api/chat', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({system:"小米MIMO",user:"测试流式回复"})
+    });
+    es.onmessage = e=>{
+        document.getElementById('msg').innerText += e.data;
+        if(e.data.includes("[DONE]")) es.close();
+    }
+</script>
+</body>
+</html>
