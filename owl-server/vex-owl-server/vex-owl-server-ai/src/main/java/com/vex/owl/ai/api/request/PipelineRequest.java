@@ -6,6 +6,8 @@ import lombok.Data;
 @Data
 public class PipelineRequest {
 
+    private String sessionId;
+
     @NotBlank(message = "prompt 不能为空")
     private String prompt;
 }

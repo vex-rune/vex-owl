@@ -1,0 +1,24 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: owl-ai2
+  
+  ai:
+    dashscope:
+      api-key: ${DASHSCOPE_API_KEY:your-api-key}
+      options:
+        model: qwen-plus
+        max-tokens: 2048
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  level:
+    com.vex.owl.ai2: DEBUG
+    org.springframework.ai: DEBUG

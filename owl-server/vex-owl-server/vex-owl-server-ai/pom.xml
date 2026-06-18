@@ -190,6 +190,12 @@
             <artifactId>spring-ai-pgvector-store</artifactId>
         </dependency>
 
+        <!-- Spring AI Alibaba Agent Framework (仅用于增强 Agent 能力，不绑定模型) -->
+        <dependency>
+            <groupId>com.alibaba.cloud.ai</groupId>
+            <artifactId>spring-ai-alibaba-agent-framework</artifactId>
+        </dependency>
+
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>

@@ -20,6 +20,7 @@
 
     <modules>
         <module>vex-owl-server-ai</module>
+        <module>vex-owl-server-ai2</module>
         <module>vex-owl-server-gateway</module>
         <module>vex-owl-server-notification</module>
         <module>vex-owl-server-notification-api</module>

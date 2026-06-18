@@ -56,14 +56,14 @@ public class ChatApi {
      */
     @PostMapping(value = "/pipeline")
     public ApiResponse<SequentialPipeline.Result> pipeline(
-            @RequestHeader(value = "X-Session-Id", required = false) String sessionId,
             @RequestBody @Valid PipelineRequest request) {
 
         String userId = currentUserResolver.resolveCurrentUser().get().getUserId();
+
         RunContext context = RunContext.builder()
                 .modelProperties(modelProperties)
                 .userId(userId)
-                .sessionId(sessionId)
+                .sessionId(request.getSessionId())
                 .headers(Map.of())
                 .params(Map.of())
                 .build();
